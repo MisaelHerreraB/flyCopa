@@ -569,51 +569,129 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
             ctx.fillText('🔒', 800, 40);
 
             // Agrupar segmentos con escala en PTY
-            // Mostrar todos los segmentos como individuales, sin agrupar
-            let groupedSegments = Array.isArray(data.segments) ? data.segments : [];
+            // Agrupar solo los segmentos que tienen "1 escala(s)" en el campo stops
+            let groupedSegments = [];
+            if (data.segments && Array.isArray(data.segments)) {
+                let i = 0;
+                while (i < data.segments.length) {
+                    const seg = data.segments[i];
+                    // Detectar si este segmento y el siguiente tienen "1 escala(s)"
+                    if (
+                        i < data.segments.length - 1 &&
+                        seg.stops && seg.stops.toLowerCase().includes('escala') &&
+                        data.segments[i + 1].stops && data.segments[i + 1].stops.toLowerCase().includes('escala') &&
+                        seg.date === data.segments[i + 1].date
+                    ) {
+                        // Agrupar ambos
+                        groupedSegments.push({
+                            date: seg.date,
+                            from: seg.from,
+                            departure: seg.departure,
+                            to: data.segments[i + 1].to,
+                            arrival: data.segments[i + 1].arrival,
+                            class: seg.class,
+                            direct: false,
+                            stops: seg.stops,
+                            flightNumber: seg.flightNumber + ' / ' + data.segments[i + 1].flightNumber,
+                            aircraft: seg.aircraft + ' / ' + data.segments[i + 1].aircraft
+                        });
+                        i += 2;
+                    } else {
+                        groupedSegments.push(seg);
+                        i++;
+                    }
+                }
+            }
 
             // Segmentos de vuelo visuales
             let y = 70;
             if (groupedSegments.length > 0) {
                 groupedSegments.forEach((seg, idx) => {
-                    // Fecha y tipo de vuelo
-                    ctx.fillStyle = '#333';
-                    ctx.font = 'bold 16px Arial';
-                    ctx.fillText(seg.date, 40, y);
-                    ctx.font = 'italic 14px Arial';
-                    ctx.fillStyle = seg.direct ? '#28a745' : '#ff9800';
-                    ctx.fillText(seg.direct ? 'Sin escalas' : seg.stops, 320, y);
-                    y += 26;
-                    // Ruta y horas
-                    ctx.font = 'bold 20px Arial';
-                    ctx.fillStyle = '#222';
-                    ctx.fillText(seg.from, 40, y);
-                    ctx.font = 'bold 18px Arial';
-                    ctx.fillText(seg.departure, 110, y);
-                    ctx.font = 'bold 24px Arial';
-                    ctx.fillStyle = '#0056b3';
-                    ctx.fillText('→', 180, y);
-                    ctx.font = 'bold 20px Arial';
-                    ctx.fillStyle = '#222';
-                    ctx.fillText(seg.to, 240, y);
-                    ctx.font = 'bold 18px Arial';
-                    ctx.fillText(seg.arrival, 310, y);
-                    // Clase y número de vuelo
-                    ctx.font = '14px Arial';
-                    ctx.fillStyle = '#0056b3';
-                    ctx.fillText(seg.class || 'Económica Basic', 40, y + 20);
-                    ctx.fillStyle = '#666';
-                    ctx.fillText(`Vuelo: ${seg.flightNumber}`, 240, y + 20);
-                    ctx.font = '13px Arial';
-                    ctx.fillStyle = '#888';
-                    ctx.fillText(seg.aircraft, 420, y + 20);
-                    y += 42;
-                    // Separador visual
-                    ctx.strokeStyle = '#e0e0e0';
-                    ctx.beginPath();
-                    ctx.moveTo(40, y - 10);
-                    ctx.lineTo(500, y - 10);
-                    ctx.stroke();
+                    if (!seg.direct && seg.stops && seg.stops.toLowerCase().includes('escala')) {
+                        // VUELO AGRUPADO VISUAL ESPECIAL
+                        // Fecha en formato largo
+                        ctx.fillStyle = '#333';
+                        ctx.font = 'bold 15px Arial';
+                        let fecha = new Date(seg.date);
+                        let fechaStr = fecha.toLocaleDateString('es-ES', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+                        ctx.fillText(fechaStr, 40, y);
+                        // Icono avión y texto escala
+                        ctx.font = '16px Arial';
+                        ctx.fillStyle = '#888';
+                        ctx.fillText('✈ Escala en PTY', 180, y);
+                        ctx.font = 'italic 14px Arial';
+                        ctx.fillStyle = '#888';
+                        // Duración escala si está disponible
+                        let escalaDur = '';
+                        let match = seg.stops.match(/\(([^)]+)\)/);
+                        if (match) escalaDur = match[1];
+                        if (escalaDur) ctx.fillText(`(${escalaDur})`, 320, y);
+                        y += 28;
+                        // Ruta y horas
+                        ctx.font = 'bold 22px Arial';
+                        ctx.fillStyle = '#222';
+                        ctx.fillText(seg.from, 40, y);
+                        ctx.font = 'bold 20px Arial';
+                        ctx.fillText(seg.departure, 120, y);
+                        ctx.font = 'bold 28px Arial';
+                        ctx.fillStyle = '#bbb';
+                        ctx.fillText('→', 200, y);
+                        ctx.font = 'bold 22px Arial';
+                        ctx.fillStyle = '#222';
+                        ctx.fillText(seg.to, 240, y);
+                        ctx.font = 'bold 20px Arial';
+                        ctx.fillText(seg.arrival, 320, y);
+                        // Clase en azul
+                        ctx.font = '15px Arial';
+                        ctx.fillStyle = '#1976d2';
+                        ctx.fillText(seg.class || 'Económica Basic', 40, y + 22);
+                        y += 48;
+                        // Separador visual
+                        ctx.strokeStyle = '#e0e0e0';
+                        ctx.beginPath();
+                        ctx.moveTo(40, y - 10);
+                        ctx.lineTo(500, y - 10);
+                        ctx.stroke();
+                    } else {
+                        // VUELO NORMAL
+                        ctx.fillStyle = '#333';
+                        ctx.font = 'bold 16px Arial';
+                        ctx.fillText(seg.date, 40, y);
+                        ctx.font = 'italic 14px Arial';
+                        ctx.fillStyle = seg.direct ? '#28a745' : '#ff9800';
+                        ctx.fillText(seg.direct ? 'Sin escalas' : seg.stops, 320, y);
+                        y += 26;
+                        // Ruta y horas
+                        ctx.font = 'bold 20px Arial';
+                        ctx.fillStyle = '#222';
+                        ctx.fillText(seg.from, 40, y);
+                        ctx.font = 'bold 18px Arial';
+                        ctx.fillText(seg.departure, 110, y);
+                        ctx.font = 'bold 24px Arial';
+                        ctx.fillStyle = '#0056b3';
+                        ctx.fillText('→', 180, y);
+                        ctx.font = 'bold 20px Arial';
+                        ctx.fillStyle = '#222';
+                        ctx.fillText(seg.to, 240, y);
+                        ctx.font = 'bold 18px Arial';
+                        ctx.fillText(seg.arrival, 310, y);
+                        // Clase y número de vuelo
+                        ctx.font = '14px Arial';
+                        ctx.fillStyle = '#0056b3';
+                        ctx.fillText(seg.class || 'Económica Basic', 40, y + 20);
+                        ctx.fillStyle = '#666';
+                        ctx.fillText(`Vuelo: ${seg.flightNumber}`, 240, y + 20);
+                        ctx.font = '13px Arial';
+                        ctx.fillStyle = '#888';
+                        ctx.fillText(seg.aircraft, 420, y + 20);
+                        y += 42;
+                        // Separador visual
+                        ctx.strokeStyle = '#e0e0e0';
+                        ctx.beginPath();
+                        ctx.moveTo(40, y - 10);
+                        ctx.lineTo(500, y - 10);
+                        ctx.stroke();
+                    }
                 });
             }
 
