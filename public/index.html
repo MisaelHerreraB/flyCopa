@@ -105,10 +105,11 @@
     <button onclick="fetchOffers()">Obtener Ofertas</button>
     <div id="loading">Cargando ofertas...</div>
     <div id="error"></div>
+    <div id="global-cheapest-info"></div>
     <div id="cheapest-info1" class="cheapest-info"></div>
     <div id="cheapest-info2" class="cheapest-info"></div>
     <div id="cheapest-info3" class="cheapest-info"></div>
-    <div id="global-cheapest-info"></div>
+    <div id="cheapest-info4" class="cheapest-info"></div>
     <details>
         <summary>Itinerario 1: Lima → Panamá → Medellín → Lima</summary>
         <table id="offers-table1">
@@ -154,34 +155,55 @@
             <tbody></tbody>
         </table>
     </details>
+    <details>
+        <summary>Itinerario 4: Lima → Panamá → Bogotá → Lima</summary>
+        <table id="offers-table4">
+            <thead>
+                <tr>
+                    <th>ID de Oferta</th>
+                    <th>Claves de Soluciones</th>
+                    <th>Precio por Adulto (USD)</th>
+                    <th>Familia de Tarifa</th>
+                    <th>Clase de Servicio</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </details>
 
     <script>
         async function fetchOffers() {
             const loading = document.getElementById('loading');
             const errorDiv = document.getElementById('error');
+            const globalCheapestInfo = document.getElementById('global-cheapest-info');
             const cheapestInfo1 = document.getElementById('cheapest-info1');
             const cheapestInfo2 = document.getElementById('cheapest-info2');
             const cheapestInfo3 = document.getElementById('cheapest-info3');
-            const globalCheapestInfo = document.getElementById('global-cheapest-info');
+            const cheapestInfo4 = document.getElementById('cheapest-info4');
             const table1 = document.getElementById('offers-table1');
             const table2 = document.getElementById('offers-table2');
             const table3 = document.getElementById('offers-table3');
+            const table4 = document.getElementById('offers-table4');
             const tbody1 = table1.querySelector('tbody');
             const tbody2 = table2.querySelector('tbody');
             const tbody3 = table3.querySelector('tbody');
+            const tbody4 = table4.querySelector('tbody');
 
             loading.style.display = 'block';
             errorDiv.style.display = 'none';
+            globalCheapestInfo.style.display = 'none';
             cheapestInfo1.style.display = 'none';
             cheapestInfo2.style.display = 'none';
             cheapestInfo3.style.display = 'none';
-            globalCheapestInfo.style.display = 'none';
+            cheapestInfo4.style.display = 'none';
             table1.style.display = 'none';
             table2.style.display = 'none';
             table3.style.display = 'none';
+            table4.style.display = 'none';
             tbody1.innerHTML = '';
             tbody2.innerHTML = '';
             tbody3.innerHTML = '';
+            tbody4.innerHTML = '';
 
             try {
                 const response = await fetch('/api/offers');
@@ -249,6 +271,49 @@
                     table3.style.display = 'table';
                 }
 
+                // Mostrar ofertas del itinerario 4 (BOG)
+                if (data.itinerary4.offers.length) {
+                    data.itinerary4.offers.forEach(offer => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${offer.id}</td>
+                            <td>${offer.solutionKeys}</td>
+                            <td>$${offer.pricePerAdult}</td>
+                            <td>${offer.fareFamily}</td>
+                            <td>${offer.classOfService}</td>
+                        `;
+                        if (data.itinerary4.cheapest && data.itinerary4.cheapest.offerIds.includes(offer.id)) {
+                            row.classList.add('cheapest');
+                        }
+                        tbody4.appendChild(row);
+                    });
+                    table4.style.display = 'table';
+                }
+
+                // Mostrar oferta más barata global
+                if (data.globalCheapest) {
+                    const itineraryText = data.globalCheapest.itinerary === 'LIM -> PTY -> MDE -> LIM' ?
+                        `✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Medellín - Panamá - Lima` :
+                        data.globalCheapest.itinerary === 'LIM -> PTY -> UIO -> LIM' ?
+                        `✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Quito - Panamá - Lima` :
+                        data.globalCheapest.itinerary === 'LIM -> PTY -> CLO -> LIM' ?
+                        `✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Cali - Panamá - Lima` :
+                        `✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Bogotá - Panamá - Lima`;
+                    globalCheapestInfo.textContent = `🌍✈️ ¡Atención pastores y hermanos!
+🔥 Aprovechen esta súper oferta 🔥
+
+👉 Pasajes stopover:
+${itineraryText} 
+💵 Todo a ${data.globalCheapest.price} USD 💵
+
+✨ ¡No dejen pasar esta oportunidad! ✨`;
+                    globalCheapestInfo.style.display = 'block';
+                }
+
                 // Mostrar oferta más barata del itinerario 1
                 if (data.itinerary1.cheapest) {
                     cheapestInfo1.textContent = `👉 Pasajes stopover:
@@ -285,25 +350,16 @@
                     errorDiv.style.display = 'block';
                 }
 
-                // Mostrar oferta más barata global
-                if (data.globalCheapest) {
-                    const itineraryText = data.globalCheapest.itinerary === 'LIM -> PTY -> MDE -> LIM' ?
-                        `✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Medellín - Panamá - Lima` :
-                        data.globalCheapest.itinerary === 'LIM -> PTY -> UIO -> LIM' ?
-                        `✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Quito - Panamá - Lima` :
-                        `✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Cali - Panamá - Lima`;
-                    globalCheapestInfo.textContent = `🌍✈️ ¡Atención pastores y hermanos!
-🔥 Aprovechen esta súper oferta 🔥
-
-👉 Pasajes stopover:
-${itineraryText} 
-💵 Todo a ${data.globalCheapest.price} USD 💵
-
-✨ ¡No dejen pasar esta oportunidad! ✨`;
-                    globalCheapestInfo.style.display = 'block';
+                // Mostrar oferta más barata del itinerario 4
+                if (data.itinerary4.cheapest) {
+                    cheapestInfo4.textContent = `👉 Pasajes stopover:
+✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Bogotá - Panamá - Lima 
+💵 Todo a ${data.itinerary4.cheapest.price} USD 💵`;
+                    cheapestInfo4.style.display = 'block';
+                } else if (data.itinerary4.error) {
+                    errorDiv.textContent = `Error en itinerario 4: ${data.itinerary4.error}`;
+                    errorDiv.style.display = 'block';
                 }
             } catch (error) {
                 errorDiv.textContent = `Error: ${error.message}`;
