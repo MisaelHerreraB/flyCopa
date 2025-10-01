@@ -341,51 +341,40 @@
 
                 // Mostrar oferta más barata global
                 if (data.globalCheapest) {
-                    const itineraryText = 
-                        data.globalCheapest.itinerary === 'LIM -> PTY -> MDE -> LIM' ?
-                        `✅ Ida ✈️ Lima - Panamá\n✅ Vuelta ✈️ Panamá - Medellín - Panamá - Lima` :
-                        data.globalCheapest.itinerary === 'LIM -> PTY -> UIO -> LIM' ?
-                        `✅ Ida ✈️ Lima - Panamá\n✅ Vuelta ✈️ Panamá - Quito - Panamá - Lima` :
-                        data.globalCheapest.itinerary === 'LIM -> PTY -> CLO -> LIM' ?
-                        `✅ Ida ✈️ Lima - Panamá\n✅ Vuelta ✈️ Panamá - Cali - Panamá - Lima` :
-                        data.globalCheapest.itinerary === 'LIM -> PTY -> BOG -> LIM' ?
-                        `✅ Ida ✈️ Lima - Panamá\n✅ Vuelta ✈️ Panamá - Bogotá - Panamá - Lima` :
-                        data.globalCheapest.itinerary === 'LIM -> PTY -> CTG -> LIM' ?
-                        `✅ Ida ✈️ Lima - Panamá\n✅ Vuelta ✈️ Panamá - Cartagena - Panamá - Lima` :
-                        data.globalCheapest.itinerary === 'LIM -> MDE -> PTY -> LIM' ?
-                        `✅ Ida ✈️ Lima - Panamá - Medellín - Panamá\n✅ Vuelta ✈️ Panamá - Lima` :
-                        data.globalCheapest.itinerary === 'LIM -> UIO -> PTY -> LIM' ?
-                        `✅ Ida ✈️ Lima - Panamá - Quito - Panamá\n✅ Vuelta ✈️ Panamá - Lima` :
-                        data.globalCheapest.itinerary === 'LIM -> CLO -> PTY -> LIM' ?
-                        `✅ Ida ✈️ Lima - Panamá - Cali - Panamá\n✅ Vuelta ✈️ Panamá - Lima` :
-                        data.globalCheapest.itinerary === 'LIM -> BOG -> PTY -> LIM' ?
-                        `✅ Ida ✈️ Lima - Panamá - Bogotá - Panamá\n✅ Vuelta ✈️ Panamá - Lima` :
-                        `✅ Ida ✈️ Lima - Panamá - Cartagena - Panamá\n✅ Vuelta ✈️ Panamá - Lima`;
-
-                    const stopoverType = 
-                        ['LIM -> PTY -> MDE -> LIM', 'LIM -> PTY -> UIO -> LIM', 'LIM -> PTY -> CLO -> LIM', 
-                         'LIM -> PTY -> BOG -> LIM', 'LIM -> PTY -> CTG -> LIM'].includes(data.globalCheapest.itinerary) ?
-                        `🛫 Stopover de ida en Panamá` :
-                        `🛬 Stopover de regreso en Panamá`;
+                    // Construir segmentos de vuelo para la imagen
+                    const segments = [];
+                    if (data.globalCheapest.segments && Array.isArray(data.globalCheapest.segments)) {
+                        data.globalCheapest.segments.forEach(seg => {
+                            segments.push({
+                                date: seg.date,
+                                from: seg.from,
+                                departure: seg.departure,
+                                to: seg.to,
+                                arrival: seg.arrival,
+                                class: seg.class,
+                                direct: seg.direct,
+                                stops: seg.stops || '',
+                                stopover: seg.stopover || ''
+                            });
+                        });
+                    }
 
                     globalCheapestInfo.innerHTML = `<div class="pre-formatted">
 🌍✈️ ¡Atención pastores y hermanos!
 🔥 Aprovechen esta súper oferta 🔥
 
 👉 Pasajes stopover:
-${itineraryText}
-${stopoverType}
+${segments.map(s => `${s.date}: ${s.from} (${s.departure}) → ${s.to} (${s.arrival})`).join('\n')}
 💵 Todo a ${data.globalCheapest.price} USD 💵
 
 ✨ ¡No dejen pasar esta oportunidad! ✨
                     </div>`;
                     globalCheapestInfo.style.display = 'block';
 
-                    // Generar imagen siempre
+                    // Generar imagen con segmentos
                     const imageData = {
                         price: data.globalCheapest.price,
-                        itinerary: itineraryText.split('\n'), // Separar líneas del itinerario
-                        stopoverType: stopoverType
+                        segments: segments
                     };
                     const generatedImage = await generateOfferImage(imageData);
                     if (generatedImage) {
