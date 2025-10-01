@@ -607,7 +607,7 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
             let y = 70;
             if (groupedSegments.length > 0) {
                 groupedSegments.forEach((seg, idx) => {
-                    if (!seg.direct && seg.stops && seg.stops.toLowerCase().includes('escala')) {
+                    if (!seg.direct && seg.stops && seg.stops.toLowerCase().includes('1 escala')) {
                         // VUELO AGRUPADO VISUAL ESPECIAL
                         // Fecha en formato largo
                         ctx.fillStyle = '#333';
