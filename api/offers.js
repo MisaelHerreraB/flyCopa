@@ -599,67 +599,131 @@ module.exports = async (req, res) => {
             let ida = '';
             let vuelta = '';
             let stopoverType = '';
+            let segments = [];
+            // Buscar el objeto de itinerario correspondiente
+            let itineraryObj = null;
             switch (winner.itinerary) {
                 case 'LIM -> PTY -> MDE -> LIM':
                     ida = 'Lima - Panamá';
                     vuelta = 'Panamá - Medellín - Panamá - Lima';
                     stopoverType = '🛫 Stopover de ida en Panamá';
+                    itineraryObj = response.itinerary1;
                     break;
                 case 'LIM -> PTY -> UIO -> LIM':
                     ida = 'Lima - Panamá';
                     vuelta = 'Panamá - Quito - Panamá - Lima';
                     stopoverType = '🛫 Stopover de ida en Panamá';
+                    itineraryObj = response.itinerary2;
                     break;
                 case 'LIM -> PTY -> CLO -> LIM':
                     ida = 'Lima - Panamá';
                     vuelta = 'Panamá - Cali - Panamá - Lima';
                     stopoverType = '🛫 Stopover de ida en Panamá';
+                    itineraryObj = response.itinerary3;
                     break;
                 case 'LIM -> PTY -> BOG -> LIM':
                     ida = 'Lima - Panamá';
                     vuelta = 'Panamá - Bogotá - Panamá - Lima';
                     stopoverType = '🛫 Stopover de ida en Panamá';
+                    itineraryObj = response.itinerary4;
                     break;
                 case 'LIM -> PTY -> CTG -> LIM':
                     ida = 'Lima - Panamá';
                     vuelta = 'Panamá - Cartagena - Panamá - Lima';
                     stopoverType = '🛫 Stopover de ida en Panamá';
+                    itineraryObj = response.itinerary5;
                     break;
                 case 'LIM -> MDE -> PTY -> LIM':
                     ida = 'Lima - Panamá - Medellín - Panamá';
                     vuelta = 'Panamá - Lima';
                     stopoverType = '🛬 Stopover de regreso en Panamá';
+                    itineraryObj = response.itinerary6;
                     break;
                 case 'LIM -> UIO -> PTY -> LIM':
                     ida = 'Lima - Panamá - Quito - Panamá';
                     vuelta = 'Panamá - Lima';
                     stopoverType = '🛬 Stopover de regreso en Panamá';
+                    itineraryObj = response.itinerary7;
                     break;
                 case 'LIM -> CLO -> PTY -> LIM':
                     ida = 'Lima - Panamá - Cali - Panamá';
                     vuelta = 'Panamá - Lima';
                     stopoverType = '🛬 Stopover de regreso en Panamá';
+                    itineraryObj = response.itinerary8;
                     break;
                 case 'LIM -> BOG -> PTY -> LIM':
                     ida = 'Lima - Panamá - Bogotá - Panamá';
                     vuelta = 'Panamá - Lima';
                     stopoverType = '🛬 Stopover de regreso en Panamá';
+                    itineraryObj = response.itinerary9;
                     break;
                 case 'LIM -> CTG -> PTY -> LIM':
                     ida = 'Lima - Panamá - Cartagena - Panamá';
                     vuelta = 'Panamá - Lima';
                     stopoverType = '🛬 Stopover de regreso en Panamá';
+                    itineraryObj = response.itinerary10;
                     break;
                 default:
                     ida = '';
                     vuelta = '';
                     stopoverType = '';
             }
+            // Extraer los detalles de los vuelos ganadores
+            if (itineraryObj && itineraryObj.offers && itineraryObj.offers.length > 0) {
+                // Buscar el objeto de oferta ganadora
+                const offerId = winner.offerIds[0];
+                const offer = itineraryObj.offers.find(o => o.id === offerId);
+                if (offer) {
+                    // Buscar los solutionKeys en la respuesta original
+                    const solutionKeys = offer.solutionKeys.split(',').map(k => k.trim());
+                    // Buscar los originDestinations en la respuesta original (dataX)
+                    let originDestinations = null;
+                    switch (winner.itinerary) {
+                        case 'LIM -> PTY -> MDE -> LIM': originDestinations = data1.originDestinations; break;
+                        case 'LIM -> PTY -> UIO -> LIM': originDestinations = data2.originDestinations; break;
+                        case 'LIM -> PTY -> CLO -> LIM': originDestinations = data3.originDestinations; break;
+                        case 'LIM -> PTY -> BOG -> LIM': originDestinations = data4.originDestinations; break;
+                        case 'LIM -> PTY -> CTG -> LIM': originDestinations = data5.originDestinations; break;
+                        case 'LIM -> MDE -> PTY -> LIM': originDestinations = data6.originDestinations; break;
+                        case 'LIM -> UIO -> PTY -> LIM': originDestinations = data7.originDestinations; break;
+                        case 'LIM -> CLO -> PTY -> LIM': originDestinations = data8.originDestinations; break;
+                        case 'LIM -> BOG -> PTY -> LIM': originDestinations = data9.originDestinations; break;
+                        case 'LIM -> CTG -> PTY -> LIM': originDestinations = data10.originDestinations; break;
+                        default: originDestinations = null;
+                    }
+                    if (originDestinations) {
+                        for (let i = 0; i < originDestinations.length; i++) {
+                            const od = originDestinations[i];
+                            // Buscar la solución correspondiente
+                            const solutionKey = solutionKeys[i];
+                            const solution = od.solutions.find(s => s.key === solutionKey);
+                            if (solution && solution.flights && solution.flights.length > 0) {
+                                // Puede haber más de un vuelo por solución (escalas)
+                                solution.flights.forEach(flight => {
+                                    segments.push({
+                                        date: flight.departure.flightDate,
+                                        from: flight.departure.airportCode,
+                                        departure: flight.departure.flightTime,
+                                        to: flight.arrival.airportCode,
+                                        arrival: flight.arrival.flightTime,
+                                        class: offer.fareFamily || 'Económica Basic',
+                                        direct: solution.numberOfLayovers === 0,
+                                        stops: solution.numberOfLayovers > 0 ? `${solution.numberOfLayovers} escala(s)` : 'Sin escalas',
+                                        flightNumber: flight.marketingCarrier.flightNumber,
+                                        aircraft: flight.aircraftName
+                                    });
+                                });
+                            }
+                        }
+                    }
+                }
+            }
             response.globalCheapest = {
                 ...winner,
                 ida,
                 vuelta,
-                stopoverType
+                stopoverType,
+                segments
             };
         }
 
