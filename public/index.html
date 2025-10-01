@@ -443,7 +443,7 @@ ${stopoverType}
 👉 Pasajes stopover de ida (Bogotá):
 ✅ Ida ✈️ Lima - Panamá
 ✅ Vuelta ✈️ Panamá - Bogotá - Panamá - Lima 
-💵 Todo a ${data.itinerary4.cheapest.price} USD �5
+💵 Todo a ${data.itinerary4.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo4.style.display = 'block';
                 } else if (data.itinerary4.error) {
@@ -457,7 +457,7 @@ ${stopoverType}
 👉 Pasajes stopover de ida (Cartagena):
 ✅ Ida ✈️ Lima - Panamá
 ✅ Vuelta ✈️ Panamá - Cartagena - Panamá - Lima 
-💵 Todo a ${data.itinerary5.cheapest.price} USD �5
+💵 Todo a ${data.itinerary5.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo5.style.display = 'block';
                 } else if (data.itinerary5.error) {
@@ -471,7 +471,7 @@ ${stopoverType}
 👉 Pasajes stopover de regreso (Medellín):
 ✅ Ida ✈️ Lima - Panamá - Medellín - Panamá
 ✅ Vuelta ✈️ Panamá - Lima 
-�5 Todo a ${data.itinerary6.cheapest.price} USD
+💵 Todo a ${data.itinerary6.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo6.style.display = 'block';
                 } else if (data.itinerary6.error) {
@@ -485,7 +485,7 @@ ${stopoverType}
 👉 Pasajes stopover de regreso (Quito):
 ✅ Ida ✈️ Lima - Panamá - Quito - Panamá
 ✅ Vuelta ✈️ Panamá - Lima 
-�5 Todo a ${data.itinerary7.cheapest.price} USD
+💵 Todo a ${data.itinerary7.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo7.style.display = 'block';
                 } else if (data.itinerary7.error) {
@@ -499,7 +499,7 @@ ${stopoverType}
 👉 Pasajes stopover de regreso (Cali):
 ✅ Ida ✈️ Lima - Panamá - Cali - Panamá
 ✅ Vuelta ✈️ Panamá - Lima 
-�5 Todo a ${data.itinerary8.cheapest.price} USD
+💵 Todo a ${data.itinerary8.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo8.style.display = 'block';
                 } else if (data.itinerary8.error) {
@@ -513,7 +513,7 @@ ${stopoverType}
 👉 Pasajes stopover de regreso (Bogotá):
 ✅ Ida ✈️ Lima - Panamá - Bogotá - Panamá
 ✅ Vuelta ✈️ Panamá - Lima 
-�5 Todo a ${data.itinerary9.cheapest.price} USD
+💵 Todo a ${data.itinerary9.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo9.style.display = 'block';
                 } else if (data.itinerary9.error) {
@@ -527,7 +527,7 @@ ${stopoverType}
 👉 Pasajes stopover de regreso (Cartagena):
 ✅ Ida ✈️ Lima - Panamá - Cartagena - Panamá
 ✅ Vuelta ✈️ Panamá - Lima 
-�5 Todo a ${data.itinerary10.cheapest.price} USD
+💵 Todo a ${data.itinerary10.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo10.style.display = 'block';
                 } else if (data.itinerary10.error) {
@@ -542,6 +542,27 @@ ${stopoverType}
                 fetchButton.disabled = false;
                 fetchButton.innerHTML = '<i class="bi bi-search"></i> Actualizar Búsqueda';
             }
+        }
+
+        // Función para parsear los vuelos del itinerario
+        function parseFlights(itineraryText) {
+            const flights = [];
+            const lines = itineraryText.split('\n');
+            lines.forEach(line => {
+                const match = line.match(/✅ (Ida|Vuelta) ✈️ (.*)/);
+                if (match) {
+                    const [, type, route] = match;
+                    const [departure, ...rest] = route.split(' - ');
+                    const arrival = rest.join(' - ');
+                    flights.push({
+                        type: type,
+                        departure: departure.trim(),
+                        arrival: arrival.trim(),
+                        dateTime: '2026-02-13 02:35 AM' // Placeholder, reemplaza con datos reales del API
+                    });
+                }
+            });
+            return flights;
         }
 
         // Función para generar la imagen basada en el diseño proporcionado
@@ -563,14 +584,15 @@ ${stopoverType}
             ctx.font = '16px Arial';
             ctx.fillText('Oferta MMM - Congreso 2026', 20, 30);
 
-            // Itinerario centrado
+            // Detalles de vuelos centrados
             ctx.fillStyle = '#000000';
             ctx.font = '12px Arial';
-            const maxWidth = 340; // Espacio para texto, dejando margen para ícono
-            data.itinerary.forEach((line, index) => {
-                const textWidth = ctx.measureText(line).width;
+            data.flights.forEach((flight, index) => {
+                const y = 80 + (index * 40);
+                const text = `${flight.type}: ${flight.departure} → ${flight.arrival} - ${flight.dateTime}`;
+                const textWidth = ctx.measureText(text).width;
                 const x = (canvas.width - textWidth) / 2;
-                ctx.fillText(line, x, 80 + (index * 20));
+                ctx.fillText(text, x, y);
             });
 
             // Stopover centrado
