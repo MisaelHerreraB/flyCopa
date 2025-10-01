@@ -63,6 +63,50 @@
             border: 1px solid #ddd;
             border-radius: 5px;
         }
+        .right-offer-column {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: flex-start;
+            min-width: 260px;
+            max-width: 320px;
+            padding: 20px 10px 10px 10px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        }
+        .right-offer-column .price {
+            font-size: 2.2rem;
+            color: #0056b3;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .right-offer-column .class {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 12px;
+        }
+        .right-offer-column .select-btn {
+            width: 100%;
+            margin-bottom: 8px;
+        }
+        .right-offer-column .details-link {
+            color: #1976d2;
+            font-size: 1rem;
+            text-decoration: underline;
+            cursor: pointer;
+            margin-bottom: 4px;
+        }
+        @media (max-width: 900px) {
+            .right-offer-column {
+                min-width: 180px;
+                max-width: 100%;
+                padding: 10px 5px;
+            }
+            .right-offer-column .price {
+                font-size: 1.5rem;
+            }
+        }
         .pre-formatted {
             white-space: pre-wrap;
             font-family: 'Courier New', monospace;
@@ -87,186 +131,68 @@
 </head>
 <body>
     <div class="container mt-4">
-        <div class="row justify-content-center">
-            <div class="col-12 text-center">
-                <h1 class="header-title">
-                    <i class="bi bi-airplane-engines"></i> MMM - Congreso Centroamericano 2026 - Comparador de Ofertas de Vuelos - Copa Airlines
-                </h1>
-            </div>
-        </div>
-        
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-6">
-                <button class="btn btn-primary btn-lg w-100" id="fetch-button" onclick="fetchOffers()">
-                    <i class="bi bi-airplane-fill"></i> ¡Buscar Ofertas de Vuelos Ahora!
-                </button>
-            </div>
-        </div>
-
-        <!-- Progress Bar -->
-        <div class="loading-progress" id="loading">
-            <div class="progress" role="progressbar" aria-label="Progreso de búsqueda" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                <div class="progress-bar bg-primary" style="width: 0%;" id="progress-bar"></div>
-            </div>
-            <p class="mt-2 text-center" id="progress-text">Buscando las mejores ofertas para Medellín, Quito, Cali, Bogotá, Cartagena (stopover de ida y regreso en Panamá)... Progreso: 0%</p>
-        </div>
-
-        <!-- Error Alert -->
-        <div class="alert alert-danger error-alert" role="alert" id="error">
-            <i class="bi bi-exclamation-triangle-fill"></i>
-            <span id="error-message"></span>
-        </div>
-
-        <!-- Global Cheapest Offer -->
-        <div class="row" id="global-cheapest-section">
-            <div class="col-12">
-                <div class="card global-cheapest-card" id="global-cheapest-info" style="display: none;">
-                    <div class="card-body">
-                        <div class="pre-formatted">
-                            🌍✈️ ¡Atención pastores y hermanos!
-                            🔥 Aprovechen esta súper oferta 🔥
-
-                            👉 Pasajes stopover:
-                            [ITINERARIO]
-                            [STOPOVER_TYPE]
-                            💵 Todo a [PRECIO] USD 💵
-
-                            ✨ ¡No dejen pasar esta oportunidad! ✨
-                        </div>
-                    </div>
-                </div>
-                <!-- Contenedor para la imagen generada -->
-                <div class="text-center" id="offer-image-container" style="display: none;">
-                    <img src="" alt="Oferta Visual" class="offer-image" id="offer-image">
+        <div class="container mt-4">
+            <div class="row justify-content-center">
+                <div class="col-12 text-center">
+                    <h1 class="header-title">
+                        <i class="bi bi-airplane-engines"></i> MMM - Congreso Centroamericano 2026 - Comparador de Ofertas de Vuelos - Copa Airlines
+                    </h1>
                 </div>
             </div>
-        </div>
-
-        <!-- Individual Cheapest Offers -->
-        <div class="row" id="individual-offers-section">
-            <div class="col-12">
-                <!-- Itinerario 1: Medellín (stopover de ida) -->
-                <div class="card cheapest-card" id="cheapest-info1" style="display: none;">
-                    <div class="card-body">
-                        <div class="pre-formatted">
-                            👉 Pasajes stopover de ida (Medellín):
-                            ✅ Ida ✈️ Lima - Panamá
-                            ✅ Vuelta ✈️ Panamá - Medellín - Panamá - Lima 
-                            💵 Todo a [PRECIO] USD 💵
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-6">
+                    <button class="btn btn-primary btn-lg w-100" id="fetch-button" onclick="fetchOffers()">
+                        <i class="bi bi-airplane-fill"></i> ¡Buscar Ofertas de Vuelos Ahora!
+                    </button>
+                </div>
+            </div>
+            <!-- Progress Bar -->
+            <div class="loading-progress" id="loading">
+                <div class="progress" role="progressbar" aria-label="Progreso de búsqueda" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar bg-primary" style="width: 0%;" id="progress-bar"></div>
+                </div>
+                <p class="mt-2 text-center" id="progress-text">Buscando las mejores ofertas para Medellín, Quito, Cali, Bogotá, Cartagena (stopover de ida y regreso en Panamá)... Progreso: 0%</p>
+            </div>
+            <!-- Error Alert -->
+            <div class="alert alert-danger error-alert" role="alert" id="error">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span id="error-message"></span>
+            </div>
+            <!-- Global Cheapest Offer -->
+            <div class="row" id="global-cheapest-section">
+                <div class="col-12">
+                    <div class="card global-cheapest-card" id="global-cheapest-info" style="display: none;">
+                        <div class="card-body">
+                            <div class="pre-formatted">
+                                🌍✈️ ¡Atención pastores y hermanos!
+                                🔥 Aprovechen esta súper oferta 🔥
+                                👉 Pasajes stopover:
+                                [ITINERARIO]
+                                [STOPOVER_TYPE]
+                                💵 Todo a [PRECIO] USD 💵
+                                ✨ ¡No dejen pasar esta oportunidad! ✨
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Itinerario 2: Quito (stopover de ida) -->
-                <div class="card cheapest-card" id="cheapest-info2" style="display: none;">
-                    <div class="card-body">
-                        <div class="pre-formatted">
-                            👉 Pasajes stopover de ida (Quito):
-                            ✅ Ida ✈️ Lima - Panamá
-                            ✅ Vuelta ✈️ Panamá - Quito - Panamá - Lima 
-                            💵 Todo a [PRECIO] USD 💵
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Itinerario 3: Cali (stopover de ida) -->
-                <div class="card cheapest-card" id="cheapest-info3" style="display: none;">
-                    <div class="card-body">
-                        <div class="pre-formatted">
-                            👉 Pasajes stopover de ida (Cali):
-                            ✅ Ida ✈️ Lima - Panamá
-                            ✅ Vuelta ✈️ Panamá - Cali - Panamá - Lima 
-                            💵 Todo a [PRECIO] USD 💵
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Itinerario 4: Bogotá (stopover de ida) -->
-                <div class="card cheapest-card" id="cheapest-info4" style="display: none;">
-                    <div class="card-body">
-                        <div class="pre-formatted">
-                            👉 Pasajes stopover de ida (Bogotá):
-                            ✅ Ida ✈️ Lima - Panamá
-                            ✅ Vuelta ✈️ Panamá - Bogotá - Panamá - Lima 
-                            💵 Todo a [PRECIO] USD 💵
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Itinerario 5: Cartagena (stopover de ida) -->
-                <div class="card cheapest-card" id="cheapest-info5" style="display: none;">
-                    <div class="card-body">
-                        <div class="pre-formatted">
-                            👉 Pasajes stopover de ida (Cartagena):
-                            ✅ Ida ✈️ Lima - Panamá
-                            ✅ Vuelta ✈️ Panamá - Cartagena - Panamá - Lima 
-                            💵 Todo a [PRECIO] USD 💵
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Itinerario 6: Medellín (stopover de regreso) -->
-                <div class="card cheapest-card" id="cheapest-info6" style="display: none;">
-                    <div class="card-body">
-                        <div class="pre-formatted">
-                            👉 Pasajes stopover de regreso (Medellín):
-                            ✅ Ida ✈️ Lima - Panamá - Medellín - Panamá
-                            ✅ Vuelta ✈️ Panamá - Lima 
-                            💵 Todo a [PRECIO] USD 💵
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Itinerario 7: Quito (stopover de regreso) -->
-                <div class="card cheapest-card" id="cheapest-info7" style="display: none;">
-                    <div class="card-body">
-                        <div class="pre-formatted">
-                            👉 Pasajes stopover de regreso (Quito):
-                            ✅ Ida ✈️ Lima - Panamá - Quito - Panamá
-                            ✅ Vuelta ✈️ Panamá - Lima 
-                            💵 Todo a [PRECIO] USD 💵
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Itinerario 8: Cali (stopover de regreso) -->
-                <div class="card cheapest-card" id="cheapest-info8" style="display: none;">
-                    <div class="card-body">
-                        <div class="pre-formatted">
-                            👉 Pasajes stopover de regreso (Cali):
-                            ✅ Ida ✈️ Lima - Panamá - Cali - Panamá
-                            ✅ Vuelta ✈️ Panamá - Lima 
-                            💵 Todo a [PRECIO] USD 💵
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Itinerario 9: Bogotá (stopover de regreso) -->
-                <div class="card cheapest-card" id="cheapest-info9" style="display: none;">
-                    <div class="card-body">
-                        <div class="pre-formatted">
-                            👉 Pasajes stopover de regreso (Bogotá):
-                            ✅ Ida ✈️ Lima - Panamá - Bogotá - Panamá
-                            ✅ Vuelta ✈️ Panamá - Lima 
-                            💵 Todo a [PRECIO] USD 💵
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Itinerario 10: Cartagena (stopover de regreso) -->
-                <div class="card cheapest-card" id="cheapest-info10" style="display: none;">
-                    <div class="card-body">
-                        <div class="pre-formatted">
-                            👉 Pasajes stopover de regreso (Cartagena):
-                            ✅ Ida ✈️ Lima - Panamá - Cartagena - Panamá
-                            ✅ Vuelta ✈️ Panamá - Lima 
-                            💵 Todo a [PRECIO] USD 💵
+                    <!-- Contenedor para la imagen generada -->
+                    <div class="text-center" id="offer-image-container" style="display: none;">
+                        <div class="right-offer-column">
+                            <img src="" alt="Oferta Visual" class="offer-image" id="offer-image">
+                            <div class="price" id="offer-price">266.19 USD</div>
+                            <div class="class">Clase Económica</div>
+                            <button class="btn btn-primary select-btn">Seleccionar</button>
+                            <span class="details-link">Ver detalles</span>
                         </div>
                     </div>
                 </div>
             </div>
+            <!-- Individual Cheapest Offers -->
+            <div class="row" id="individual-offers-section">
+                <div class="col-12">
+                    <!-- ...existing code... -->
+                </div>
+            </div>
         </div>
-    </div>
 
     <!-- Bootstrap 5 JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
