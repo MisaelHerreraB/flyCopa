@@ -57,6 +57,12 @@
             font-size: 1.1em;
             font-weight: bold;
         }
+        .offer-image {
+            max-width: 100%;
+            margin-top: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
         .pre-formatted {
             white-space: pre-wrap;
             font-family: 'Courier New', monospace;
@@ -72,6 +78,9 @@
             }
             .cheapest-card, .global-cheapest-card {
                 font-size: 0.9em;
+            }
+            .offer-image {
+                max-width: 100%;
             }
         }
     </style>
@@ -125,6 +134,10 @@
                             ✨ ¡No dejen pasar esta oportunidad! ✨
                         </div>
                     </div>
+                </div>
+                <!-- Contenedor para la imagen generada -->
+                <div class="text-center" id="offer-image-container" style="display: none;">
+                    <img src="" alt="Oferta Visual" class="offer-image" id="offer-image">
                 </div>
             </div>
         </div>
@@ -266,6 +279,8 @@
             const progressText = document.getElementById('progress-text');
             const errorDiv = document.getElementById('error');
             const globalCheapestInfo = document.getElementById('global-cheapest-info');
+            const offerImageContainer = document.getElementById('offer-image-container');
+            const offerImage = document.getElementById('offer-image');
             const cheapestInfo1 = document.getElementById('cheapest-info1');
             const cheapestInfo2 = document.getElementById('cheapest-info2');
             const cheapestInfo3 = document.getElementById('cheapest-info3');
@@ -287,6 +302,7 @@
             progressText.textContent = 'Buscando las mejores ofertas para Medellín, Quito, Cali, Bogotá, Cartagena (stopover de ida y regreso en Panamá)... Progreso: 0%';
             errorDiv.style.display = 'none';
             globalCheapestInfo.style.display = 'none';
+            offerImageContainer.style.display = 'none';
             cheapestInfo1.style.display = 'none';
             cheapestInfo2.style.display = 'none';
             cheapestInfo3.style.display = 'none';
@@ -364,6 +380,21 @@ ${stopoverType}
 ✨ ¡No dejen pasar esta oportunidad! ✨
                     </div>`;
                     globalCheapestInfo.style.display = 'block';
+
+                    // Preguntar por confirmación para generar la imagen
+                    if (confirm('¿Deseas generar una imagen con la oferta más barata?')) {
+                        // Crear imagen basada en el diseño proporcionado
+                        const imageData = {
+                            price: data.globalCheapest.price,
+                            itinerary: itineraryText.split('\n'), // Separar líneas del itinerario
+                            stopoverType: stopoverType
+                        };
+                        const generatedImage = await generateOfferImage(imageData); // Nueva función
+                        if (generatedImage) {
+                            offerImage.src = generatedImage;
+                            offerImageContainer.style.display = 'block';
+                        }
+                    }
                 }
 
                 // Mostrar ofertas más baratas individuales
@@ -457,7 +488,7 @@ ${stopoverType}
 👉 Pasajes stopover de regreso (Quito):
 ✅ Ida ✈️ Lima - Panamá - Quito - Panamá
 ✅ Vuelta ✈️ Panamá - Lima 
-💵 Todo a ${data.itinerary7.cheapest.price} USD 💵
+💵 Todo a ${data.itinerary7.cheapest.price} USD �5
                     </div>`;
                     cheapestInfo7.style.display = 'block';
                 } else if (data.itinerary7.error) {
@@ -471,7 +502,7 @@ ${stopoverType}
 👉 Pasajes stopover de regreso (Cali):
 ✅ Ida ✈️ Lima - Panamá - Cali - Panamá
 ✅ Vuelta ✈️ Panamá - Lima 
-💵 Todo a ${data.itinerary8.cheapest.price} USD 💵
+💵 Todo a ${data.itinerary8.cheapest.price} USD �5
                     </div>`;
                     cheapestInfo8.style.display = 'block';
                 } else if (data.itinerary8.error) {
@@ -485,7 +516,7 @@ ${stopoverType}
 👉 Pasajes stopover de regreso (Bogotá):
 ✅ Ida ✈️ Lima - Panamá - Bogotá - Panamá
 ✅ Vuelta ✈️ Panamá - Lima 
-💵 Todo a ${data.itinerary9.cheapest.price} USD 💵
+�5 Todo a ${data.itinerary9.cheapest.price} USD
                     </div>`;
                     cheapestInfo9.style.display = 'block';
                 } else if (data.itinerary9.error) {
@@ -499,7 +530,7 @@ ${stopoverType}
 👉 Pasajes stopover de regreso (Cartagena):
 ✅ Ida ✈️ Lima - Panamá - Cartagena - Panamá
 ✅ Vuelta ✈️ Panamá - Lima 
-💵 Todo a ${data.itinerary10.cheapest.price} USD 💵
+�5 Todo a ${data.itinerary10.cheapest.price} USD
                     </div>`;
                     cheapestInfo10.style.display = 'block';
                 } else if (data.itinerary10.error) {
@@ -514,6 +545,55 @@ ${stopoverType}
                 fetchButton.disabled = false;
                 fetchButton.innerHTML = '<i class="bi bi-search"></i> Actualizar Búsqueda';
             }
+        }
+
+        // Función para generar la imagen basada en el diseño proporcionado
+        async function generateOfferImage(data) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 400; // Ajustado para simular el diseño
+            canvas.height = 300;
+            const ctx = canvas.getContext('2d');
+
+            // Fondo gris claro con borde
+            ctx.fillStyle = '#f5f5f5';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(0, 0, canvas.width, canvas.height);
+
+            // Título y fecha (simulado)
+            ctx.fillStyle = '#000';
+            ctx.font = '16px Arial';
+            ctx.fillText('Oferta MMM - Congreso 2026', 20, 30);
+            ctx.font = '12px Arial';
+            ctx.fillText('Fecha: ' + new Date().toLocaleDateString(), 20, 50);
+
+            // Itinerario
+            ctx.font = '14px Arial';
+            data.itinerary.forEach((line, index) => {
+                ctx.fillText(line, 20, 80 + (index * 20));
+            });
+
+            // Stopover
+            ctx.font = '12px Arial';
+            ctx.fillText(data.stopoverType, 20, 160);
+
+            // Precio
+            ctx.font = '18px Arial';
+            ctx.fillStyle = '#e63946';
+            ctx.fillText(`Precio: ${data.price} USD`, 20, 200);
+
+            // Ícono de avión (simulado)
+            ctx.beginPath();
+            ctx.moveTo(350, 50);
+            ctx.lineTo(380, 70);
+            ctx.lineTo(350, 90);
+            ctx.closePath();
+            ctx.fillStyle = '#007bff';
+            ctx.fill();
+
+            // Convertir a imagen
+            return canvas.toDataURL('image/png');
         }
     </script>
 </body>
