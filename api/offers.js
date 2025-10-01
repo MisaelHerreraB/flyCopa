@@ -1,6 +1,22 @@
+
 const axios = require('axios');
+const { Redis } = require('@upstash/redis');
+
+const redis = new Redis({
+    url: process.env.fly_KV_REST_API_URL || "https://charmed-dane-16789.upstash.io",
+    token: process.env.fly_KV_REST_API_TOKEN || "AUGVAAIncDI1M2Y5YjIxY2IxYWQ0ZDE5OGY2ZTFjOTU5YWZlZDU1ZnAyMTY3ODk"
+});
 
 module.exports = async (req, res) => {
+    // Clave única para la cache de ofertas
+    const REDIS_KEY = "copaair:offers:2026-02-13";
+
+    // Intentar recuperar de Redis primero
+    const cached = await redis.get(REDIS_KEY);
+    if (cached) {
+        res.status(200).json(cached);
+        return;
+    }
     async function fetchOffers(url, headers, payload) {
         try {
             const response = await axios.post(url, payload, { headers });
@@ -185,44 +201,26 @@ module.exports = async (req, res) => {
     };
 
     try {
-        // Primera llamada
-        const data1 = await fetchOffers(url1, headers, payload1);
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        // Segunda llamada
-        const data2 = await fetchOffers(url2, headers, payload2);
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        // Tercera llamada
-        const data3 = await fetchOffers(url3, headers, payload3);
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        // Cuarta llamada
-        const data4 = await fetchOffers(url4, headers, payload4);
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        // Quinta llamada
-        const data5 = await fetchOffers(url5, headers, payload5);
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        // Sexta llamada
-        const data6 = await fetchOffers(url6, headers, payload6);
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        // Séptima llamada
-        const data7 = await fetchOffers(url7, headers, payload7);
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        // Octava llamada
-        const data8 = await fetchOffers(url8, headers, payload8);
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        // Novena llamada
-        const data9 = await fetchOffers(url9, headers, payload9);
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        // Décima llamada
-        const data10 = await fetchOffers(url10, headers, payload10);
+    // Solo si no hay cache, hacer las llamadas POST
+    const data1 = await fetchOffers(url1, headers, payload1);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    const data2 = await fetchOffers(url2, headers, payload2);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    const data3 = await fetchOffers(url3, headers, payload3);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    const data4 = await fetchOffers(url4, headers, payload4);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    const data5 = await fetchOffers(url5, headers, payload5);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    const data6 = await fetchOffers(url6, headers, payload6);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    const data7 = await fetchOffers(url7, headers, payload7);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    const data8 = await fetchOffers(url8, headers, payload8);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    const data9 = await fetchOffers(url9, headers, payload9);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    const data10 = await fetchOffers(url10, headers, payload10);
 
         // Procesar respuestas
         let response = {
@@ -736,7 +734,9 @@ module.exports = async (req, res) => {
             return;
         }
 
-        res.status(200).json(response);
+    // Guardar en Redis para futuras consultas
+    await redis.set(REDIS_KEY, response, { ex: 60 * 60 * 6 }); // Expira en 6 horas
+    res.status(200).json(response);
     } catch (error) {
         res.status(500).json({ error: `Error en el servidor: ${error.message}` });
     }
