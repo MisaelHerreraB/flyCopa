@@ -109,6 +109,21 @@ module.exports = async (req, res) => {
         ]
     };
 
+    // Sexta llamada (LIM -> MDE -> PTY -> LIM)
+    const url6 = 'https://api.copaair.com/ibe/booking/plan-multicity';
+    const payload6 = {
+        numberOfAdults: 1,
+        numberOfChildren: 0,
+        numberOfInfants: 0,
+        cabinType: 'Y',
+        isStopOver: true,
+        originDestinations: [
+            { od: 'OD1', departure: { airportCode: 'LIM', date: '2026-02-13' }, arrival: { airportCode: 'MDE' } },
+            { od: 'OD2', departure: { airportCode: 'MDE', date: '2026-02-13' }, arrival: { airportCode: 'PTY' } },
+            { od: 'OD3', departure: { airportCode: 'PTY', date: '2026-02-18' }, arrival: { airportCode: 'LIM' } }
+        ]
+    };
+
     try {
         // Primera llamada
         const data1 = await fetchOffers(url1, headers, payload1);
@@ -137,6 +152,12 @@ module.exports = async (req, res) => {
         // Quinta llamada
         const data5 = await fetchOffers(url5, headers, payload5);
 
+        // Esperar 1.5 segundos
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        // Sexta llamada
+        const data6 = await fetchOffers(url6, headers, payload6);
+
         // Procesar respuestas
         let response = {
             itinerary1: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> PTY -> MDE -> LIM', city: 'Medellín' },
@@ -144,6 +165,7 @@ module.exports = async (req, res) => {
             itinerary3: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> PTY -> CLO -> LIM', city: 'Cali' },
             itinerary4: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> PTY -> BOG -> LIM', city: 'Bogotá' },
             itinerary5: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> PTY -> CTG -> LIM', city: 'Cartagena' },
+            itinerary6: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> MDE -> PTY -> LIM', city: 'Medellín' },
             globalCheapest: null
         };
 
@@ -317,13 +339,48 @@ module.exports = async (req, res) => {
             }
         }
 
+        // Procesar sexta llamada (LIM -> MDE -> PTY -> LIM)
+        if (data6.error || !data6.offers) {
+            response.itinerary6.error = data6.error || 'No se pudieron obtener datos de la API';
+        } else {
+            const offers = data6.offers || [];
+            let minPrice = Infinity;
+            const cheapestOffers = [];
+
+            response.itinerary6.offers = offers.map(offer => {
+                const fareFamily = offer.fareFamilies ? `${offer.fareFamilies[0].name} (${offer.fareFamilies[0].code})` : 'N/A';
+                if (offer.pricePerAdult < minPrice) {
+                    minPrice = offer.pricePerAdult;
+                    cheapestOffers.length = 0;
+                    cheapestOffers.push(offer.id);
+                } else if (offer.pricePerAdult === minPrice) {
+                    cheapestOffers.push(offer.id);
+                }
+                return {
+                    id: offer.id,
+                    solutionKeys: offer.solutionKeys.join(', '),
+                    pricePerAdult: offer.pricePerAdult.toFixed(2),
+                    fareFamily,
+                    classOfService: offer.classOfService.join(', ')
+                };
+            });
+
+            if (offers.length) {
+                response.itinerary6.cheapest = {
+                    price: minPrice.toFixed(2),
+                    offerIds: cheapestOffers
+                };
+            }
+        }
+
         // Comparar las ofertas más baratas
         const cheapestPrices = [
             response.itinerary1.cheapest ? { price: parseFloat(response.itinerary1.cheapest.price), itinerary: response.itinerary1.itinerary, city: response.itinerary1.city, offerIds: response.itinerary1.cheapest.offerIds } : null,
             response.itinerary2.cheapest ? { price: parseFloat(response.itinerary2.cheapest.price), itinerary: response.itinerary2.itinerary, city: response.itinerary2.city, offerIds: response.itinerary2.cheapest.offerIds } : null,
             response.itinerary3.cheapest ? { price: parseFloat(response.itinerary3.cheapest.price), itinerary: response.itinerary3.itinerary, city: response.itinerary3.city, offerIds: response.itinerary3.cheapest.offerIds } : null,
             response.itinerary4.cheapest ? { price: parseFloat(response.itinerary4.cheapest.price), itinerary: response.itinerary4.itinerary, city: response.itinerary4.city, offerIds: response.itinerary4.cheapest.offerIds } : null,
-            response.itinerary5.cheapest ? { price: parseFloat(response.itinerary5.cheapest.price), itinerary: response.itinerary5.itinerary, city: response.itinerary5.city, offerIds: response.itinerary5.cheapest.offerIds } : null
+            response.itinerary5.cheapest ? { price: parseFloat(response.itinerary5.cheapest.price), itinerary: response.itinerary5.itinerary, city: response.itinerary5.city, offerIds: response.itinerary5.cheapest.offerIds } : null,
+            response.itinerary6.cheapest ? { price: parseFloat(response.itinerary6.cheapest.price), itinerary: response.itinerary6.itinerary, city: response.itinerary6.city, offerIds: response.itinerary6.cheapest.offerIds } : null
         ].filter(item => item !== null);
 
         if (cheapestPrices.length) {
@@ -331,7 +388,7 @@ module.exports = async (req, res) => {
         }
 
         // Devolver respuesta
-        if (!response.itinerary1.offers.length && !response.itinerary2.offers.length && !response.itinerary3.offers.length && !response.itinerary4.offers.length && !response.itinerary5.offers.length) {
+        if (!response.itinerary1.offers.length && !response.itinerary2.offers.length && !response.itinerary3.offers.length && !response.itinerary4.offers.length && !response.itinerary5.offers.length && !response.itinerary6.offers.length) {
             res.status(404).json({ error: 'No se encontraron ofertas en ninguno de los itinerarios.' });
             return;
         }

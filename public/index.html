@@ -116,7 +116,7 @@
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Cargando ofertas...</span>
             </div>
-            <p class="mt-2">Buscando las mejores ofertas en Panamá, Medellín, Quito, Cali, Bogotá y Cartagena...</p>
+            <p class="mt-2">Buscando las mejores ofertas en Panamá, Medellín, Quito, Cali, Bogotá, Cartagena...</p>
         </div>
 
         <!-- Error Alert -->
@@ -148,7 +148,7 @@
         <!-- Individual Cheapest Offers -->
         <div class="row" id="individual-offers-section">
             <div class="col-12">
-                <!-- Medellín -->
+                <!-- Medellín (PTY -> MDE) -->
                 <div class="card cheapest-card" id="cheapest-info1" style="display: none;">
                     <div class="card-body">
                         <div class="pre-formatted">
@@ -207,6 +207,18 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Medellín (MDE -> PTY) -->
+                <div class="card cheapest-card" id="cheapest-info6" style="display: none;">
+                    <div class="card-body">
+                        <div class="pre-formatted">
+                            👉 Pasajes stopover (Medellín):
+                            ✅ Ida ✈️ Lima - Medellín
+                            ✅ Vuelta ✈️ Medellín - Panamá - Lima 
+                            💵 Todo a [PRECIO] USD 💵
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -214,7 +226,7 @@
         <div class="row" id="detailed-tables-section">
             <div class="col-12">
                 <div class="accordion" id="offersAccordion">
-                    <!-- Itinerario 1: Medellín -->
+                    <!-- Itinerario 1: Medellín (PTY -> MDE) -->
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="false" aria-controls="collapse1">
@@ -348,6 +360,33 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Itinerario 6: Medellín (MDE -> PTY) -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false" aria-controls="collapse6">
+                                📋 Detalles - Itinerario 6: Lima → Medellín → Panamá → Lima
+                            </button>
+                        </h2>
+                        <div id="collapse6" class="accordion-collapse collapse" data-bs-parent="#offersAccordion">
+                            <div class="accordion-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover" id="offers-table6">
+                                        <thead>
+                                            <tr>
+                                                <th>ID de Oferta</th>
+                                                <th>Claves de Soluciones</th>
+                                                <th>Precio por Adulto (USD)</th>
+                                                <th>Familia de Tarifa</th>
+                                                <th>Clase de Servicio</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -366,16 +405,19 @@
             const cheapestInfo3 = document.getElementById('cheapest-info3');
             const cheapestInfo4 = document.getElementById('cheapest-info4');
             const cheapestInfo5 = document.getElementById('cheapest-info5');
+            const cheapestInfo6 = document.getElementById('cheapest-info6');
             const table1 = document.getElementById('offers-table1');
             const table2 = document.getElementById('offers-table2');
             const table3 = document.getElementById('offers-table3');
             const table4 = document.getElementById('offers-table4');
             const table5 = document.getElementById('offers-table5');
+            const table6 = document.getElementById('offers-table6');
             const tbody1 = table1.querySelector('tbody');
             const tbody2 = table2.querySelector('tbody');
             const tbody3 = table3.querySelector('tbody');
             const tbody4 = table4.querySelector('tbody');
             const tbody5 = table5.querySelector('tbody');
+            const tbody6 = table6.querySelector('tbody');
 
             loading.style.display = 'block';
             errorDiv.style.display = 'none';
@@ -385,16 +427,19 @@
             cheapestInfo3.style.display = 'none';
             cheapestInfo4.style.display = 'none';
             cheapestInfo5.style.display = 'none';
+            cheapestInfo6.style.display = 'none';
             table1.style.display = 'none';
             table2.style.display = 'none';
             table3.style.display = 'none';
             table4.style.display = 'none';
             table5.style.display = 'none';
+            table6.style.display = 'none';
             tbody1.innerHTML = '';
             tbody2.innerHTML = '';
             tbody3.innerHTML = '';
             tbody4.innerHTML = '';
             tbody5.innerHTML = '';
+            tbody6.innerHTML = '';
 
             try {
                 const response = await fetch('/api/offers');
@@ -419,8 +464,11 @@
                         data.globalCheapest.itinerary === 'LIM -> PTY -> BOG -> LIM' ?
                         `✅ Ida ✈️ Lima - Panamá
 ✅ Vuelta ✈️ Panamá - Bogotá - Panamá - Lima` :
+                        data.globalCheapest.itinerary === 'LIM -> PTY -> CTG -> LIM' ?
                         `✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Cartagena - Panamá - Lima`;
+✅ Vuelta ✈️ Panamá - Cartagena - Panamá - Lima` :
+                        `✅ Ida ✈️ Lima - Medellín
+✅ Vuelta ✈️ Medellín - Panamá - Lima`;
                     globalCheapestInfo.innerHTML = `<div class="pre-formatted">
 🌍✈️ ¡Atención pastores y hermanos!
 🔥 Aprovechen esta súper oferta 🔥
@@ -435,7 +483,7 @@ ${itineraryText}
                 }
 
                 // Mostrar ofertas más baratas individuales (después del global)
-                // Itinerario 1 (MDE)
+                // Itinerario 1 (MDE via PTY)
                 if (data.itinerary1.cheapest) {
                     cheapestInfo1.innerHTML = `<div class="pre-formatted">
 👉 Pasajes stopover (Medellín):
@@ -445,7 +493,7 @@ ${itineraryText}
                     </div>`;
                     cheapestInfo1.style.display = 'block';
                 } else if (data.itinerary1.error) {
-                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 1 (Medellín): ${data.itinerary1.error}`;
+                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 1 (Medellín via Panamá): ${data.itinerary1.error}`;
                     errorDiv.style.display = 'block';
                 }
 
@@ -505,8 +553,22 @@ ${itineraryText}
                     errorDiv.style.display = 'block';
                 }
 
+                // Itinerario 6 (MDE via MDE -> PTY)
+                if (data.itinerary6.cheapest) {
+                    cheapestInfo6.innerHTML = `<div class="pre-formatted">
+👉 Pasajes stopover (Medellín):
+✅ Ida ✈️ Lima - Medellín
+✅ Vuelta ✈️ Medellín - Panamá - Lima 
+💵 Todo a ${data.itinerary6.cheapest.price} USD 💵
+                    </div>`;
+                    cheapestInfo6.style.display = 'block';
+                } else if (data.itinerary6.error) {
+                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 6 (Medellín via Medellín-Panamá): ${data.itinerary6.error}`;
+                    errorDiv.style.display = 'block';
+                }
+
                 // Mostrar ofertas detalladas en las tablas
-                // Itinerario 1 (MDE)
+                // Itinerario 1 (MDE via PTY)
                 if (data.itinerary1.offers.length) {
                     data.itinerary1.offers.forEach(offer => {
                         const row = document.createElement('tr');
@@ -522,6 +584,7 @@ ${itineraryText}
                         }
                         tbody1.appendChild(row);
                     });
+                    table1.style.display = 'table';
                 }
 
                 // Itinerario 2 (UIO)
@@ -540,6 +603,7 @@ ${itineraryText}
                         }
                         tbody2.appendChild(row);
                     });
+                    table2.style.display = 'table';
                 }
 
                 // Itinerario 3 (CLO)
@@ -558,6 +622,7 @@ ${itineraryText}
                         }
                         tbody3.appendChild(row);
                     });
+                    table3.style.display = 'table';
                 }
 
                 // Itinerario 4 (BOG)
@@ -576,6 +641,7 @@ ${itineraryText}
                         }
                         tbody4.appendChild(row);
                     });
+                    table4.style.display = 'table';
                 }
 
                 // Itinerario 5 (CTG)
@@ -594,6 +660,26 @@ ${itineraryText}
                         }
                         tbody5.appendChild(row);
                     });
+                    table5.style.display = 'table';
+                }
+
+                // Itinerario 6 (MDE via MDE -> PTY)
+                if (data.itinerary6.offers.length) {
+                    data.itinerary6.offers.forEach(offer => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${offer.id}</td>
+                            <td>${offer.solutionKeys}</td>
+                            <td>$${offer.pricePerAdult}</td>
+                            <td>${offer.fareFamily}</td>
+                            <td>${offer.classOfService}</td>
+                        `;
+                        if (data.itinerary6.cheapest && data.itinerary6.cheapest.offerIds.includes(offer.id)) {
+                            row.classList.add('cheapest');
+                        }
+                        tbody6.appendChild(row);
+                    });
+                    table6.style.display = 'table';
                 }
 
             } catch (error) {
