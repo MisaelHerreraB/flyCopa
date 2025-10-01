@@ -546,51 +546,107 @@ ${stopoverType}
 
         // Función para generar la imagen basada en el diseño proporcionado
         async function generateOfferImage(data) {
+            // Canvas más grande para más detalles visuales
             const canvas = document.createElement('canvas');
-            canvas.width = 400; // Ajustado para simular el diseño
-            canvas.height = 300;
+            canvas.width = 480;
+            canvas.height = 380;
             const ctx = canvas.getContext('2d');
 
-            // Fondo blanco con borde gris
-            ctx.fillStyle = '#ffffff';
+            // Fondo y borde
+            ctx.fillStyle = '#fff';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = '#cccccc';
-            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 2;
             ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
-            // Título en azul
-            ctx.fillStyle = '#0056b3';
-            ctx.font = '16px Arial';
-            ctx.fillText('Oferta MMM - Congreso 2026', 20, 30);
-
-            // Itinerario centrado
-            ctx.fillStyle = '#000000';
-            ctx.font = '12px Arial';
-            const maxWidth = 340; // Espacio para texto, dejando margen para ícono
-            data.itinerary.forEach((line, index) => {
-                const textWidth = ctx.measureText(line).width;
-                const x = (canvas.width - textWidth) / 2;
-                ctx.fillText(line, x, 80 + (index * 20));
-            });
-
-            // Stopover centrado
-            const stopoverWidth = ctx.measureText(data.stopoverType).width;
-            const stopoverX = (canvas.width - stopoverWidth) / 2;
-            ctx.fillText(data.stopoverType, stopoverX, 160);
-
-            // Precio en rojo, abajo a la izquierda
-            ctx.fillStyle = '#e63946';
-            ctx.font = '14px Arial';
-            ctx.fillText(`Precio: ${data.price} USD`, 20, 250);
-
-            // Ícono de avión a la derecha
+            // Tarifa restrictiva
+            ctx.fillStyle = '#a85c1c';
+            ctx.font = 'bold 13px Arial';
             ctx.beginPath();
-            ctx.moveTo(360, 50);
-            ctx.lineTo(380, 70);
-            ctx.lineTo(360, 90);
+            ctx.roundRect(320, 18, 120, 28, 12);
+            ctx.fill();
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 12px Arial';
+            ctx.fillText('Tarifa restrictiva', 335, 36);
+            ctx.fillStyle = '#a85c1c';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('🔒', 420, 36);
+
+            // Segmentos de vuelo
+            let y = 60;
+            if (data.segments && Array.isArray(data.segments)) {
+                data.segments.forEach((seg, idx) => {
+                    // Fecha y tipo de vuelo
+                    ctx.fillStyle = '#333';
+                    ctx.font = 'bold 13px Arial';
+                    ctx.fillText(seg.date, 20, y);
+                    ctx.font = '12px Arial';
+                    ctx.fillText(seg.direct ? 'Sin escalas' : seg.stops, 160, y);
+                    y += 18;
+                    // Ruta y horas
+                    ctx.font = 'bold 16px Arial';
+                    ctx.fillStyle = '#222';
+                    ctx.fillText(seg.from, 20, y);
+                    ctx.font = 'bold 15px Arial';
+                    ctx.fillText(seg.departure, 65, y);
+                    ctx.font = 'bold 18px Arial';
+                    ctx.fillText('→', 110, y);
+                    ctx.font = 'bold 16px Arial';
+                    ctx.fillText(seg.to, 140, y);
+                    ctx.font = 'bold 15px Arial';
+                    ctx.fillText(seg.arrival, 185, y);
+                    // Clase
+                    ctx.font = '12px Arial';
+                    ctx.fillStyle = '#0056b3';
+                    ctx.fillText(seg.class || 'Económica Basic', 20, y + 16);
+                    y += 32;
+                    // Stopover info
+                    if (seg.stopover) {
+                        ctx.font = 'italic 12px Arial';
+                        ctx.fillStyle = '#666';
+                        ctx.fillText(seg.stopover, 20, y);
+                        y += 18;
+                    }
+                });
+            }
+
+            // Precio destacado
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 15px Arial';
+            ctx.fillText('Precio por adulto', 320, 110);
+            ctx.font = 'bold 28px Arial';
+            ctx.fillStyle = '#0056b3';
+            ctx.fillText(`${data.price} USD`, 320, 145);
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#666';
+            ctx.fillText('Clase Económica', 320, 170);
+
+            // Botón seleccionar
+            ctx.fillStyle = '#1976d2';
+            ctx.beginPath();
+            ctx.roundRect(320, 200, 120, 38, 8);
+            ctx.fill();
+            ctx.font = 'bold 16px Arial';
+            ctx.fillStyle = '#fff';
+            ctx.fillText('Seleccionar', 345, 225);
+
+            // Ver detalles
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#1976d2';
+            ctx.fillText('Ver detalles', 350, 250);
+
+            // Icono avión
+            ctx.save();
+            ctx.translate(440, 320);
+            ctx.rotate(-0.2);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(20, 10);
+            ctx.lineTo(0, 20);
             ctx.closePath();
             ctx.fillStyle = '#0056b3';
             ctx.fill();
+            ctx.restore();
 
             // Convertir a imagen
             return canvas.toDataURL('image/png');
