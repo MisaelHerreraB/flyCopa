@@ -14,7 +14,7 @@
         th { background-color: #0056b3; color: white; }
         tr:hover { background-color: #f1f1f1; }
         .cheapest { background-color: #d4edda; font-weight: bold; }
-        #cheapest-info { text-align: center; font-size: 18px; margin-top: 20px; padding: 10px; background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 5px; display: none; }
+        #cheapest-info { text-align: center; font-size: 18px; margin-top: 20px; padding: 10px; background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 5px; display: none; white-space: pre-wrap; font-family: monospace; }
         #loading, #error { text-align: center; font-size: 16px; margin: 20px; display: none; }
         #error { color: red; }
     </style>
@@ -58,7 +58,7 @@
                 const data = await response.json();
 
                 if (data.error) {
-                    throw new Error(data.error);
+                    throw new Error(`${data.error} (Status: ${data.details.status}, ${data.details.statusText})`);
                 }
 
                 data.offers.forEach(offer => {
@@ -76,7 +76,12 @@
                     tbody.appendChild(row);
                 });
 
-                cheapestInfo.textContent = `Oferta más barata: $${data.cheapest.price} USD (Ofertas: ${data.cheapest.offerIds.join(', ')})`;
+                // Formatear el mensaje de la oferta más barata
+                cheapestInfo.textContent = `👉 Pasajes stopover:
+✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Medellín - Panamá - Lima 
+💵 Todo a ${data.cheapest.price} USD 💵`;
+
                 table.style.display = 'table';
                 cheapestInfo.style.display = 'block';
             } catch (error) {
