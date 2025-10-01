@@ -572,37 +572,35 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
             // Agrupar solo los tramos de regreso si el segundo tramo tiene escala en PTY
             let groupedSegments = [];
             if (data.segments && Array.isArray(data.segments)) {
-                // Si hay 3 segmentos, los dos primeros son ida y el último es regreso (con posible escala)
-                if (data.segments.length === 3) {
-                    // Mostrar los dos primeros como individuales
-                    groupedSegments.push(data.segments[0]);
-                    groupedSegments.push(data.segments[1]);
-                    // Agrupar los dos últimos solo si el campo stops del segundo tramo contiene "1 escala(s)"
-                    const seg2 = data.segments[1];
-                    const seg3 = data.segments[2];
+                let i = 0;
+                while (i < data.segments.length) {
+                    const seg = data.segments[i];
+                    // Si el campo stops contiene "Escala en PTY" y el siguiente segmento existe y es la continuación
                     if (
-                        seg2.to === 'PTY' && seg3.from === 'PTY' &&
-                        seg3.stops && seg3.stops.toLowerCase().includes('1 escala')
+                        seg.stops && seg.stops.toLowerCase().includes('escala en pty') &&
+                        i < data.segments.length - 1 &&
+                        seg.to === 'PTY' && data.segments[i + 1].from === 'PTY'
                     ) {
+                        // Agrupar ambos como un solo vuelo
+                        const nextSeg = data.segments[i + 1];
                         groupedSegments.push({
-                            date: seg3.date,
-                            from: seg2.from,
-                            departure: seg2.departure,
-                            to: seg3.to,
-                            arrival: seg3.arrival,
-                            class: seg3.class,
+                            date: nextSeg.date,
+                            from: seg.from,
+                            departure: seg.departure,
+                            to: nextSeg.to,
+                            arrival: nextSeg.arrival,
+                            class: nextSeg.class,
                             direct: false,
-                            stops: seg3.stops,
-                            flightNumber: seg2.flightNumber + ' / ' + seg3.flightNumber,
-                            aircraft: seg2.aircraft + ' / ' + seg3.aircraft
+                            stops: seg.stops,
+                            flightNumber: seg.flightNumber + ' / ' + nextSeg.flightNumber,
+                            aircraft: seg.aircraft + ' / ' + nextSeg.aircraft
                         });
+                        i += 2;
                     } else {
-                        // Si no hay escala, mostrar el último como individual
-                        groupedSegments.push(seg3);
+                        // Mostrar segmento individual
+                        groupedSegments.push(seg);
+                        i++;
                     }
-                } else {
-                    // Si no son 3 segmentos, mostrar todos como individuales
-                    groupedSegments = data.segments;
                 }
             }
 
