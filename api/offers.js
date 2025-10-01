@@ -34,7 +34,7 @@ module.exports = async (req, res) => {
         'Cookie': 'incap_ses_1720_2819721=cIY/dXaGL0RLChrvS6veF7qq3GgAAAAAY60WvRGwr7grrEGX+0+nPA==; nlbi_2819721=N9BRVjYGK03BgLfoKqYZMAAAAABsG7hTogBmgphNVsByFhe4; visid_incap_2819721=0ZnecVHbSp+SjvQkyGf2c7iq3GgAAAAAQUIPAAAAAADPyOHpLGA9q+odK9R/dHMH'
     };
 
-    // Primera llamada (LIM -> PTY -> MDE -> LIM)
+    // Primera llamada (LIM -> PTY -> MDE -> LIM, stopover de ida)
     const url1 = 'https://api.copaair.com/ibe/booking/plan-multicity';
     const payload1 = {
         numberOfAdults: 1,
@@ -49,7 +49,7 @@ module.exports = async (req, res) => {
         ]
     };
 
-    // Segunda llamada (LIM -> PTY -> UIO -> LIM)
+    // Segunda llamada (LIM -> PTY -> UIO -> LIM, stopover de ida)
     const url2 = 'https://api.copaair.com/ibe/booking/plan-multicity';
     const payload2 = {
         numberOfAdults: 1,
@@ -64,7 +64,7 @@ module.exports = async (req, res) => {
         ]
     };
 
-    // Tercera llamada (LIM -> PTY -> CLO -> LIM)
+    // Tercera llamada (LIM -> PTY -> CLO -> LIM, stopover de ida)
     const url3 = 'https://api.copaair.com/ibe/booking/plan-multicity';
     const payload3 = {
         numberOfAdults: 1,
@@ -79,7 +79,7 @@ module.exports = async (req, res) => {
         ]
     };
 
-    // Cuarta llamada (LIM -> PTY -> BOG -> LIM)
+    // Cuarta llamada (LIM -> PTY -> BOG -> LIM, stopover de ida)
     const url4 = 'https://api.copaair.com/ibe/booking/plan-multicity';
     const payload4 = {
         numberOfAdults: 1,
@@ -94,7 +94,7 @@ module.exports = async (req, res) => {
         ]
     };
 
-    // Quinta llamada (LIM -> PTY -> CTG -> LIM)
+    // Quinta llamada (LIM -> PTY -> CTG -> LIM, stopover de ida)
     const url5 = 'https://api.copaair.com/ibe/booking/plan-multicity';
     const payload5 = {
         numberOfAdults: 1,
@@ -109,7 +109,7 @@ module.exports = async (req, res) => {
         ]
     };
 
-    // Sexta llamada (LIM -> MDE -> PTY -> LIM)
+    // Sexta llamada (LIM -> MDE -> PTY -> LIM, stopover de regreso)
     const url6 = 'https://api.copaair.com/ibe/booking/plan-multicity';
     const payload6 = {
         numberOfAdults: 1,
@@ -124,52 +124,122 @@ module.exports = async (req, res) => {
         ]
     };
 
+    // Séptima llamada (LIM -> UIO -> PTY -> LIM, stopover de regreso)
+    const url7 = 'https://api.copaair.com/ibe/booking/plan-multicity';
+    const payload7 = {
+        numberOfAdults: 1,
+        numberOfChildren: 0,
+        numberOfInfants: 0,
+        cabinType: 'Y',
+        isStopOver: true,
+        originDestinations: [
+            { od: 'OD1', departure: { airportCode: 'LIM', date: '2026-02-13' }, arrival: { airportCode: 'UIO' } },
+            { od: 'OD2', departure: { airportCode: 'UIO', date: '2026-02-13' }, arrival: { airportCode: 'PTY' } },
+            { od: 'OD3', departure: { airportCode: 'PTY', date: '2026-02-18' }, arrival: { airportCode: 'LIM' } }
+        ]
+    };
+
+    // Octava llamada (LIM -> CLO -> PTY -> LIM, stopover de regreso)
+    const url8 = 'https://api.copaair.com/ibe/booking/plan-multicity';
+    const payload8 = {
+        numberOfAdults: 1,
+        numberOfChildren: 0,
+        numberOfInfants: 0,
+        cabinType: 'Y',
+        isStopOver: true,
+        originDestinations: [
+            { od: 'OD1', departure: { airportCode: 'LIM', date: '2026-02-13' }, arrival: { airportCode: 'CLO' } },
+            { od: 'OD2', departure: { airportCode: 'CLO', date: '2026-02-13' }, arrival: { airportCode: 'PTY' } },
+            { od: 'OD3', departure: { airportCode: 'PTY', date: '2026-02-18' }, arrival: { airportCode: 'LIM' } }
+        ]
+    };
+
+    // Novena llamada (LIM -> BOG -> PTY -> LIM, stopover de regreso)
+    const url9 = 'https://api.copaair.com/ibe/booking/plan-multicity';
+    const payload9 = {
+        numberOfAdults: 1,
+        numberOfChildren: 0,
+        numberOfInfants: 0,
+        cabinType: 'Y',
+        isStopOver: true,
+        originDestinations: [
+            { od: 'OD1', departure: { airportCode: 'LIM', date: '2026-02-13' }, arrival: { airportCode: 'BOG' } },
+            { od: 'OD2', departure: { airportCode: 'BOG', date: '2026-02-13' }, arrival: { airportCode: 'PTY' } },
+            { od: 'OD3', departure: { airportCode: 'PTY', date: '2026-02-18' }, arrival: { airportCode: 'LIM' } }
+        ]
+    };
+
+    // Décima llamada (LIM -> CTG -> PTY -> LIM, stopover de regreso)
+    const url10 = 'https://api.copaair.com/ibe/booking/plan-multicity';
+    const payload10 = {
+        numberOfAdults: 1,
+        numberOfChildren: 0,
+        numberOfInfants: 0,
+        cabinType: 'Y',
+        isStopOver: true,
+        originDestinations: [
+            { od: 'OD1', departure: { airportCode: 'LIM', date: '2026-02-13' }, arrival: { airportCode: 'CTG' } },
+            { od: 'OD2', departure: { airportCode: 'CTG', date: '2026-02-13' }, arrival: { airportCode: 'PTY' } },
+            { od: 'OD3', departure: { airportCode: 'PTY', date: '2026-02-18' }, arrival: { airportCode: 'LIM' } }
+        ]
+    };
+
     try {
         // Primera llamada
         const data1 = await fetchOffers(url1, headers, payload1);
-
-        // Esperar 1.5 segundos
         await new Promise(resolve => setTimeout(resolve, 1500));
 
         // Segunda llamada
         const data2 = await fetchOffers(url2, headers, payload2);
-
-        // Esperar 1.5 segundos
         await new Promise(resolve => setTimeout(resolve, 1500));
 
         // Tercera llamada
         const data3 = await fetchOffers(url3, headers, payload3);
-
-        // Esperar 1.5 segundos
         await new Promise(resolve => setTimeout(resolve, 1500));
 
         // Cuarta llamada
         const data4 = await fetchOffers(url4, headers, payload4);
-
-        // Esperar 1.5 segundos
         await new Promise(resolve => setTimeout(resolve, 1500));
 
         // Quinta llamada
         const data5 = await fetchOffers(url5, headers, payload5);
-
-        // Esperar 1.5 segundos
         await new Promise(resolve => setTimeout(resolve, 1500));
 
         // Sexta llamada
         const data6 = await fetchOffers(url6, headers, payload6);
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        // Séptima llamada
+        const data7 = await fetchOffers(url7, headers, payload7);
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        // Octava llamada
+        const data8 = await fetchOffers(url8, headers, payload8);
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        // Novena llamada
+        const data9 = await fetchOffers(url9, headers, payload9);
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        // Décima llamada
+        const data10 = await fetchOffers(url10, headers, payload10);
 
         // Procesar respuestas
         let response = {
-            itinerary1: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> PTY -> MDE -> LIM', city: 'Medellín' },
-            itinerary2: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> PTY -> UIO -> LIM', city: 'Quito' },
-            itinerary3: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> PTY -> CLO -> LIM', city: 'Cali' },
-            itinerary4: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> PTY -> BOG -> LIM', city: 'Bogotá' },
-            itinerary5: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> PTY -> CTG -> LIM', city: 'Cartagena' },
-            itinerary6: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> MDE -> PTY -> LIM', city: 'Medellín' },
+            itinerary1: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> PTY -> MDE -> LIM', city: 'Medellín', stopover: 'ida' },
+            itinerary2: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> PTY -> UIO -> LIM', city: 'Quito', stopover: 'ida' },
+            itinerary3: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> PTY -> CLO -> LIM', city: 'Cali', stopover: 'ida' },
+            itinerary4: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> PTY -> BOG -> LIM', city: 'Bogotá', stopover: 'ida' },
+            itinerary5: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> PTY -> CTG -> LIM', city: 'Cartagena', stopover: 'ida' },
+            itinerary6: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> MDE -> PTY -> LIM', city: 'Medellín', stopover: 'regreso' },
+            itinerary7: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> UIO -> PTY -> LIM', city: 'Quito', stopover: 'regreso' },
+            itinerary8: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> CLO -> PTY -> LIM', city: 'Cali', stopover: 'regreso' },
+            itinerary9: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> BOG -> PTY -> LIM', city: 'Bogotá', stopover: 'regreso' },
+            itinerary10: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> CTG -> PTY -> LIM', city: 'Cartagena', stopover: 'regreso' },
             globalCheapest: null
         };
 
-        // Procesar primera llamada (MDE)
+        // Procesar primera llamada (MDE, stopover de ida)
         if (data1.error || !data1.offers) {
             response.itinerary1.error = data1.error || 'No se pudieron obtener datos de la API';
         } else {
@@ -203,7 +273,7 @@ module.exports = async (req, res) => {
             }
         }
 
-        // Procesar segunda llamada (UIO)
+        // Procesar segunda llamada (UIO, stopover de ida)
         if (data2.error || !data2.offers) {
             response.itinerary2.error = data2.error || 'No se pudieron obtener datos de la API';
         } else {
@@ -237,7 +307,7 @@ module.exports = async (req, res) => {
             }
         }
 
-        // Procesar tercera llamada (CLO)
+        // Procesar tercera llamada (CLO, stopover de ida)
         if (data3.error || !data3.offers) {
             response.itinerary3.error = data3.error || 'No se pudieron obtener datos de la API';
         } else {
@@ -271,7 +341,7 @@ module.exports = async (req, res) => {
             }
         }
 
-        // Procesar cuarta llamada (BOG)
+        // Procesar cuarta llamada (BOG, stopover de ida)
         if (data4.error || !data4.offers) {
             response.itinerary4.error = data4.error || 'No se pudieron obtener datos de la API';
         } else {
@@ -305,7 +375,7 @@ module.exports = async (req, res) => {
             }
         }
 
-        // Procesar quinta llamada (CTG)
+        // Procesar quinta llamada (CTG, stopover de ida)
         if (data5.error || !data5.offers) {
             response.itinerary5.error = data5.error || 'No se pudieron obtener datos de la API';
         } else {
@@ -339,7 +409,7 @@ module.exports = async (req, res) => {
             }
         }
 
-        // Procesar sexta llamada (LIM -> MDE -> PTY -> LIM)
+        // Procesar sexta llamada (MDE, stopover de regreso)
         if (data6.error || !data6.offers) {
             response.itinerary6.error = data6.error || 'No se pudieron obtener datos de la API';
         } else {
@@ -373,14 +443,154 @@ module.exports = async (req, res) => {
             }
         }
 
+        // Procesar séptima llamada (UIO, stopover de regreso)
+        if (data7.error || !data7.offers) {
+            response.itinerary7.error = data7.error || 'No se pudieron obtener datos de la API';
+        } else {
+            const offers = data7.offers || [];
+            let minPrice = Infinity;
+            const cheapestOffers = [];
+
+            response.itinerary7.offers = offers.map(offer => {
+                const fareFamily = offer.fareFamilies ? `${offer.fareFamilies[0].name} (${offer.fareFamilies[0].code})` : 'N/A';
+                if (offer.pricePerAdult < minPrice) {
+                    minPrice = offer.pricePerAdult;
+                    cheapestOffers.length = 0;
+                    cheapestOffers.push(offer.id);
+                } else if (offer.pricePerAdult === minPrice) {
+                    cheapestOffers.push(offer.id);
+                }
+                return {
+                    id: offer.id,
+                    solutionKeys: offer.solutionKeys.join(', '),
+                    pricePerAdult: offer.pricePerAdult.toFixed(2),
+                    fareFamily,
+                    classOfService: offer.classOfService.join(', ')
+                };
+            });
+
+            if (offers.length) {
+                response.itinerary7.cheapest = {
+                    price: minPrice.toFixed(2),
+                    offerIds: cheapestOffers
+                };
+            }
+        }
+
+        // Procesar octava llamada (CLO, stopover de regreso)
+        if (data8.error || !data8.offers) {
+            response.itinerary8.error = data8.error || 'No se pudieron obtener datos de la API';
+        } else {
+            const offers = data8.offers || [];
+            let minPrice = Infinity;
+            const cheapestOffers = [];
+
+            response.itinerary8.offers = offers.map(offer => {
+                const fareFamily = offer.fareFamilies ? `${offer.fareFamilies[0].name} (${offer.fareFamilies[0].code})` : 'N/A';
+                if (offer.pricePerAdult < minPrice) {
+                    minPrice = offer.pricePerAdult;
+                    cheapestOffers.length = 0;
+                    cheapestOffers.push(offer.id);
+                } else if (offer.pricePerAdult === minPrice) {
+                    cheapestOffers.push(offer.id);
+                }
+                return {
+                    id: offer.id,
+                    solutionKeys: offer.solutionKeys.join(', '),
+                    pricePerAdult: offer.pricePerAdult.toFixed(2),
+                    fareFamily,
+                    classOfService: offer.classOfService.join(', ')
+                };
+            });
+
+            if (offers.length) {
+                response.itinerary8.cheapest = {
+                    price: minPrice.toFixed(2),
+                    offerIds: cheapestOffers
+                };
+            }
+        }
+
+        // Procesar novena llamada (BOG, stopover de regreso)
+        if (data9.error || !data9.offers) {
+            response.itinerary9.error = data9.error || 'No se pudieron obtener datos de la API';
+        } else {
+            const offers = data9.offers || [];
+            let minPrice = Infinity;
+            const cheapestOffers = [];
+
+            response.itinerary9.offers = offers.map(offer => {
+                const fareFamily = offer.fareFamilies ? `${offer.fareFamilies[0].name} (${offer.fareFamilies[0].code})` : 'N/A';
+                if (offer.pricePerAdult < minPrice) {
+                    minPrice = offer.pricePerAdult;
+                    cheapestOffers.length = 0;
+                    cheapestOffers.push(offer.id);
+                } else if (offer.pricePerAdult === minPrice) {
+                    cheapestOffers.push(offer.id);
+                }
+                return {
+                    id: offer.id,
+                    solutionKeys: offer.solutionKeys.join(', '),
+                    pricePerAdult: offer.pricePerAdult.toFixed(2),
+                    fareFamily,
+                    classOfService: offer.classOfService.join(', ')
+                };
+            });
+
+            if (offers.length) {
+                response.itinerary9.cheapest = {
+                    price: minPrice.toFixed(2),
+                    offerIds: cheapestOffers
+                };
+            }
+        }
+
+        // Procesar décima llamada (CTG, stopover de regreso)
+        if (data10.error || !data10.offers) {
+            response.itinerary10.error = data10.error || 'No se pudieron obtener datos de la API';
+        } else {
+            const offers = data10.offers || [];
+            let minPrice = Infinity;
+            const cheapestOffers = [];
+
+            response.itinerary10.offers = offers.map(offer => {
+                const fareFamily = offer.fareFamilies ? `${offer.fareFamilies[0].name} (${offer.fareFamilies[0].code})` : 'N/A';
+                if (offer.pricePerAdult < minPrice) {
+                    minPrice = offer.pricePerAdult;
+                    cheapestOffers.length = 0;
+                    cheapestOffers.push(offer.id);
+                } else if (offer.pricePerAdult === minPrice) {
+                    cheapestOffers.push(offer.id);
+                }
+                return {
+                    id: offer.id,
+                    solutionKeys: offer.solutionKeys.join(', '),
+                    pricePerAdult: offer.pricePerAdult.toFixed(2),
+                    fareFamily,
+                    classOfService: offer.classOfService.join(', ')
+                };
+            });
+
+            if (offers.length) {
+                response.itinerary10.cheapest = {
+                    price: minPrice.toFixed(2),
+                    offerIds: cheapestOffers
+                };
+            }
+        }
+
         // Comparar las ofertas más baratas
         const cheapestPrices = [
-            response.itinerary1.cheapest ? { price: parseFloat(response.itinerary1.cheapest.price), itinerary: response.itinerary1.itinerary, city: response.itinerary1.city, offerIds: response.itinerary1.cheapest.offerIds } : null,
-            response.itinerary2.cheapest ? { price: parseFloat(response.itinerary2.cheapest.price), itinerary: response.itinerary2.itinerary, city: response.itinerary2.city, offerIds: response.itinerary2.cheapest.offerIds } : null,
-            response.itinerary3.cheapest ? { price: parseFloat(response.itinerary3.cheapest.price), itinerary: response.itinerary3.itinerary, city: response.itinerary3.city, offerIds: response.itinerary3.cheapest.offerIds } : null,
-            response.itinerary4.cheapest ? { price: parseFloat(response.itinerary4.cheapest.price), itinerary: response.itinerary4.itinerary, city: response.itinerary4.city, offerIds: response.itinerary4.cheapest.offerIds } : null,
-            response.itinerary5.cheapest ? { price: parseFloat(response.itinerary5.cheapest.price), itinerary: response.itinerary5.itinerary, city: response.itinerary5.city, offerIds: response.itinerary5.cheapest.offerIds } : null,
-            response.itinerary6.cheapest ? { price: parseFloat(response.itinerary6.cheapest.price), itinerary: response.itinerary6.itinerary, city: response.itinerary6.city, offerIds: response.itinerary6.cheapest.offerIds } : null
+            response.itinerary1.cheapest ? { price: parseFloat(response.itinerary1.cheapest.price), itinerary: response.itinerary1.itinerary, city: response.itinerary1.city, stopover: response.itinerary1.stopover, offerIds: response.itinerary1.cheapest.offerIds } : null,
+            response.itinerary2.cheapest ? { price: parseFloat(response.itinerary2.cheapest.price), itinerary: response.itinerary2.itinerary, city: response.itinerary2.city, stopover: response.itinerary2.stopover, offerIds: response.itinerary2.cheapest.offerIds } : null,
+            response.itinerary3.cheapest ? { price: parseFloat(response.itinerary3.cheapest.price), itinerary: response.itinerary3.itinerary, city: response.itinerary3.city, stopover: response.itinerary3.stopover, offerIds: response.itinerary3.cheapest.offerIds } : null,
+            response.itinerary4.cheapest ? { price: parseFloat(response.itinerary4.cheapest.price), itinerary: response.itinerary4.itinerary, city: response.itinerary4.city, stopover: response.itinerary4.stopover, offerIds: response.itinerary4.cheapest.offerIds } : null,
+            response.itinerary5.cheapest ? { price: parseFloat(response.itinerary5.cheapest.price), itinerary: response.itinerary5.itinerary, city: response.itinerary5.city, stopover: response.itinerary5.stopover, offerIds: response.itinerary5.cheapest.offerIds } : null,
+            response.itinerary6.cheapest ? { price: parseFloat(response.itinerary6.cheapest.price), itinerary: response.itinerary6.itinerary, city: response.itinerary6.city, stopover: response.itinerary6.stopover, offerIds: response.itinerary6.cheapest.offerIds } : null,
+            response.itinerary7.cheapest ? { price: parseFloat(response.itinerary7.cheapest.price), itinerary: response.itinerary7.itinerary, city: response.itinerary7.city, stopover: response.itinerary7.stopover, offerIds: response.itinerary7.cheapest.offerIds } : null,
+            response.itinerary8.cheapest ? { price: parseFloat(response.itinerary8.cheapest.price), itinerary: response.itinerary8.itinerary, city: response.itinerary8.city, stopover: response.itinerary8.stopover, offerIds: response.itinerary8.cheapest.offerIds } : null,
+            response.itinerary9.cheapest ? { price: parseFloat(response.itinerary9.cheapest.price), itinerary: response.itinerary9.itinerary, city: response.itinerary9.city, stopover: response.itinerary9.stopover, offerIds: response.itinerary9.cheapest.offerIds } : null,
+            response.itinerary10.cheapest ? { price: parseFloat(response.itinerary10.cheapest.price), itinerary: response.itinerary10.itinerary, city: response.itinerary10.city, stopover: response.itinerary10.stopover, offerIds: response.itinerary10.cheapest.offerIds } : null
         ].filter(item => item !== null);
 
         if (cheapestPrices.length) {
@@ -388,7 +598,10 @@ module.exports = async (req, res) => {
         }
 
         // Devolver respuesta
-        if (!response.itinerary1.offers.length && !response.itinerary2.offers.length && !response.itinerary3.offers.length && !response.itinerary4.offers.length && !response.itinerary5.offers.length && !response.itinerary6.offers.length) {
+        if (!response.itinerary1.offers.length && !response.itinerary2.offers.length && !response.itinerary3.offers.length && 
+            !response.itinerary4.offers.length && !response.itinerary5.offers.length && !response.itinerary6.offers.length && 
+            !response.itinerary7.offers.length && !response.itinerary8.offers.length && !response.itinerary9.offers.length && 
+            !response.itinerary10.offers.length) {
             res.status(404).json({ error: 'No se encontraron ofertas en ninguno de los itinerarios.' });
             return;
         }

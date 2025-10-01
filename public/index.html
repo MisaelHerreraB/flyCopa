@@ -48,11 +48,6 @@
             font-size: 1.1em;
             font-weight: bold;
         }
-        .itinerary-card {
-            background-color: #e9ecef;
-            border-left: 5px solid #6c757d;
-            margin: 10px 0;
-        }
         .table-responsive {
             margin: 15px 0;
         }
@@ -79,9 +74,6 @@
             white-space: pre-wrap;
             font-family: 'Courier New', monospace;
             line-height: 1.4;
-        }
-        .loading {
-            display: none;
         }
         @media (max-width: 768px) {
             .container {
@@ -116,7 +108,7 @@
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Cargando ofertas...</span>
             </div>
-            <p class="mt-2">Buscando las mejores ofertas en Panamá, Medellín, Quito, Cali, Bogotá, Cartagena...</p>
+            <p class="mt-2">Buscando las mejores ofertas para Medellín, Quito, Cali, Bogotá, Cartagena (stopover de ida y regreso en Panamá)...</p>
         </div>
 
         <!-- Error Alert -->
@@ -125,7 +117,7 @@
             <span id="error-message"></span>
         </div>
 
-        <!-- Global Cheapest Offer (Mostrado primero) -->
+        <!-- Global Cheapest Offer -->
         <div class="row" id="global-cheapest-section">
             <div class="col-12">
                 <div class="card global-cheapest-card" id="global-cheapest-info" style="display: none;">
@@ -148,11 +140,11 @@
         <!-- Individual Cheapest Offers -->
         <div class="row" id="individual-offers-section">
             <div class="col-12">
-                <!-- Medellín (PTY -> MDE) -->
+                <!-- Itinerario 1: Medellín (stopover de ida) -->
                 <div class="card cheapest-card" id="cheapest-info1" style="display: none;">
                     <div class="card-body">
                         <div class="pre-formatted">
-                            👉 Pasajes stopover (Medellín):
+                            👉 Pasajes stopover de ida (Medellín):
                             ✅ Ida ✈️ Lima - Panamá
                             ✅ Vuelta ✈️ Panamá - Medellín - Panamá - Lima 
                             💵 Todo a [PRECIO] USD 💵
@@ -160,11 +152,11 @@
                     </div>
                 </div>
 
-                <!-- Quito -->
+                <!-- Itinerario 2: Quito (stopover de ida) -->
                 <div class="card cheapest-card" id="cheapest-info2" style="display: none;">
                     <div class="card-body">
                         <div class="pre-formatted">
-                            👉 Pasajes stopover (Quito):
+                            👉 Pasajes stopover de ida (Quito):
                             ✅ Ida ✈️ Lima - Panamá
                             ✅ Vuelta ✈️ Panamá - Quito - Panamá - Lima 
                             💵 Todo a [PRECIO] USD 💵
@@ -172,11 +164,11 @@
                     </div>
                 </div>
 
-                <!-- Cali -->
+                <!-- Itinerario 3: Cali (stopover de ida) -->
                 <div class="card cheapest-card" id="cheapest-info3" style="display: none;">
                     <div class="card-body">
                         <div class="pre-formatted">
-                            👉 Pasajes stopover (Cali):
+                            👉 Pasajes stopover de ida (Cali):
                             ✅ Ida ✈️ Lima - Panamá
                             ✅ Vuelta ✈️ Panamá - Cali - Panamá - Lima 
                             💵 Todo a [PRECIO] USD 💵
@@ -184,11 +176,11 @@
                     </div>
                 </div>
 
-                <!-- Bogotá -->
+                <!-- Itinerario 4: Bogotá (stopover de ida) -->
                 <div class="card cheapest-card" id="cheapest-info4" style="display: none;">
                     <div class="card-body">
                         <div class="pre-formatted">
-                            👉 Pasajes stopover (Bogotá):
+                            👉 Pasajes stopover de ida (Bogotá):
                             ✅ Ida ✈️ Lima - Panamá
                             ✅ Vuelta ✈️ Panamá - Bogotá - Panamá - Lima 
                             💵 Todo a [PRECIO] USD 💵
@@ -196,11 +188,11 @@
                     </div>
                 </div>
 
-                <!-- Cartagena -->
+                <!-- Itinerario 5: Cartagena (stopover de ida) -->
                 <div class="card cheapest-card" id="cheapest-info5" style="display: none;">
                     <div class="card-body">
                         <div class="pre-formatted">
-                            👉 Pasajes stopover (Cartagena):
+                            👉 Pasajes stopover de ida (Cartagena):
                             ✅ Ida ✈️ Lima - Panamá
                             ✅ Vuelta ✈️ Panamá - Cartagena - Panamá - Lima 
                             💵 Todo a [PRECIO] USD 💵
@@ -208,13 +200,61 @@
                     </div>
                 </div>
 
-                <!-- Medellín (MDE -> PTY) -->
+                <!-- Itinerario 6: Medellín (stopover de regreso) -->
                 <div class="card cheapest-card" id="cheapest-info6" style="display: none;">
                     <div class="card-body">
                         <div class="pre-formatted">
-                            👉 Pasajes stopover (Medellín):
-                            ✅ Ida ✈️ Lima - Medellín
-                            ✅ Vuelta ✈️ Medellín - Panamá - Lima 
+                            👉 Pasajes stopover de regreso (Medellín):
+                            ✅ Ida ✈️ Lima - Panamá - Medellín - Panamá
+                            ✅ Vuelta ✈️ Panamá - Lima 
+                            💵 Todo a [PRECIO] USD 💵
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Itinerario 7: Quito (stopover de regreso) -->
+                <div class="card cheapest-card" id="cheapest-info7" style="display: none;">
+                    <div class="card-body">
+                        <div class="pre-formatted">
+                            👉 Pasajes stopover de regreso (Quito):
+                            ✅ Ida ✈️ Lima - Panamá - Quito - Panamá
+                            ✅ Vuelta ✈️ Panamá - Lima 
+                            💵 Todo a [PRECIO] USD 💵
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Itinerario 8: Cali (stopover de regreso) -->
+                <div class="card cheapest-card" id="cheapest-info8" style="display: none;">
+                    <div class="card-body">
+                        <div class="pre-formatted">
+                            👉 Pasajes stopover de regreso (Cali):
+                            ✅ Ida ✈️ Lima - Panamá - Cali - Panamá
+                            ✅ Vuelta ✈️ Panamá - Lima 
+                            💵 Todo a [PRECIO] USD 💵
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Itinerario 9: Bogotá (stopover de regreso) -->
+                <div class="card cheapest-card" id="cheapest-info9" style="display: none;">
+                    <div class="card-body">
+                        <div class="pre-formatted">
+                            👉 Pasajes stopover de regreso (Bogotá):
+                            ✅ Ida ✈️ Lima - Panamá - Bogotá - Panamá
+                            ✅ Vuelta ✈️ Panamá - Lima 
+                            💵 Todo a [PRECIO] USD 💵
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Itinerario 10: Cartagena (stopover de regreso) -->
+                <div class="card cheapest-card" id="cheapest-info10" style="display: none;">
+                    <div class="card-body">
+                        <div class="pre-formatted">
+                            👉 Pasajes stopover de regreso (Cartagena):
+                            ✅ Ida ✈️ Lima - Panamá - Cartagena - Panamá
+                            ✅ Vuelta ✈️ Panamá - Lima 
                             💵 Todo a [PRECIO] USD 💵
                         </div>
                     </div>
@@ -226,7 +266,7 @@
         <div class="row" id="detailed-tables-section">
             <div class="col-12">
                 <div class="accordion" id="offersAccordion">
-                    <!-- Itinerario 1: Medellín (PTY -> MDE) -->
+                    <!-- Itinerario 1: Medellín (stopover de ida) -->
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="false" aria-controls="collapse1">
@@ -253,7 +293,7 @@
                         </div>
                     </div>
 
-                    <!-- Itinerario 2: Quito -->
+                    <!-- Itinerario 2: Quito (stopover de ida) -->
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
@@ -280,7 +320,7 @@
                         </div>
                     </div>
 
-                    <!-- Itinerario 3: Cali -->
+                    <!-- Itinerario 3: Cali (stopover de ida) -->
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
@@ -307,7 +347,7 @@
                         </div>
                     </div>
 
-                    <!-- Itinerario 4: Bogotá -->
+                    <!-- Itinerario 4: Bogotá (stopover de ida) -->
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
@@ -334,7 +374,7 @@
                         </div>
                     </div>
 
-                    <!-- Itinerario 5: Cartagena -->
+                    <!-- Itinerario 5: Cartagena (stopover de ida) -->
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
@@ -361,17 +401,125 @@
                         </div>
                     </div>
 
-                    <!-- Itinerario 6: Medellín (MDE -> PTY) -->
+                    <!-- Itinerario 6: Medellín (stopover de regreso) -->
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false" aria-controls="collapse6">
-                                📋 Detalles - Itinerario 6: Lima → Medellín → Panamá → Lima
+                                📋 Detalles - Itinerario 6: Lima → Panamá → Medellín → Panamá → Lima
                             </button>
                         </h2>
                         <div id="collapse6" class="accordion-collapse collapse" data-bs-parent="#offersAccordion">
                             <div class="accordion-body">
                                 <div class="table-responsive">
                                     <table class="table table-striped table-hover" id="offers-table6">
+                                        <thead>
+                                            <tr>
+                                                <th>ID de Oferta</th>
+                                                <th>Claves de Soluciones</th>
+                                                <th>Precio por Adulto (USD)</th>
+                                                <th>Familia de Tarifa</th>
+                                                <th>Clase de Servicio</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Itinerario 7: Quito (stopover de regreso) -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse7" aria-expanded="false" aria-controls="collapse7">
+                                📋 Detalles - Itinerario 7: Lima → Panamá → Quito → Panamá → Lima
+                            </button>
+                        </h2>
+                        <div id="collapse7" class="accordion-collapse collapse" data-bs-parent="#offersAccordion">
+                            <div class="accordion-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover" id="offers-table7">
+                                        <thead>
+                                            <tr>
+                                                <th>ID de Oferta</th>
+                                                <th>Claves de Soluciones</th>
+                                                <th>Precio por Adulto (USD)</th>
+                                                <th>Familia de Tarifa</th>
+                                                <th>Clase de Servicio</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Itinerario 8: Cali (stopover de regreso) -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse8" aria-expanded="false" aria-controls="collapse8">
+                                📋 Detalles - Itinerario 8: Lima → Panamá → Cali → Panamá → Lima
+                            </button>
+                        </h2>
+                        <div id="collapse8" class="accordion-collapse collapse" data-bs-parent="#offersAccordion">
+                            <div class="accordion-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover" id="offers-table8">
+                                        <thead>
+                                            <tr>
+                                                <th>ID de Oferta</th>
+                                                <th>Claves de Soluciones</th>
+                                                <th>Precio por Adulto (USD)</th>
+                                                <th>Familia de Tarifa</th>
+                                                <th>Clase de Servicio</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Itinerario 9: Bogotá (stopover de regreso) -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse9" aria-expanded="false" aria-controls="collapse9">
+                                📋 Detalles - Itinerario 9: Lima → Panamá → Bogotá → Panamá → Lima
+                            </button>
+                        </h2>
+                        <div id="collapse9" class="accordion-collapse collapse" data-bs-parent="#offersAccordion">
+                            <div class="accordion-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover" id="offers-table9">
+                                        <thead>
+                                            <tr>
+                                                <th>ID de Oferta</th>
+                                                <th>Claves de Soluciones</th>
+                                                <th>Precio por Adulto (USD)</th>
+                                                <th>Familia de Tarifa</th>
+                                                <th>Clase de Servicio</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Itinerario 10: Cartagena (stopover de regreso) -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse10" aria-expanded="false" aria-controls="collapse10">
+                                📋 Detalles - Itinerario 10: Lima → Panamá → Cartagena → Panamá → Lima
+                            </button>
+                        </h2>
+                        <div id="collapse10" class="accordion-collapse collapse" data-bs-parent="#offersAccordion">
+                            <div class="accordion-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover" id="offers-table10">
                                         <thead>
                                             <tr>
                                                 <th>ID de Oferta</th>
@@ -406,18 +554,30 @@
             const cheapestInfo4 = document.getElementById('cheapest-info4');
             const cheapestInfo5 = document.getElementById('cheapest-info5');
             const cheapestInfo6 = document.getElementById('cheapest-info6');
+            const cheapestInfo7 = document.getElementById('cheapest-info7');
+            const cheapestInfo8 = document.getElementById('cheapest-info8');
+            const cheapestInfo9 = document.getElementById('cheapest-info9');
+            const cheapestInfo10 = document.getElementById('cheapest-info10');
             const table1 = document.getElementById('offers-table1');
             const table2 = document.getElementById('offers-table2');
             const table3 = document.getElementById('offers-table3');
             const table4 = document.getElementById('offers-table4');
             const table5 = document.getElementById('offers-table5');
             const table6 = document.getElementById('offers-table6');
+            const table7 = document.getElementById('offers-table7');
+            const table8 = document.getElementById('offers-table8');
+            const table9 = document.getElementById('offers-table9');
+            const table10 = document.getElementById('offers-table10');
             const tbody1 = table1.querySelector('tbody');
             const tbody2 = table2.querySelector('tbody');
             const tbody3 = table3.querySelector('tbody');
             const tbody4 = table4.querySelector('tbody');
             const tbody5 = table5.querySelector('tbody');
             const tbody6 = table6.querySelector('tbody');
+            const tbody7 = table7.querySelector('tbody');
+            const tbody8 = table8.querySelector('tbody');
+            const tbody9 = table9.querySelector('tbody');
+            const tbody10 = table10.querySelector('tbody');
 
             loading.style.display = 'block';
             errorDiv.style.display = 'none';
@@ -428,18 +588,30 @@
             cheapestInfo4.style.display = 'none';
             cheapestInfo5.style.display = 'none';
             cheapestInfo6.style.display = 'none';
+            cheapestInfo7.style.display = 'none';
+            cheapestInfo8.style.display = 'none';
+            cheapestInfo9.style.display = 'none';
+            cheapestInfo10.style.display = 'none';
             table1.style.display = 'none';
             table2.style.display = 'none';
             table3.style.display = 'none';
             table4.style.display = 'none';
             table5.style.display = 'none';
             table6.style.display = 'none';
+            table7.style.display = 'none';
+            table8.style.display = 'none';
+            table9.style.display = 'none';
+            table10.style.display = 'none';
             tbody1.innerHTML = '';
             tbody2.innerHTML = '';
             tbody3.innerHTML = '';
             tbody4.innerHTML = '';
             tbody5.innerHTML = '';
             tbody6.innerHTML = '';
+            tbody7.innerHTML = '';
+            tbody8.innerHTML = '';
+            tbody9.innerHTML = '';
+            tbody10.innerHTML = '';
 
             try {
                 const response = await fetch('/api/offers');
@@ -450,25 +622,28 @@
                     throw new Error(data.error);
                 }
 
-                // Mostrar oferta más barata global (PRIMERO)
+                // Mostrar oferta más barata global
                 if (data.globalCheapest) {
-                    const itineraryText = data.globalCheapest.itinerary === 'LIM -> PTY -> MDE -> LIM' ?
-                        `✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Medellín - Panamá - Lima` :
+                    const itineraryText = 
+                        data.globalCheapest.itinerary === 'LIM -> PTY -> MDE -> LIM' ?
+                        `✅ Ida ✈️ Lima - Panamá\n✅ Vuelta ✈️ Panamá - Medellín - Panamá - Lima` :
                         data.globalCheapest.itinerary === 'LIM -> PTY -> UIO -> LIM' ?
-                        `✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Quito - Panamá - Lima` :
+                        `✅ Ida ✈️ Lima - Panamá\n✅ Vuelta ✈️ Panamá - Quito - Panamá - Lima` :
                         data.globalCheapest.itinerary === 'LIM -> PTY -> CLO -> LIM' ?
-                        `✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Cali - Panamá - Lima` :
+                        `✅ Ida ✈️ Lima - Panamá\n✅ Vuelta ✈️ Panamá - Cali - Panamá - Lima` :
                         data.globalCheapest.itinerary === 'LIM -> PTY -> BOG -> LIM' ?
-                        `✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Bogotá - Panamá - Lima` :
+                        `✅ Ida ✈️ Lima - Panamá\n✅ Vuelta ✈️ Panamá - Bogotá - Panamá - Lima` :
                         data.globalCheapest.itinerary === 'LIM -> PTY -> CTG -> LIM' ?
-                        `✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Cartagena - Panamá - Lima` :
-                        `✅ Ida ✈️ Lima - Medellín
-✅ Vuelta ✈️ Medellín - Panamá - Lima`;
+                        `✅ Ida ✈️ Lima - Panamá\n✅ Vuelta ✈️ Panamá - Cartagena - Panamá - Lima` :
+                        data.globalCheapest.itinerary === 'LIM -> MDE -> PTY -> LIM' ?
+                        `✅ Ida ✈️ Lima - Panamá - Medellín - Panamá\n✅ Vuelta ✈️ Panamá - Lima` :
+                        data.globalCheapest.itinerary === 'LIM -> UIO -> PTY -> LIM' ?
+                        `✅ Ida ✈️ Lima - Panamá - Quito - Panamá\n✅ Vuelta ✈️ Panamá - Lima` :
+                        data.globalCheapest.itinerary === 'LIM -> CLO -> PTY -> LIM' ?
+                        `✅ Ida ✈️ Lima - Panamá - Cali - Panamá\n✅ Vuelta ✈️ Panamá - Lima` :
+                        data.globalCheapest.itinerary === 'LIM -> BOG -> PTY -> LIM' ?
+                        `✅ Ida ✈️ Lima - Panamá - Bogotá - Panamá\n✅ Vuelta ✈️ Panamá - Lima` :
+                        `✅ Ida ✈️ Lima - Panamá - Cartagena - Panamá\n✅ Vuelta ✈️ Panamá - Lima`;
                     globalCheapestInfo.innerHTML = `<div class="pre-formatted">
 🌍✈️ ¡Atención pastores y hermanos!
 🔥 Aprovechen esta súper oferta 🔥
@@ -482,94 +657,16 @@ ${itineraryText}
                     globalCheapestInfo.style.display = 'block';
                 }
 
-                // Mostrar ofertas más baratas individuales (después del global)
-                // Itinerario 1 (MDE via PTY)
+                // Mostrar ofertas más baratas individuales
+                // Itinerario 1 (MDE, stopover de ida)
                 if (data.itinerary1.cheapest) {
                     cheapestInfo1.innerHTML = `<div class="pre-formatted">
-👉 Pasajes stopover (Medellín):
+👉 Pasajes stopover de ida (Medellín):
 ✅ Ida ✈️ Lima - Panamá
 ✅ Vuelta ✈️ Panamá - Medellín - Panamá - Lima 
 💵 Todo a ${data.itinerary1.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo1.style.display = 'block';
-                } else if (data.itinerary1.error) {
-                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 1 (Medellín via Panamá): ${data.itinerary1.error}`;
-                    errorDiv.style.display = 'block';
-                }
-
-                // Itinerario 2 (UIO)
-                if (data.itinerary2.cheapest) {
-                    cheapestInfo2.innerHTML = `<div class="pre-formatted">
-👉 Pasajes stopover (Quito):
-✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Quito - Panamá - Lima 
-💵 Todo a ${data.itinerary2.cheapest.price} USD 💵
-                    </div>`;
-                    cheapestInfo2.style.display = 'block';
-                } else if (data.itinerary2.error) {
-                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 2 (Quito): ${data.itinerary2.error}`;
-                    errorDiv.style.display = 'block';
-                }
-
-                // Itinerario 3 (CLO)
-                if (data.itinerary3.cheapest) {
-                    cheapestInfo3.innerHTML = `<div class="pre-formatted">
-👉 Pasajes stopover (Cali):
-✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Cali - Panamá - Lima 
-💵 Todo a ${data.itinerary3.cheapest.price} USD 💵
-                    </div>`;
-                    cheapestInfo3.style.display = 'block';
-                } else if (data.itinerary3.error) {
-                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 3 (Cali): ${data.itinerary3.error}`;
-                    errorDiv.style.display = 'block';
-                }
-
-                // Itinerario 4 (BOG)
-                if (data.itinerary4.cheapest) {
-                    cheapestInfo4.innerHTML = `<div class="pre-formatted">
-👉 Pasajes stopover (Bogotá):
-✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Bogotá - Panamá - Lima 
-💵 Todo a ${data.itinerary4.cheapest.price} USD 💵
-                    </div>`;
-                    cheapestInfo4.style.display = 'block';
-                } else if (data.itinerary4.error) {
-                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 4 (Bogotá): ${data.itinerary4.error}`;
-                    errorDiv.style.display = 'block';
-                }
-
-                // Itinerario 5 (CTG)
-                if (data.itinerary5.cheapest) {
-                    cheapestInfo5.innerHTML = `<div class="pre-formatted">
-👉 Pasajes stopover (Cartagena):
-✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Cartagena - Panamá - Lima 
-💵 Todo a ${data.itinerary5.cheapest.price} USD 💵
-                    </div>`;
-                    cheapestInfo5.style.display = 'block';
-                } else if (data.itinerary5.error) {
-                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 5 (Cartagena): ${data.itinerary5.error}`;
-                    errorDiv.style.display = 'block';
-                }
-
-                // Itinerario 6 (MDE via MDE -> PTY)
-                if (data.itinerary6.cheapest) {
-                    cheapestInfo6.innerHTML = `<div class="pre-formatted">
-👉 Pasajes stopover (Medellín):
-✅ Ida ✈️ Lima - Medellín
-✅ Vuelta ✈️ Medellín - Panamá - Lima 
-💵 Todo a ${data.itinerary6.cheapest.price} USD 💵
-                    </div>`;
-                    cheapestInfo6.style.display = 'block';
-                } else if (data.itinerary6.error) {
-                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 6 (Medellín via Medellín-Panamá): ${data.itinerary6.error}`;
-                    errorDiv.style.display = 'block';
-                }
-
-                // Mostrar ofertas detalladas en las tablas
-                // Itinerario 1 (MDE via PTY)
-                if (data.itinerary1.offers.length) {
                     data.itinerary1.offers.forEach(offer => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
@@ -585,10 +682,20 @@ ${itineraryText}
                         tbody1.appendChild(row);
                     });
                     table1.style.display = 'table';
+                } else if (data.itinerary1.error) {
+                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 1 (Medellín, stopover de ida): ${data.itinerary1.error}`;
+                    errorDiv.style.display = 'block';
                 }
 
-                // Itinerario 2 (UIO)
-                if (data.itinerary2.offers.length) {
+                // Itinerario 2 (UIO, stopover de ida)
+                if (data.itinerary2.cheapest) {
+                    cheapestInfo2.innerHTML = `<div class="pre-formatted">
+👉 Pasajes stopover de ida (Quito):
+✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Quito - Panamá - Lima 
+💵 Todo a ${data.itinerary2.cheapest.price} USD 💵
+                    </div>`;
+                    cheapestInfo2.style.display = 'block';
                     data.itinerary2.offers.forEach(offer => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
@@ -604,10 +711,20 @@ ${itineraryText}
                         tbody2.appendChild(row);
                     });
                     table2.style.display = 'table';
+                } else if (data.itinerary2.error) {
+                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 2 (Quito, stopover de ida): ${data.itinerary2.error}`;
+                    errorDiv.style.display = 'block';
                 }
 
-                // Itinerario 3 (CLO)
-                if (data.itinerary3.offers.length) {
+                // Itinerario 3 (CLO, stopover de ida)
+                if (data.itinerary3.cheapest) {
+                    cheapestInfo3.innerHTML = `<div class="pre-formatted">
+👉 Pasajes stopover de ida (Cali):
+✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Cali - Panamá - Lima 
+💵 Todo a ${data.itinerary3.cheapest.price} USD 💵
+                    </div>`;
+                    cheapestInfo3.style.display = 'block';
                     data.itinerary3.offers.forEach(offer => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
@@ -623,10 +740,20 @@ ${itineraryText}
                         tbody3.appendChild(row);
                     });
                     table3.style.display = 'table';
+                } else if (data.itinerary3.error) {
+                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 3 (Cali, stopover de ida): ${data.itinerary3.error}`;
+                    errorDiv.style.display = 'block';
                 }
 
-                // Itinerario 4 (BOG)
-                if (data.itinerary4.offers.length) {
+                // Itinerario 4 (BOG, stopover de ida)
+                if (data.itinerary4.cheapest) {
+                    cheapestInfo4.innerHTML = `<div class="pre-formatted">
+👉 Pasajes stopover de ida (Bogotá):
+✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Bogotá - Panamá - Lima 
+💵 Todo a ${data.itinerary4.cheapest.price} USD 💵
+                    </div>`;
+                    cheapestInfo4.style.display = 'block';
                     data.itinerary4.offers.forEach(offer => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
@@ -642,10 +769,20 @@ ${itineraryText}
                         tbody4.appendChild(row);
                     });
                     table4.style.display = 'table';
+                } else if (data.itinerary4.error) {
+                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 4 (Bogotá, stopover de ida): ${data.itinerary4.error}`;
+                    errorDiv.style.display = 'block';
                 }
 
-                // Itinerario 5 (CTG)
-                if (data.itinerary5.offers.length) {
+                // Itinerario 5 (CTG, stopover de ida)
+                if (data.itinerary5.cheapest) {
+                    cheapestInfo5.innerHTML = `<div class="pre-formatted">
+👉 Pasajes stopover de ida (Cartagena):
+✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Cartagena - Panamá - Lima 
+💵 Todo a ${data.itinerary5.cheapest.price} USD 💵
+                    </div>`;
+                    cheapestInfo5.style.display = 'block';
                     data.itinerary5.offers.forEach(offer => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
@@ -661,10 +798,20 @@ ${itineraryText}
                         tbody5.appendChild(row);
                     });
                     table5.style.display = 'table';
+                } else if (data.itinerary5.error) {
+                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 5 (Cartagena, stopover de ida): ${data.itinerary5.error}`;
+                    errorDiv.style.display = 'block';
                 }
 
-                // Itinerario 6 (MDE via MDE -> PTY)
-                if (data.itinerary6.offers.length) {
+                // Itinerario 6 (MDE, stopover de regreso)
+                if (data.itinerary6.cheapest) {
+                    cheapestInfo6.innerHTML = `<div class="pre-formatted">
+👉 Pasajes stopover de regreso (Medellín):
+✅ Ida ✈️ Lima - Panamá - Medellín - Panamá
+✅ Vuelta ✈️ Panamá - Lima 
+💵 Todo a ${data.itinerary6.cheapest.price} USD 💵
+                    </div>`;
+                    cheapestInfo6.style.display = 'block';
                     data.itinerary6.offers.forEach(offer => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
@@ -680,10 +827,128 @@ ${itineraryText}
                         tbody6.appendChild(row);
                     });
                     table6.style.display = 'table';
+                } else if (data.itinerary6.error) {
+                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 6 (Medellín, stopover de regreso): ${data.itinerary6.error}`;
+                    errorDiv.style.display = 'block';
                 }
 
+                // Itinerario 7 (UIO, stopover de regreso)
+                if (data.itinerary7.cheapest) {
+                    cheapestInfo7.innerHTML = `<div class="pre-formatted">
+👉 Pasajes stopover de regreso (Quito):
+✅ Ida ✈️ Lima - Panamá - Quito - Panamá
+✅ Vuelta ✈️ Panamá - Lima 
+💵 Todo a ${data.itinerary7.cheapest.price} USD 💵
+                    </div>`;
+                    cheapestInfo7.style.display = 'block';
+                    data.itinerary7.offers.forEach(offer => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${offer.id}</td>
+                            <td>${offer.solutionKeys}</td>
+                            <td>$${offer.pricePerAdult}</td>
+                            <td>${offer.fareFamily}</td>
+                            <td>${offer.classOfService}</td>
+                        `;
+                        if (data.itinerary7.cheapest && data.itinerary7.cheapest.offerIds.includes(offer.id)) {
+                            row.classList.add('cheapest');
+                        }
+                        tbody7.appendChild(row);
+                    });
+                    table7.style.display = 'table';
+                } else if (data.itinerary7.error) {
+                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 7 (Quito, stopover de regreso): ${data.itinerary7.error}`;
+                    errorDiv.style.display = 'block';
+                }
+
+                // Itinerario 8 (CLO, stopover de regreso)
+                if (data.itinerary8.cheapest) {
+                    cheapestInfo8.innerHTML = `<div class="pre-formatted">
+👉 Pasajes stopover de regreso (Cali):
+✅ Ida ✈️ Lima - Panamá - Cali - Panamá
+✅ Vuelta ✈️ Panamá - Lima 
+💵 Todo a ${data.itinerary8.cheapest.price} USD 💵
+                    </div>`;
+                    cheapestInfo8.style.display = 'block';
+                    data.itinerary8.offers.forEach(offer => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${offer.id}</td>
+                            <td>${offer.solutionKeys}</td>
+                            <td>$${offer.pricePerAdult}</td>
+                            <td>${offer.fareFamily}</td>
+                            <td>${offer.classOfService}</td>
+                        `;
+                        if (data.itinerary8.cheapest && data.itinerary8.cheapest.offerIds.includes(offer.id)) {
+                            row.classList.add('cheapest');
+                        }
+                        tbody8.appendChild(row);
+                    });
+                    table8.style.display = 'table';
+                } else if (data.itinerary8.error) {
+                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 8 (Cali, stopover de regreso): ${data.itinerary8.error}`;
+                    errorDiv.style.display = 'block';
+                }
+
+                // Itinerario 9 (BOG, stopover de regreso)
+                if (data.itinerary9.cheapest) {
+                    cheapestInfo9.innerHTML = `<div class="pre-formatted">
+👉 Pasajes stopover de regreso (Bogotá):
+✅ Ida ✈️ Lima - Panamá - Bogotá - Panamá
+✅ Vuelta ✈️ Panamá - Lima 
+💵 Todo a ${data.itinerary9.cheapest.price} USD 💵
+                    </div>`;
+                    cheapestInfo9.style.display = 'block';
+                    data.itinerary9.offers.forEach(offer => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${offer.id}</td>
+                            <td>${offer.solutionKeys}</td>
+                            <td>$${offer.pricePerAdult}</td>
+                            <td>${offer.fareFamily}</td>
+                            <td>${offer.classOfService}</td>
+                        `;
+                        if (data.itinerary9.cheapest && data.itinerary9.cheapest.offerIds.includes(offer.id)) {
+                            row.classList.add('cheapest');
+                        }
+                        tbody9.appendChild(row);
+                    });
+                    table9.style.display = 'table';
+                } else if (data.itinerary9.error) {
+                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 9 (Bogotá, stopover de regreso): ${data.itinerary9.error}`;
+                    errorDiv.style.display = 'block';
+                }
+
+                // Itinerario 10 (CTG, stopover de regreso)
+                if (data.itinerary10.cheapest) {
+                    cheapestInfo10.innerHTML = `<div class="pre-formatted">
+👉 Pasajes stopover de regreso (Cartagena):
+✅ Ida ✈️ Lima - Panamá - Cartagena - Panamá
+✅ Vuelta ✈️ Panamá - Lima 
+💵 Todo a ${data.itinerary10.cheapest.price} USD 💵
+                    </div>`;
+                    cheapestInfo10.style.display = 'block';
+                    data.itinerary10.offers.forEach(offer => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${offer.id}</td>
+                            <td>${offer.solutionKeys}</td>
+                            <td>$${offer.pricePerAdult}</td>
+                            <td>${offer.fareFamily}</td>
+                            <td>${offer.classOfService}</td>
+                        `;
+                        if (data.itinerary10.cheapest && data.itinerary10.cheapest.offerIds.includes(offer.id)) {
+                            row.classList.add('cheapest');
+                        }
+                        tbody10.appendChild(row);
+                    });
+                    table10.style.display = 'table';
+                } else if (data.itinerary10.error) {
+                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 10 (Cartagena, stopover de regreso): ${data.itinerary10.error}`;
+                    errorDiv.style.display = 'block';
+                }
             } catch (error) {
-                errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error: ${error.message}`;
+                errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> ${error.message}`;
                 errorDiv.style.display = 'block';
             } finally {
                 loading.style.display = 'none';
