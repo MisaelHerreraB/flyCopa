@@ -22,14 +22,23 @@
             background-color: #0056b3;
             border-color: #0056b3;
             font-weight: bold;
+            font-size: 1.2rem;
+            padding: 12px 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
         }
         .btn-primary:hover {
-            background-color: #004494;
-            border-color: #004494;
+            background-color: #007bff;
+            border-color: #007bff;
+            transform: translateY(-2px);
         }
-        .loading-spinner {
+        .btn-primary:disabled {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .loading-progress {
             display: none;
-            text-align: center;
             margin: 20px 0;
         }
         .error-alert {
@@ -48,28 +57,6 @@
             font-size: 1.1em;
             font-weight: bold;
         }
-        .table-responsive {
-            margin: 15px 0;
-        }
-        .table th {
-            background-color: #0056b3;
-            color: white;
-            font-weight: bold;
-        }
-        .table tbody tr:hover {
-            background-color: #f8f9fa;
-        }
-        .table tbody tr.cheapest {
-            background-color: #d4edda !important;
-            font-weight: bold;
-        }
-        .accordion-button:not(.collapsed) {
-            background-color: #e9ecef;
-            color: #333;
-        }
-        .accordion-button {
-            font-weight: bold;
-        }
         .pre-formatted {
             white-space: pre-wrap;
             font-family: 'Courier New', monospace;
@@ -78,6 +65,10 @@
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
+            }
+            .btn-primary {
+                font-size: 1rem;
+                padding: 10px 15px;
             }
             .cheapest-card, .global-cheapest-card {
                 font-size: 0.9em;
@@ -97,18 +88,18 @@
         
         <div class="row justify-content-center">
             <div class="col-12 col-md-6">
-                <button class="btn btn-primary btn-lg w-100" onclick="fetchOffers()">
-                    <i class="bi bi-search"></i> Obtener Ofertas
+                <button class="btn btn-primary btn-lg w-100" id="fetch-button" onclick="fetchOffers()">
+                    <i class="bi bi-airplane-fill"></i> ¡Buscar Ofertas de Vuelos Ahora!
                 </button>
             </div>
         </div>
 
-        <!-- Loading Spinner -->
-        <div class="loading-spinner" id="loading">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Cargando ofertas...</span>
+        <!-- Progress Bar -->
+        <div class="loading-progress" id="loading">
+            <div class="progress" role="progressbar" aria-label="Progreso de búsqueda" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar bg-primary" style="width: 0%;" id="progress-bar"></div>
             </div>
-            <p class="mt-2">Buscando las mejores ofertas para Medellín, Quito, Cali, Bogotá, Cartagena (stopover de ida y regreso en Panamá)...</p>
+            <p class="mt-2 text-center" id="progress-text">Buscando las mejores ofertas para Medellín, Quito, Cali, Bogotá, Cartagena (stopover de ida y regreso en Panamá)... Progreso: 0%</p>
         </div>
 
         <!-- Error Alert -->
@@ -261,283 +252,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Detailed Tables (Colapsables) -->
-        <div class="row" id="detailed-tables-section">
-            <div class="col-12">
-                <div class="accordion" id="offersAccordion">
-                    <!-- Itinerario 1: Medellín (stopover de ida) -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="false" aria-controls="collapse1">
-                                📋 Detalles - Itinerario 1: Lima → Panamá → Medellín → Lima
-                            </button>
-                        </h2>
-                        <div id="collapse1" class="accordion-collapse collapse" data-bs-parent="#offersAccordion">
-                            <div class="accordion-body">
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-hover" id="offers-table1">
-                                        <thead>
-                                            <tr>
-                                                <th>ID de Oferta</th>
-                                                <th>Claves de Soluciones</th>
-                                                <th>Precio por Adulto (USD)</th>
-                                                <th>Familia de Tarifa</th>
-                                                <th>Clase de Servicio</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Itinerario 2: Quito (stopover de ida) -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
-                                📋 Detalles - Itinerario 2: Lima → Panamá → Quito → Lima
-                            </button>
-                        </h2>
-                        <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#offersAccordion">
-                            <div class="accordion-body">
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-hover" id="offers-table2">
-                                        <thead>
-                                            <tr>
-                                                <th>ID de Oferta</th>
-                                                <th>Claves de Soluciones</th>
-                                                <th>Precio por Adulto (USD)</th>
-                                                <th>Familia de Tarifa</th>
-                                                <th>Clase de Servicio</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Itinerario 3: Cali (stopover de ida) -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
-                                📋 Detalles - Itinerario 3: Lima → Panamá → Cali → Lima
-                            </button>
-                        </h2>
-                        <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#offersAccordion">
-                            <div class="accordion-body">
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-hover" id="offers-table3">
-                                        <thead>
-                                            <tr>
-                                                <th>ID de Oferta</th>
-                                                <th>Claves de Soluciones</th>
-                                                <th>Precio por Adulto (USD)</th>
-                                                <th>Familia de Tarifa</th>
-                                                <th>Clase de Servicio</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Itinerario 4: Bogotá (stopover de ida) -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
-                                📋 Detalles - Itinerario 4: Lima → Panamá → Bogotá → Lima
-                            </button>
-                        </h2>
-                        <div id="collapse4" class="accordion-collapse collapse" data-bs-parent="#offersAccordion">
-                            <div class="accordion-body">
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-hover" id="offers-table4">
-                                        <thead>
-                                            <tr>
-                                                <th>ID de Oferta</th>
-                                                <th>Claves de Soluciones</th>
-                                                <th>Precio por Adulto (USD)</th>
-                                                <th>Familia de Tarifa</th>
-                                                <th>Clase de Servicio</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Itinerario 5: Cartagena (stopover de ida) -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
-                                📋 Detalles - Itinerario 5: Lima → Panamá → Cartagena → Lima
-                            </button>
-                        </h2>
-                        <div id="collapse5" class="accordion-collapse collapse" data-bs-parent="#offersAccordion">
-                            <div class="accordion-body">
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-hover" id="offers-table5">
-                                        <thead>
-                                            <tr>
-                                                <th>ID de Oferta</th>
-                                                <th>Claves de Soluciones</th>
-                                                <th>Precio por Adulto (USD)</th>
-                                                <th>Familia de Tarifa</th>
-                                                <th>Clase de Servicio</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Itinerario 6: Medellín (stopover de regreso) -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false" aria-controls="collapse6">
-                                📋 Detalles - Itinerario 6: Lima → Panamá → Medellín → Panamá → Lima
-                            </button>
-                        </h2>
-                        <div id="collapse6" class="accordion-collapse collapse" data-bs-parent="#offersAccordion">
-                            <div class="accordion-body">
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-hover" id="offers-table6">
-                                        <thead>
-                                            <tr>
-                                                <th>ID de Oferta</th>
-                                                <th>Claves de Soluciones</th>
-                                                <th>Precio por Adulto (USD)</th>
-                                                <th>Familia de Tarifa</th>
-                                                <th>Clase de Servicio</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Itinerario 7: Quito (stopover de regreso) -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse7" aria-expanded="false" aria-controls="collapse7">
-                                📋 Detalles - Itinerario 7: Lima → Panamá → Quito → Panamá → Lima
-                            </button>
-                        </h2>
-                        <div id="collapse7" class="accordion-collapse collapse" data-bs-parent="#offersAccordion">
-                            <div class="accordion-body">
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-hover" id="offers-table7">
-                                        <thead>
-                                            <tr>
-                                                <th>ID de Oferta</th>
-                                                <th>Claves de Soluciones</th>
-                                                <th>Precio por Adulto (USD)</th>
-                                                <th>Familia de Tarifa</th>
-                                                <th>Clase de Servicio</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Itinerario 8: Cali (stopover de regreso) -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse8" aria-expanded="false" aria-controls="collapse8">
-                                📋 Detalles - Itinerario 8: Lima → Panamá → Cali → Panamá → Lima
-                            </button>
-                        </h2>
-                        <div id="collapse8" class="accordion-collapse collapse" data-bs-parent="#offersAccordion">
-                            <div class="accordion-body">
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-hover" id="offers-table8">
-                                        <thead>
-                                            <tr>
-                                                <th>ID de Oferta</th>
-                                                <th>Claves de Soluciones</th>
-                                                <th>Precio por Adulto (USD)</th>
-                                                <th>Familia de Tarifa</th>
-                                                <th>Clase de Servicio</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Itinerario 9: Bogotá (stopover de regreso) -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse9" aria-expanded="false" aria-controls="collapse9">
-                                📋 Detalles - Itinerario 9: Lima → Panamá → Bogotá → Panamá → Lima
-                            </button>
-                        </h2>
-                        <div id="collapse9" class="accordion-collapse collapse" data-bs-parent="#offersAccordion">
-                            <div class="accordion-body">
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-hover" id="offers-table9">
-                                        <thead>
-                                            <tr>
-                                                <th>ID de Oferta</th>
-                                                <th>Claves de Soluciones</th>
-                                                <th>Precio por Adulto (USD)</th>
-                                                <th>Familia de Tarifa</th>
-                                                <th>Clase de Servicio</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Itinerario 10: Cartagena (stopover de regreso) -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse10" aria-expanded="false" aria-controls="collapse10">
-                                📋 Detalles - Itinerario 10: Lima → Panamá → Cartagena → Panamá → Lima
-                            </button>
-                        </h2>
-                        <div id="collapse10" class="accordion-collapse collapse" data-bs-parent="#offersAccordion">
-                            <div class="accordion-body">
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-hover" id="offers-table10">
-                                        <thead>
-                                            <tr>
-                                                <th>ID de Oferta</th>
-                                                <th>Claves de Soluciones</th>
-                                                <th>Precio por Adulto (USD)</th>
-                                                <th>Familia de Tarifa</th>
-                                                <th>Clase de Servicio</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Bootstrap 5 JS CDN -->
@@ -545,7 +259,10 @@
 
     <script>
         async function fetchOffers() {
+            const fetchButton = document.getElementById('fetch-button');
             const loading = document.getElementById('loading');
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
             const errorDiv = document.getElementById('error');
             const globalCheapestInfo = document.getElementById('global-cheapest-info');
             const cheapestInfo1 = document.getElementById('cheapest-info1');
@@ -558,28 +275,15 @@
             const cheapestInfo8 = document.getElementById('cheapest-info8');
             const cheapestInfo9 = document.getElementById('cheapest-info9');
             const cheapestInfo10 = document.getElementById('cheapest-info10');
-            const table1 = document.getElementById('offers-table1');
-            const table2 = document.getElementById('offers-table2');
-            const table3 = document.getElementById('offers-table3');
-            const table4 = document.getElementById('offers-table4');
-            const table5 = document.getElementById('offers-table5');
-            const table6 = document.getElementById('offers-table6');
-            const table7 = document.getElementById('offers-table7');
-            const table8 = document.getElementById('offers-table8');
-            const table9 = document.getElementById('offers-table9');
-            const table10 = document.getElementById('offers-table10');
-            const tbody1 = table1.querySelector('tbody');
-            const tbody2 = table2.querySelector('tbody');
-            const tbody3 = table3.querySelector('tbody');
-            const tbody4 = table4.querySelector('tbody');
-            const tbody5 = table5.querySelector('tbody');
-            const tbody6 = table6.querySelector('tbody');
-            const tbody7 = table7.querySelector('tbody');
-            const tbody8 = table8.querySelector('tbody');
-            const tbody9 = table9.querySelector('tbody');
-            const tbody10 = table10.querySelector('tbody');
 
+            // Deshabilitar botón y cambiar texto
+            fetchButton.disabled = true;
+            fetchButton.innerHTML = '<i class="bi bi-hourglass-split"></i> Buscando...';
+
+            // Mostrar barra de progreso
             loading.style.display = 'block';
+            progressBar.style.width = '0%';
+            progressText.textContent = 'Buscando las mejores ofertas para Medellín, Quito, Cali, Bogotá, Cartagena (stopover de ida y regreso en Panamá)... Progreso: 0%';
             errorDiv.style.display = 'none';
             globalCheapestInfo.style.display = 'none';
             cheapestInfo1.style.display = 'none';
@@ -592,34 +296,30 @@
             cheapestInfo8.style.display = 'none';
             cheapestInfo9.style.display = 'none';
             cheapestInfo10.style.display = 'none';
-            table1.style.display = 'none';
-            table2.style.display = 'none';
-            table3.style.display = 'none';
-            table4.style.display = 'none';
-            table5.style.display = 'none';
-            table6.style.display = 'none';
-            table7.style.display = 'none';
-            table8.style.display = 'none';
-            table9.style.display = 'none';
-            table10.style.display = 'none';
-            tbody1.innerHTML = '';
-            tbody2.innerHTML = '';
-            tbody3.innerHTML = '';
-            tbody4.innerHTML = '';
-            tbody5.innerHTML = '';
-            tbody6.innerHTML = '';
-            tbody7.innerHTML = '';
-            tbody8.innerHTML = '';
-            tbody9.innerHTML = '';
-            tbody10.innerHTML = '';
 
             try {
+                // Simular progreso (10% por cada una de las 10 llamadas)
+                let progress = 0;
+                const updateProgress = () => {
+                    progress += 10;
+                    progressBar.style.width = `${progress}%`;
+                    progressText.textContent = `Buscando las mejores ofertas para Medellín, Quito, Cali, Bogotá, Cartagena (stopover de ida y regreso en Panamá)... Progreso: ${progress}%`;
+                };
+
                 const response = await fetch('/api/offers');
+                updateProgress(); // 10%
                 if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
                 const data = await response.json();
+                updateProgress(); // 20% (simulando el procesamiento de la respuesta)
 
                 if (data.error) {
                     throw new Error(data.error);
+                }
+
+                // Simular progreso para las 8 llamadas restantes
+                for (let i = 0; i < 8; i++) {
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    updateProgress(); // 30% a 100%
                 }
 
                 // Mostrar oferta más barata global
@@ -667,21 +367,6 @@ ${itineraryText}
 💵 Todo a ${data.itinerary1.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo1.style.display = 'block';
-                    data.itinerary1.offers.forEach(offer => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${offer.id}</td>
-                            <td>${offer.solutionKeys}</td>
-                            <td>$${offer.pricePerAdult}</td>
-                            <td>${offer.fareFamily}</td>
-                            <td>${offer.classOfService}</td>
-                        `;
-                        if (data.itinerary1.cheapest && data.itinerary1.cheapest.offerIds.includes(offer.id)) {
-                            row.classList.add('cheapest');
-                        }
-                        tbody1.appendChild(row);
-                    });
-                    table1.style.display = 'table';
                 } else if (data.itinerary1.error) {
                     errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 1 (Medellín, stopover de ida): ${data.itinerary1.error}`;
                     errorDiv.style.display = 'block';
@@ -696,21 +381,6 @@ ${itineraryText}
 💵 Todo a ${data.itinerary2.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo2.style.display = 'block';
-                    data.itinerary2.offers.forEach(offer => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${offer.id}</td>
-                            <td>${offer.solutionKeys}</td>
-                            <td>$${offer.pricePerAdult}</td>
-                            <td>${offer.fareFamily}</td>
-                            <td>${offer.classOfService}</td>
-                        `;
-                        if (data.itinerary2.cheapest && data.itinerary2.cheapest.offerIds.includes(offer.id)) {
-                            row.classList.add('cheapest');
-                        }
-                        tbody2.appendChild(row);
-                    });
-                    table2.style.display = 'table';
                 } else if (data.itinerary2.error) {
                     errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 2 (Quito, stopover de ida): ${data.itinerary2.error}`;
                     errorDiv.style.display = 'block';
@@ -725,21 +395,6 @@ ${itineraryText}
 💵 Todo a ${data.itinerary3.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo3.style.display = 'block';
-                    data.itinerary3.offers.forEach(offer => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${offer.id}</td>
-                            <td>${offer.solutionKeys}</td>
-                            <td>$${offer.pricePerAdult}</td>
-                            <td>${offer.fareFamily}</td>
-                            <td>${offer.classOfService}</td>
-                        `;
-                        if (data.itinerary3.cheapest && data.itinerary3.cheapest.offerIds.includes(offer.id)) {
-                            row.classList.add('cheapest');
-                        }
-                        tbody3.appendChild(row);
-                    });
-                    table3.style.display = 'table';
                 } else if (data.itinerary3.error) {
                     errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 3 (Cali, stopover de ida): ${data.itinerary3.error}`;
                     errorDiv.style.display = 'block';
@@ -754,21 +409,6 @@ ${itineraryText}
 💵 Todo a ${data.itinerary4.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo4.style.display = 'block';
-                    data.itinerary4.offers.forEach(offer => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${offer.id}</td>
-                            <td>${offer.solutionKeys}</td>
-                            <td>$${offer.pricePerAdult}</td>
-                            <td>${offer.fareFamily}</td>
-                            <td>${offer.classOfService}</td>
-                        `;
-                        if (data.itinerary4.cheapest && data.itinerary4.cheapest.offerIds.includes(offer.id)) {
-                            row.classList.add('cheapest');
-                        }
-                        tbody4.appendChild(row);
-                    });
-                    table4.style.display = 'table';
                 } else if (data.itinerary4.error) {
                     errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 4 (Bogotá, stopover de ida): ${data.itinerary4.error}`;
                     errorDiv.style.display = 'block';
@@ -783,21 +423,6 @@ ${itineraryText}
 💵 Todo a ${data.itinerary5.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo5.style.display = 'block';
-                    data.itinerary5.offers.forEach(offer => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${offer.id}</td>
-                            <td>${offer.solutionKeys}</td>
-                            <td>$${offer.pricePerAdult}</td>
-                            <td>${offer.fareFamily}</td>
-                            <td>${offer.classOfService}</td>
-                        `;
-                        if (data.itinerary5.cheapest && data.itinerary5.cheapest.offerIds.includes(offer.id)) {
-                            row.classList.add('cheapest');
-                        }
-                        tbody5.appendChild(row);
-                    });
-                    table5.style.display = 'table';
                 } else if (data.itinerary5.error) {
                     errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 5 (Cartagena, stopover de ida): ${data.itinerary5.error}`;
                     errorDiv.style.display = 'block';
@@ -812,21 +437,6 @@ ${itineraryText}
 💵 Todo a ${data.itinerary6.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo6.style.display = 'block';
-                    data.itinerary6.offers.forEach(offer => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${offer.id}</td>
-                            <td>${offer.solutionKeys}</td>
-                            <td>$${offer.pricePerAdult}</td>
-                            <td>${offer.fareFamily}</td>
-                            <td>${offer.classOfService}</td>
-                        `;
-                        if (data.itinerary6.cheapest && data.itinerary6.cheapest.offerIds.includes(offer.id)) {
-                            row.classList.add('cheapest');
-                        }
-                        tbody6.appendChild(row);
-                    });
-                    table6.style.display = 'table';
                 } else if (data.itinerary6.error) {
                     errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 6 (Medellín, stopover de regreso): ${data.itinerary6.error}`;
                     errorDiv.style.display = 'block';
@@ -841,21 +451,6 @@ ${itineraryText}
 💵 Todo a ${data.itinerary7.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo7.style.display = 'block';
-                    data.itinerary7.offers.forEach(offer => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${offer.id}</td>
-                            <td>${offer.solutionKeys}</td>
-                            <td>$${offer.pricePerAdult}</td>
-                            <td>${offer.fareFamily}</td>
-                            <td>${offer.classOfService}</td>
-                        `;
-                        if (data.itinerary7.cheapest && data.itinerary7.cheapest.offerIds.includes(offer.id)) {
-                            row.classList.add('cheapest');
-                        }
-                        tbody7.appendChild(row);
-                    });
-                    table7.style.display = 'table';
                 } else if (data.itinerary7.error) {
                     errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 7 (Quito, stopover de regreso): ${data.itinerary7.error}`;
                     errorDiv.style.display = 'block';
@@ -870,21 +465,6 @@ ${itineraryText}
 💵 Todo a ${data.itinerary8.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo8.style.display = 'block';
-                    data.itinerary8.offers.forEach(offer => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${offer.id}</td>
-                            <td>${offer.solutionKeys}</td>
-                            <td>$${offer.pricePerAdult}</td>
-                            <td>${offer.fareFamily}</td>
-                            <td>${offer.classOfService}</td>
-                        `;
-                        if (data.itinerary8.cheapest && data.itinerary8.cheapest.offerIds.includes(offer.id)) {
-                            row.classList.add('cheapest');
-                        }
-                        tbody8.appendChild(row);
-                    });
-                    table8.style.display = 'table';
                 } else if (data.itinerary8.error) {
                     errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 8 (Cali, stopover de regreso): ${data.itinerary8.error}`;
                     errorDiv.style.display = 'block';
@@ -899,21 +479,6 @@ ${itineraryText}
 💵 Todo a ${data.itinerary9.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo9.style.display = 'block';
-                    data.itinerary9.offers.forEach(offer => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${offer.id}</td>
-                            <td>${offer.solutionKeys}</td>
-                            <td>$${offer.pricePerAdult}</td>
-                            <td>${offer.fareFamily}</td>
-                            <td>${offer.classOfService}</td>
-                        `;
-                        if (data.itinerary9.cheapest && data.itinerary9.cheapest.offerIds.includes(offer.id)) {
-                            row.classList.add('cheapest');
-                        }
-                        tbody9.appendChild(row);
-                    });
-                    table9.style.display = 'table';
                 } else if (data.itinerary9.error) {
                     errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 9 (Bogotá, stopover de regreso): ${data.itinerary9.error}`;
                     errorDiv.style.display = 'block';
@@ -928,21 +493,6 @@ ${itineraryText}
 💵 Todo a ${data.itinerary10.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo10.style.display = 'block';
-                    data.itinerary10.offers.forEach(offer => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${offer.id}</td>
-                            <td>${offer.solutionKeys}</td>
-                            <td>$${offer.pricePerAdult}</td>
-                            <td>${offer.fareFamily}</td>
-                            <td>${offer.classOfService}</td>
-                        `;
-                        if (data.itinerary10.cheapest && data.itinerary10.cheapest.offerIds.includes(offer.id)) {
-                            row.classList.add('cheapest');
-                        }
-                        tbody10.appendChild(row);
-                    });
-                    table10.style.display = 'table';
                 } else if (data.itinerary10.error) {
                     errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 10 (Cartagena, stopover de regreso): ${data.itinerary10.error}`;
                     errorDiv.style.display = 'block';
@@ -952,6 +502,8 @@ ${itineraryText}
                 errorDiv.style.display = 'block';
             } finally {
                 loading.style.display = 'none';
+                fetchButton.disabled = false;
+                fetchButton.innerHTML = '<i class="bi bi-search"></i> Actualizar Búsqueda';
             }
         }
     </script>
