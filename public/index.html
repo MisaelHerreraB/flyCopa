@@ -5,18 +5,99 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comparador de Ofertas de Vuelos</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; }
-        h1 { text-align: center; color: #0056b3; }
-        button { display: block; margin: 20px auto; padding: 10px 20px; background-color: #0056b3; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        button:hover { background-color: #004494; }
-        table { width: 100%; border-collapse: collapse; margin: 20px 0; background-color: #fff; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); display: none; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: #0056b3; color: white; }
-        tr:hover { background-color: #f1f1f1; }
-        .cheapest { background-color: #d4edda; font-weight: bold; }
-        #cheapest-info1, #cheapest-info2, #global-cheapest-info { text-align: center; font-size: 18px; margin-top: 20px; padding: 10px; background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 5px; display: none; white-space: pre-wrap; font-family: monospace; }
-        #loading, #error { text-align: center; font-size: 16px; margin: 20px; display: none; }
-        #error { color: red; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #0056b3;
+            margin-bottom: 30px;
+        }
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 12px 24px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #004494;
+        }
+        details {
+            margin: 20px 0;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        summary {
+            padding: 15px;
+            font-weight: bold;
+            font-size: 18px;
+            background-color: #e9ecef;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background-color: #fff;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #0056b3;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .cheapest {
+            background-color: #d4edda;
+            font-weight: bold;
+        }
+        .cheapest-info, #global-cheapest-info {
+            text-align: center;
+            font-size: 18px;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #d4edda;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            white-space: pre-wrap;
+            font-family: monospace;
+            display: none;
+        }
+        #global-cheapest-info {
+            background-color: #ffe5b4;
+            border-color: #ffca2c;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        #loading, #error {
+            text-align: center;
+            font-size: 16px;
+            margin: 20px;
+            display: none;
+        }
+        #error {
+            color: red;
+            background-color: #f8d7da;
+            padding: 15px;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -24,40 +105,83 @@
     <button onclick="fetchOffers()">Obtener Ofertas</button>
     <div id="loading">Cargando ofertas...</div>
     <div id="error"></div>
-    <table id="offers-table">
-        <thead>
-            <tr>
-                <th>Itinerario</th>
-                <th>ID de Oferta</th>
-                <th>Claves de Soluciones</th>
-                <th>Precio por Adulto (USD)</th>
-                <th>Familia de Tarifa</th>
-                <th>Clase de Servicio</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-    <div id="cheapest-info1"></div>
-    <div id="cheapest-info2"></div>
+    <div id="cheapest-info1" class="cheapest-info"></div>
+    <div id="cheapest-info2" class="cheapest-info"></div>
+    <div id="cheapest-info3" class="cheapest-info"></div>
     <div id="global-cheapest-info"></div>
+    <details>
+        <summary>Itinerario 1: Lima → Panamá → Medellín → Lima</summary>
+        <table id="offers-table1">
+            <thead>
+                <tr>
+                    <th>ID de Oferta</th>
+                    <th>Claves de Soluciones</th>
+                    <th>Precio por Adulto (USD)</th>
+                    <th>Familia de Tarifa</th>
+                    <th>Clase de Servicio</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </details>
+    <details>
+        <summary>Itinerario 2: Lima → Panamá → Quito → Lima</summary>
+        <table id="offers-table2">
+            <thead>
+                <tr>
+                    <th>ID de Oferta</th>
+                    <th>Claves de Soluciones</th>
+                    <th>Precio por Adulto (USD)</th>
+                    <th>Familia de Tarifa</th>
+                    <th>Clase de Servicio</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </details>
+    <details>
+        <summary>Itinerario 3: Lima → Panamá → Cali → Lima</summary>
+        <table id="offers-table3">
+            <thead>
+                <tr>
+                    <th>ID de Oferta</th>
+                    <th>Claves de Soluciones</th>
+                    <th>Precio por Adulto (USD)</th>
+                    <th>Familia de Tarifa</th>
+                    <th>Clase de Servicio</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </details>
 
     <script>
         async function fetchOffers() {
             const loading = document.getElementById('loading');
             const errorDiv = document.getElementById('error');
-            const table = document.getElementById('offers-table');
-            const tbody = table.querySelector('tbody');
             const cheapestInfo1 = document.getElementById('cheapest-info1');
             const cheapestInfo2 = document.getElementById('cheapest-info2');
+            const cheapestInfo3 = document.getElementById('cheapest-info3');
             const globalCheapestInfo = document.getElementById('global-cheapest-info');
+            const table1 = document.getElementById('offers-table1');
+            const table2 = document.getElementById('offers-table2');
+            const table3 = document.getElementById('offers-table3');
+            const tbody1 = table1.querySelector('tbody');
+            const tbody2 = table2.querySelector('tbody');
+            const tbody3 = table3.querySelector('tbody');
 
             loading.style.display = 'block';
             errorDiv.style.display = 'none';
-            table.style.display = 'none';
             cheapestInfo1.style.display = 'none';
             cheapestInfo2.style.display = 'none';
+            cheapestInfo3.style.display = 'none';
             globalCheapestInfo.style.display = 'none';
-            tbody.innerHTML = '';
+            table1.style.display = 'none';
+            table2.style.display = 'none';
+            table3.style.display = 'none';
+            tbody1.innerHTML = '';
+            tbody2.innerHTML = '';
+            tbody3.innerHTML = '';
 
             try {
                 const response = await fetch('/api/offers');
@@ -68,39 +192,62 @@
                     throw new Error(data.error);
                 }
 
-                // Mostrar ofertas del itinerario 1
-                data.itinerary1.offers.forEach(offer => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>LIM -> PTY -> MDE -> LIM</td>
-                        <td>${offer.id}</td>
-                        <td>${offer.solutionKeys}</td>
-                        <td>$${offer.pricePerAdult}</td>
-                        <td>${offer.fareFamily}</td>
-                        <td>${offer.classOfService}</td>
-                    `;
-                    if (data.itinerary1.cheapest && data.itinerary1.cheapest.offerIds.includes(offer.id)) {
-                        row.classList.add('cheapest');
-                    }
-                    tbody.appendChild(row);
-                });
+                // Mostrar ofertas del itinerario 1 (MDE)
+                if (data.itinerary1.offers.length) {
+                    data.itinerary1.offers.forEach(offer => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${offer.id}</td>
+                            <td>${offer.solutionKeys}</td>
+                            <td>$${offer.pricePerAdult}</td>
+                            <td>${offer.fareFamily}</td>
+                            <td>${offer.classOfService}</td>
+                        `;
+                        if (data.itinerary1.cheapest && data.itinerary1.cheapest.offerIds.includes(offer.id)) {
+                            row.classList.add('cheapest');
+                        }
+                        tbody1.appendChild(row);
+                    });
+                    table1.style.display = 'table';
+                }
 
-                // Mostrar ofertas del itinerario 2
-                data.itinerary2.offers.forEach(offer => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>LIM -> PTY -> UIO -> LIM</td>
-                        <td>${offer.id}</td>
-                        <td>${offer.solutionKeys}</td>
-                        <td>$${offer.pricePerAdult}</td>
-                        <td>${offer.fareFamily}</td>
-                        <td>${offer.classOfService}</td>
-                    `;
-                    if (data.itinerary2.cheapest && data.itinerary2.cheapest.offerIds.includes(offer.id)) {
-                        row.classList.add('cheapest');
-                    }
-                    tbody.appendChild(row);
-                });
+                // Mostrar ofertas del itinerario 2 (UIO)
+                if (data.itinerary2.offers.length) {
+                    data.itinerary2.offers.forEach(offer => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${offer.id}</td>
+                            <td>${offer.solutionKeys}</td>
+                            <td>$${offer.pricePerAdult}</td>
+                            <td>${offer.fareFamily}</td>
+                            <td>${offer.classOfService}</td>
+                        `;
+                        if (data.itinerary2.cheapest && data.itinerary2.cheapest.offerIds.includes(offer.id)) {
+                            row.classList.add('cheapest');
+                        }
+                        tbody2.appendChild(row);
+                    });
+                    table2.style.display = 'table';
+                }
+
+                // Mostrar ofertas del itinerario 3 (CLO)
+                if (data.itinerary3.offers.length) {
+                    data.itinerary3.offers.forEach(offer => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${offer.id}</td>
+                            <td>${offer.solutionKeys}</td>
+                            <td>$${offer.pricePerAdult}</td>
+                            <td>${offer.fareFamily}</td>
+                            <td>${offer.classOfService}</td>
+                        `;
+                        if (data.itinerary3.cheapest && data.itinerary3.cheapest.offerIds.includes(offer.id)) {
+                            row.classList.add('cheapest');
+                        }
+                        tbody3.appendChild(row);
+                    });
+                    table3.style.display = 'table';
+                }
 
                 // Mostrar oferta más barata del itinerario 1
                 if (data.itinerary1.cheapest) {
@@ -126,13 +273,28 @@
                     errorDiv.style.display = 'block';
                 }
 
+                // Mostrar oferta más barata del itinerario 3
+                if (data.itinerary3.cheapest) {
+                    cheapestInfo3.textContent = `👉 Pasajes stopover:
+✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Cali - Panamá - Lima 
+💵 Todo a ${data.itinerary3.cheapest.price} USD 💵`;
+                    cheapestInfo3.style.display = 'block';
+                } else if (data.itinerary3.error) {
+                    errorDiv.textContent = `Error en itinerario 3: ${data.itinerary3.error}`;
+                    errorDiv.style.display = 'block';
+                }
+
                 // Mostrar oferta más barata global
                 if (data.globalCheapest) {
                     const itineraryText = data.globalCheapest.itinerary === 'LIM -> PTY -> MDE -> LIM' ?
                         `✅ Ida ✈️ Lima - Panamá
 ✅ Vuelta ✈️ Panamá - Medellín - Panamá - Lima` :
+                        data.globalCheapest.itinerary === 'LIM -> PTY -> UIO -> LIM' ?
                         `✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Quito - Panamá - Lima`;
+✅ Vuelta ✈️ Panamá - Quito - Panamá - Lima` :
+                        `✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Cali - Panamá - Lima`;
                     globalCheapestInfo.textContent = `🌍✈️ ¡Atención pastores y hermanos!
 🔥 Aprovechen esta súper oferta 🔥
 
@@ -142,10 +304,6 @@ ${itineraryText}
 
 ✨ ¡No dejen pasar esta oportunidad! ✨`;
                     globalCheapestInfo.style.display = 'block';
-                }
-
-                if (data.itinerary1.offers.length || data.itinerary2.offers.length) {
-                    table.style.display = 'table';
                 }
             } catch (error) {
                 errorDiv.textContent = `Error: ${error.message}`;
