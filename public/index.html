@@ -539,8 +539,8 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
         async function generateOfferImage(data) {
             // Canvas más grande para más detalles visuales
             const canvas = document.createElement('canvas');
-            canvas.width = 480;
-            canvas.height = 380;
+            canvas.width = 600;
+            canvas.height = 500;
             const ctx = canvas.getContext('2d');
 
             // Fondo y borde
@@ -551,89 +551,133 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
             ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
             // Tarifa restrictiva
-            ctx.fillStyle = '#a85c1c';
-            ctx.font = 'bold 13px Arial';
-            ctx.beginPath();
-            ctx.roundRect(320, 18, 120, 28, 12);
-            ctx.fill();
-            ctx.fillStyle = '#fff';
-            ctx.font = 'bold 12px Arial';
-            ctx.fillText('Tarifa restrictiva', 335, 36);
+            ctx.save();
+            ctx.shadowColor = '#a85c1c';
+            ctx.shadowBlur = 8;
             ctx.fillStyle = '#a85c1c';
             ctx.font = 'bold 16px Arial';
-            ctx.fillText('🔒', 420, 36);
+            ctx.beginPath();
+            ctx.roundRect(420, 18, 150, 32, 12);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.restore();
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 15px Arial';
+            ctx.fillText('Tarifa restrictiva', 440, 40);
+            ctx.fillStyle = '#a85c1c';
+            ctx.font = 'bold 22px Arial';
+            ctx.fillText('🔒', 550, 40);
 
-            // Segmentos de vuelo
-            let y = 60;
+            // Agrupar segmentos con escala en PTY
+            let groupedSegments = [];
             if (data.segments && Array.isArray(data.segments)) {
-                data.segments.forEach((seg, idx) => {
+                let i = 0;
+                while (i < data.segments.length) {
+                    const seg = data.segments[i];
+                    if (i < data.segments.length - 1 && seg.to === 'PTY' && data.segments[i + 1].from === 'PTY') {
+                        groupedSegments.push({
+                            date: seg.date,
+                            from: seg.from,
+                            departure: seg.departure,
+                            to: data.segments[i + 1].to,
+                            arrival: data.segments[i + 1].arrival,
+                            class: seg.class,
+                            direct: false,
+                            stops: `Escala en PTY (${seg.arrival} - ${data.segments[i + 1].departure})`,
+                            flightNumber: seg.flightNumber + ' / ' + data.segments[i + 1].flightNumber,
+                            aircraft: seg.aircraft + ' / ' + data.segments[i + 1].aircraft
+                        });
+                        i += 2;
+                    } else {
+                        groupedSegments.push(seg);
+                        i++;
+                    }
+                }
+            }
+
+            // Segmentos de vuelo visuales
+            let y = 70;
+            if (groupedSegments.length > 0) {
+                groupedSegments.forEach((seg, idx) => {
                     // Fecha y tipo de vuelo
                     ctx.fillStyle = '#333';
-                    ctx.font = 'bold 13px Arial';
-                    ctx.fillText(seg.date, 20, y);
-                    ctx.font = '12px Arial';
-                    ctx.fillText(seg.direct ? 'Sin escalas' : seg.stops, 160, y);
-                    y += 18;
+                    ctx.font = 'bold 16px Arial';
+                    ctx.fillText(seg.date, 40, y);
+                    ctx.font = 'italic 14px Arial';
+                    ctx.fillStyle = seg.direct ? '#28a745' : '#ff9800';
+                    ctx.fillText(seg.direct ? 'Sin escalas' : seg.stops, 220, y);
+                    y += 26;
                     // Ruta y horas
-                    ctx.font = 'bold 16px Arial';
+                    ctx.font = 'bold 20px Arial';
                     ctx.fillStyle = '#222';
-                    ctx.fillText(seg.from, 20, y);
-                    ctx.font = 'bold 15px Arial';
-                    ctx.fillText(seg.departure, 65, y);
+                    ctx.fillText(seg.from, 40, y);
                     ctx.font = 'bold 18px Arial';
-                    ctx.fillText('→', 110, y);
-                    ctx.font = 'bold 16px Arial';
-                    ctx.fillText(seg.to, 140, y);
-                    ctx.font = 'bold 15px Arial';
-                    ctx.fillText(seg.arrival, 185, y);
-                    // Clase
-                    ctx.font = '12px Arial';
+                    ctx.fillText(seg.departure, 90, y);
+                    ctx.font = 'bold 24px Arial';
                     ctx.fillStyle = '#0056b3';
-                    ctx.fillText(seg.class || 'Económica Basic', 20, y + 16);
-                    y += 32;
-                    // Stopover info
-                    if (seg.stopover) {
-                        ctx.font = 'italic 12px Arial';
-                        ctx.fillStyle = '#666';
-                        ctx.fillText(seg.stopover, 20, y);
-                        y += 18;
-                    }
+                    ctx.fillText('→', 140, y);
+                    ctx.font = 'bold 20px Arial';
+                    ctx.fillStyle = '#222';
+                    ctx.fillText(seg.to, 180, y);
+                    ctx.font = 'bold 18px Arial';
+                    ctx.fillText(seg.arrival, 230, y);
+                    // Clase y número de vuelo
+                    ctx.font = '14px Arial';
+                    ctx.fillStyle = '#0056b3';
+                    ctx.fillText(seg.class || 'Económica Basic', 40, y + 20);
+                    ctx.fillStyle = '#666';
+                    ctx.fillText(`Vuelo: ${seg.flightNumber}`, 180, y + 20);
+                    ctx.font = '13px Arial';
+                    ctx.fillStyle = '#888';
+                    ctx.fillText(seg.aircraft, 340, y + 20);
+                    y += 42;
+                    // Separador visual
+                    ctx.strokeStyle = '#e0e0e0';
+                    ctx.beginPath();
+                    ctx.moveTo(40, y - 10);
+                    ctx.lineTo(370, y - 10);
+                    ctx.stroke();
                 });
             }
 
             // Precio destacado
             ctx.fillStyle = '#333';
-            ctx.font = 'bold 15px Arial';
-            ctx.fillText('Precio por adulto', 320, 110);
-            ctx.font = 'bold 28px Arial';
+            ctx.font = 'bold 20px Arial';
+            ctx.fillText('Precio por adulto', 420, 120);
+            ctx.font = 'bold 40px Arial';
             ctx.fillStyle = '#0056b3';
-            ctx.fillText(`${data.price} USD`, 320, 145);
-            ctx.font = '14px Arial';
+            ctx.fillText(`${data.price} USD`, 420, 175);
+            ctx.font = '20px Arial';
             ctx.fillStyle = '#666';
-            ctx.fillText('Clase Económica', 320, 170);
+            ctx.fillText('Clase Económica', 420, 210);
 
             // Botón seleccionar
+            ctx.save();
+            ctx.shadowColor = '#1976d2';
+            ctx.shadowBlur = 8;
             ctx.fillStyle = '#1976d2';
             ctx.beginPath();
-            ctx.roundRect(320, 200, 120, 38, 8);
+            ctx.roundRect(420, 240, 150, 48, 8);
             ctx.fill();
-            ctx.font = 'bold 16px Arial';
+            ctx.shadowBlur = 0;
+            ctx.restore();
+            ctx.font = 'bold 22px Arial';
             ctx.fillStyle = '#fff';
-            ctx.fillText('Seleccionar', 345, 225);
+            ctx.fillText('Seleccionar', 455, 272);
 
             // Ver detalles
-            ctx.font = '12px Arial';
+            ctx.font = '16px Arial';
             ctx.fillStyle = '#1976d2';
-            ctx.fillText('Ver detalles', 350, 250);
+            ctx.fillText('Ver detalles', 480, 295);
 
             // Icono avión
             ctx.save();
-            ctx.translate(440, 320);
+            ctx.translate(570, 440);
             ctx.rotate(-0.2);
             ctx.beginPath();
             ctx.moveTo(0, 0);
-            ctx.lineTo(20, 10);
-            ctx.lineTo(0, 20);
+            ctx.lineTo(36, 18);
+            ctx.lineTo(0, 36);
             ctx.closePath();
             ctx.fillStyle = '#0056b3';
             ctx.fill();
