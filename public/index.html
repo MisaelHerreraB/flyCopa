@@ -3,173 +3,358 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comparador de Ofertas de Vuelos</title>
+    <title>Comparador de Ofertas de Vuelos - Copa Airlines</title>
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
+            background-color: #f8f9fa;
             color: #333;
         }
-        h1 {
-            text-align: center;
+        .header-title {
             color: #0056b3;
-            margin-bottom: 30px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
-        button {
-            display: block;
-            margin: 20px auto;
-            padding: 12px 24px;
+        .btn-primary {
             background-color: #0056b3;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
+            border-color: #0056b3;
+            font-weight: bold;
         }
-        button:hover {
+        .btn-primary:hover {
             background-color: #004494;
+            border-color: #004494;
         }
-        details {
+        .loading-spinner {
+            display: none;
+            text-align: center;
             margin: 20px 0;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
-        summary {
-            padding: 15px;
-            font-weight: bold;
-            font-size: 18px;
-            background-color: #e9ecef;
-            border-radius: 8px 8px 0 0;
-            cursor: pointer;
+        .error-alert {
+            display: none;
+            margin: 20px 0;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .cheapest-card {
+            background-color: #d4edda !important;
+            border-left: 5px solid #28a745 !important;
             margin: 15px 0;
-            background-color: #fff;
         }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
+        .global-cheapest-card {
+            background-color: #ffe5b4 !important;
+            border-left: 5px solid #ffca2c !important;
+            margin: 20px 0;
+            font-size: 1.1em;
+            font-weight: bold;
         }
-        th {
+        .itinerary-card {
+            background-color: #e9ecef;
+            border-left: 5px solid #6c757d;
+            margin: 10px 0;
+        }
+        .table-responsive {
+            margin: 15px 0;
+        }
+        .table th {
             background-color: #0056b3;
             color: white;
-        }
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-        .cheapest {
-            background-color: #d4edda;
             font-weight: bold;
         }
-        .cheapest-info, #global-cheapest-info {
-            text-align: center;
-            font-size: 18px;
-            margin: 20px 0;
-            padding: 15px;
-            background-color: #d4edda;
-            border: 2px solid #28a745;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        .table tbody tr.cheapest {
+            background-color: #d4edda !important;
+            font-weight: bold;
+        }
+        .accordion-button:not(.collapsed) {
+            background-color: #e9ecef;
+            color: #333;
+        }
+        .accordion-button {
+            font-weight: bold;
+        }
+        .pre-formatted {
             white-space: pre-wrap;
-            font-family: monospace;
+            font-family: 'Courier New', monospace;
+            line-height: 1.4;
+        }
+        .loading {
             display: none;
         }
-        #global-cheapest-info {
-            background-color: #ffe5b4;
-            border-color: #ffca2c;
-            font-size: 20px;
-            font-weight: bold;
-        }
-        #loading, #error {
-            text-align: center;
-            font-size: 16px;
-            margin: 20px;
-            display: none;
-        }
-        #error {
-            color: red;
-            background-color: #f8d7da;
-            padding: 15px;
-            border-radius: 5px;
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            .cheapest-card, .global-cheapest-card {
+                font-size: 0.9em;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Comparador de Ofertas de Vuelos</h1>
-    <button onclick="fetchOffers()">Obtener Ofertas</button>
-    <div id="loading">Cargando ofertas...</div>
-    <div id="error"></div>
-    <div id="global-cheapest-info"></div>
-    <div id="cheapest-info1" class="cheapest-info"></div>
-    <div id="cheapest-info2" class="cheapest-info"></div>
-    <div id="cheapest-info3" class="cheapest-info"></div>
-    <div id="cheapest-info4" class="cheapest-info"></div>
-    <details>
-        <summary>Itinerario 1: Lima → Panamá → Medellín → Lima</summary>
-        <table id="offers-table1">
-            <thead>
-                <tr>
-                    <th>ID de Oferta</th>
-                    <th>Claves de Soluciones</th>
-                    <th>Precio por Adulto (USD)</th>
-                    <th>Familia de Tarifa</th>
-                    <th>Clase de Servicio</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </details>
-    <details>
-        <summary>Itinerario 2: Lima → Panamá → Quito → Lima</summary>
-        <table id="offers-table2">
-            <thead>
-                <tr>
-                    <th>ID de Oferta</th>
-                    <th>Claves de Soluciones</th>
-                    <th>Precio por Adulto (USD)</th>
-                    <th>Familia de Tarifa</th>
-                    <th>Clase de Servicio</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </details>
-    <details>
-        <summary>Itinerario 3: Lima → Panamá → Cali → Lima</summary>
-        <table id="offers-table3">
-            <thead>
-                <tr>
-                    <th>ID de Oferta</th>
-                    <th>Claves de Soluciones</th>
-                    <th>Precio por Adulto (USD)</th>
-                    <th>Familia de Tarifa</th>
-                    <th>Clase de Servicio</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </details>
-    <details>
-        <summary>Itinerario 4: Lima → Panamá → Bogotá → Lima</summary>
-        <table id="offers-table4">
-            <thead>
-                <tr>
-                    <th>ID de Oferta</th>
-                    <th>Claves de Soluciones</th>
-                    <th>Precio por Adulto (USD)</th>
-                    <th>Familia de Tarifa</th>
-                    <th>Clase de Servicio</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </details>
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-12 text-center">
+                <h1 class="header-title">
+                    <i class="bi bi-airplane-engines"></i> Comparador de Ofertas de Vuelos - Copa Airlines
+                </h1>
+            </div>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6">
+                <button class="btn btn-primary btn-lg w-100" onclick="fetchOffers()">
+                    <i class="bi bi-search"></i> Obtener Ofertas
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div class="loading-spinner" id="loading">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando ofertas...</span>
+            </div>
+            <p class="mt-2">Buscando las mejores ofertas en Panamá, Medellín, Quito, Cali, Bogotá y Cartagena...</p>
+        </div>
+
+        <!-- Error Alert -->
+        <div class="alert alert-danger error-alert" role="alert" id="error">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span id="error-message"></span>
+        </div>
+
+        <!-- Global Cheapest Offer (Mostrado primero) -->
+        <div class="row" id="global-cheapest-section">
+            <div class="col-12">
+                <div class="card global-cheapest-card" id="global-cheapest-info" style="display: none;">
+                    <div class="card-body">
+                        <div class="pre-formatted">
+                            🌍✈️ ¡Atención pastores y hermanos!
+                            🔥 Aprovechen esta súper oferta 🔥
+
+                            👉 Pasajes stopover:
+                            [ITINERARIO]
+                            💵 Todo a [PRECIO] USD 💵
+
+                            ✨ ¡No dejen pasar esta oportunidad! ✨
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Individual Cheapest Offers -->
+        <div class="row" id="individual-offers-section">
+            <div class="col-12">
+                <!-- Medellín -->
+                <div class="card cheapest-card" id="cheapest-info1" style="display: none;">
+                    <div class="card-body">
+                        <div class="pre-formatted">
+                            👉 Pasajes stopover (Medellín):
+                            ✅ Ida ✈️ Lima - Panamá
+                            ✅ Vuelta ✈️ Panamá - Medellín - Panamá - Lima 
+                            💵 Todo a [PRECIO] USD 💵
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quito -->
+                <div class="card cheapest-card" id="cheapest-info2" style="display: none;">
+                    <div class="card-body">
+                        <div class="pre-formatted">
+                            👉 Pasajes stopover (Quito):
+                            ✅ Ida ✈️ Lima - Panamá
+                            ✅ Vuelta ✈️ Panamá - Quito - Panamá - Lima 
+                            💵 Todo a [PRECIO] USD 💵
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cali -->
+                <div class="card cheapest-card" id="cheapest-info3" style="display: none;">
+                    <div class="card-body">
+                        <div class="pre-formatted">
+                            👉 Pasajes stopover (Cali):
+                            ✅ Ida ✈️ Lima - Panamá
+                            ✅ Vuelta ✈️ Panamá - Cali - Panamá - Lima 
+                            💵 Todo a [PRECIO] USD 💵
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bogotá -->
+                <div class="card cheapest-card" id="cheapest-info4" style="display: none;">
+                    <div class="card-body">
+                        <div class="pre-formatted">
+                            👉 Pasajes stopover (Bogotá):
+                            ✅ Ida ✈️ Lima - Panamá
+                            ✅ Vuelta ✈️ Panamá - Bogotá - Panamá - Lima 
+                            💵 Todo a [PRECIO] USD 💵
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cartagena -->
+                <div class="card cheapest-card" id="cheapest-info5" style="display: none;">
+                    <div class="card-body">
+                        <div class="pre-formatted">
+                            👉 Pasajes stopover (Cartagena):
+                            ✅ Ida ✈️ Lima - Panamá
+                            ✅ Vuelta ✈️ Panamá - Cartagena - Panamá - Lima 
+                            💵 Todo a [PRECIO] USD 💵
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Tables (Colapsables) -->
+        <div class="row" id="detailed-tables-section">
+            <div class="col-12">
+                <div class="accordion" id="offersAccordion">
+                    <!-- Itinerario 1: Medellín -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="false" aria-controls="collapse1">
+                                📋 Detalles - Itinerario 1: Lima → Panamá → Medellín → Lima
+                            </button>
+                        </h2>
+                        <div id="collapse1" class="accordion-collapse collapse" data-bs-parent="#offersAccordion">
+                            <div class="accordion-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover" id="offers-table1">
+                                        <thead>
+                                            <tr>
+                                                <th>ID de Oferta</th>
+                                                <th>Claves de Soluciones</th>
+                                                <th>Precio por Adulto (USD)</th>
+                                                <th>Familia de Tarifa</th>
+                                                <th>Clase de Servicio</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Itinerario 2: Quito -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                                📋 Detalles - Itinerario 2: Lima → Panamá → Quito → Lima
+                            </button>
+                        </h2>
+                        <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#offersAccordion">
+                            <div class="accordion-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover" id="offers-table2">
+                                        <thead>
+                                            <tr>
+                                                <th>ID de Oferta</th>
+                                                <th>Claves de Soluciones</th>
+                                                <th>Precio por Adulto (USD)</th>
+                                                <th>Familia de Tarifa</th>
+                                                <th>Clase de Servicio</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Itinerario 3: Cali -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+                                📋 Detalles - Itinerario 3: Lima → Panamá → Cali → Lima
+                            </button>
+                        </h2>
+                        <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#offersAccordion">
+                            <div class="accordion-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover" id="offers-table3">
+                                        <thead>
+                                            <tr>
+                                                <th>ID de Oferta</th>
+                                                <th>Claves de Soluciones</th>
+                                                <th>Precio por Adulto (USD)</th>
+                                                <th>Familia de Tarifa</th>
+                                                <th>Clase de Servicio</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Itinerario 4: Bogotá -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
+                                📋 Detalles - Itinerario 4: Lima → Panamá → Bogotá → Lima
+                            </button>
+                        </h2>
+                        <div id="collapse4" class="accordion-collapse collapse" data-bs-parent="#offersAccordion">
+                            <div class="accordion-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover" id="offers-table4">
+                                        <thead>
+                                            <tr>
+                                                <th>ID de Oferta</th>
+                                                <th>Claves de Soluciones</th>
+                                                <th>Precio por Adulto (USD)</th>
+                                                <th>Familia de Tarifa</th>
+                                                <th>Clase de Servicio</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Itinerario 5: Cartagena -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
+                                📋 Detalles - Itinerario 5: Lima → Panamá → Cartagena → Lima
+                            </button>
+                        </h2>
+                        <div id="collapse5" class="accordion-collapse collapse" data-bs-parent="#offersAccordion">
+                            <div class="accordion-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover" id="offers-table5">
+                                        <thead>
+                                            <tr>
+                                                <th>ID de Oferta</th>
+                                                <th>Claves de Soluciones</th>
+                                                <th>Precio por Adulto (USD)</th>
+                                                <th>Familia de Tarifa</th>
+                                                <th>Clase de Servicio</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
     <script>
         async function fetchOffers() {
@@ -180,14 +365,17 @@
             const cheapestInfo2 = document.getElementById('cheapest-info2');
             const cheapestInfo3 = document.getElementById('cheapest-info3');
             const cheapestInfo4 = document.getElementById('cheapest-info4');
+            const cheapestInfo5 = document.getElementById('cheapest-info5');
             const table1 = document.getElementById('offers-table1');
             const table2 = document.getElementById('offers-table2');
             const table3 = document.getElementById('offers-table3');
             const table4 = document.getElementById('offers-table4');
+            const table5 = document.getElementById('offers-table5');
             const tbody1 = table1.querySelector('tbody');
             const tbody2 = table2.querySelector('tbody');
             const tbody3 = table3.querySelector('tbody');
             const tbody4 = table4.querySelector('tbody');
+            const tbody5 = table5.querySelector('tbody');
 
             loading.style.display = 'block';
             errorDiv.style.display = 'none';
@@ -196,14 +384,17 @@
             cheapestInfo2.style.display = 'none';
             cheapestInfo3.style.display = 'none';
             cheapestInfo4.style.display = 'none';
+            cheapestInfo5.style.display = 'none';
             table1.style.display = 'none';
             table2.style.display = 'none';
             table3.style.display = 'none';
             table4.style.display = 'none';
+            table5.style.display = 'none';
             tbody1.innerHTML = '';
             tbody2.innerHTML = '';
             tbody3.innerHTML = '';
             tbody4.innerHTML = '';
+            tbody5.innerHTML = '';
 
             try {
                 const response = await fetch('/api/offers');
@@ -214,7 +405,108 @@
                     throw new Error(data.error);
                 }
 
-                // Mostrar ofertas del itinerario 1 (MDE)
+                // Mostrar oferta más barata global (PRIMERO)
+                if (data.globalCheapest) {
+                    const itineraryText = data.globalCheapest.itinerary === 'LIM -> PTY -> MDE -> LIM' ?
+                        `✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Medellín - Panamá - Lima` :
+                        data.globalCheapest.itinerary === 'LIM -> PTY -> UIO -> LIM' ?
+                        `✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Quito - Panamá - Lima` :
+                        data.globalCheapest.itinerary === 'LIM -> PTY -> CLO -> LIM' ?
+                        `✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Cali - Panamá - Lima` :
+                        data.globalCheapest.itinerary === 'LIM -> PTY -> BOG -> LIM' ?
+                        `✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Bogotá - Panamá - Lima` :
+                        `✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Cartagena - Panamá - Lima`;
+                    globalCheapestInfo.innerHTML = `<div class="pre-formatted">
+🌍✈️ ¡Atención pastores y hermanos!
+🔥 Aprovechen esta súper oferta 🔥
+
+👉 Pasajes stopover:
+${itineraryText} 
+💵 Todo a ${data.globalCheapest.price} USD 💵
+
+✨ ¡No dejen pasar esta oportunidad! ✨
+                    </div>`;
+                    globalCheapestInfo.style.display = 'block';
+                }
+
+                // Mostrar ofertas más baratas individuales (después del global)
+                // Itinerario 1 (MDE)
+                if (data.itinerary1.cheapest) {
+                    cheapestInfo1.innerHTML = `<div class="pre-formatted">
+👉 Pasajes stopover (Medellín):
+✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Medellín - Panamá - Lima 
+💵 Todo a ${data.itinerary1.cheapest.price} USD 💵
+                    </div>`;
+                    cheapestInfo1.style.display = 'block';
+                } else if (data.itinerary1.error) {
+                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 1 (Medellín): ${data.itinerary1.error}`;
+                    errorDiv.style.display = 'block';
+                }
+
+                // Itinerario 2 (UIO)
+                if (data.itinerary2.cheapest) {
+                    cheapestInfo2.innerHTML = `<div class="pre-formatted">
+👉 Pasajes stopover (Quito):
+✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Quito - Panamá - Lima 
+💵 Todo a ${data.itinerary2.cheapest.price} USD 💵
+                    </div>`;
+                    cheapestInfo2.style.display = 'block';
+                } else if (data.itinerary2.error) {
+                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 2 (Quito): ${data.itinerary2.error}`;
+                    errorDiv.style.display = 'block';
+                }
+
+                // Itinerario 3 (CLO)
+                if (data.itinerary3.cheapest) {
+                    cheapestInfo3.innerHTML = `<div class="pre-formatted">
+👉 Pasajes stopover (Cali):
+✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Cali - Panamá - Lima 
+💵 Todo a ${data.itinerary3.cheapest.price} USD 💵
+                    </div>`;
+                    cheapestInfo3.style.display = 'block';
+                } else if (data.itinerary3.error) {
+                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 3 (Cali): ${data.itinerary3.error}`;
+                    errorDiv.style.display = 'block';
+                }
+
+                // Itinerario 4 (BOG)
+                if (data.itinerary4.cheapest) {
+                    cheapestInfo4.innerHTML = `<div class="pre-formatted">
+👉 Pasajes stopover (Bogotá):
+✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Bogotá - Panamá - Lima 
+💵 Todo a ${data.itinerary4.cheapest.price} USD 💵
+                    </div>`;
+                    cheapestInfo4.style.display = 'block';
+                } else if (data.itinerary4.error) {
+                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 4 (Bogotá): ${data.itinerary4.error}`;
+                    errorDiv.style.display = 'block';
+                }
+
+                // Itinerario 5 (CTG)
+                if (data.itinerary5.cheapest) {
+                    cheapestInfo5.innerHTML = `<div class="pre-formatted">
+👉 Pasajes stopover (Cartagena):
+✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Cartagena - Panamá - Lima 
+💵 Todo a ${data.itinerary5.cheapest.price} USD 💵
+                    </div>`;
+                    cheapestInfo5.style.display = 'block';
+                } else if (data.itinerary5.error) {
+                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 5 (Cartagena): ${data.itinerary5.error}`;
+                    errorDiv.style.display = 'block';
+                }
+
+                // Mostrar ofertas detalladas en las tablas
+                // Itinerario 1 (MDE)
                 if (data.itinerary1.offers.length) {
                     data.itinerary1.offers.forEach(offer => {
                         const row = document.createElement('tr');
@@ -230,10 +522,9 @@
                         }
                         tbody1.appendChild(row);
                     });
-                    table1.style.display = 'table';
                 }
 
-                // Mostrar ofertas del itinerario 2 (UIO)
+                // Itinerario 2 (UIO)
                 if (data.itinerary2.offers.length) {
                     data.itinerary2.offers.forEach(offer => {
                         const row = document.createElement('tr');
@@ -249,10 +540,9 @@
                         }
                         tbody2.appendChild(row);
                     });
-                    table2.style.display = 'table';
                 }
 
-                // Mostrar ofertas del itinerario 3 (CLO)
+                // Itinerario 3 (CLO)
                 if (data.itinerary3.offers.length) {
                     data.itinerary3.offers.forEach(offer => {
                         const row = document.createElement('tr');
@@ -268,10 +558,9 @@
                         }
                         tbody3.appendChild(row);
                     });
-                    table3.style.display = 'table';
                 }
 
-                // Mostrar ofertas del itinerario 4 (BOG)
+                // Itinerario 4 (BOG)
                 if (data.itinerary4.offers.length) {
                     data.itinerary4.offers.forEach(offer => {
                         const row = document.createElement('tr');
@@ -287,82 +576,28 @@
                         }
                         tbody4.appendChild(row);
                     });
-                    table4.style.display = 'table';
                 }
 
-                // Mostrar oferta más barata global
-                if (data.globalCheapest) {
-                    const itineraryText = data.globalCheapest.itinerary === 'LIM -> PTY -> MDE -> LIM' ?
-                        `✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Medellín - Panamá - Lima` :
-                        data.globalCheapest.itinerary === 'LIM -> PTY -> UIO -> LIM' ?
-                        `✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Quito - Panamá - Lima` :
-                        data.globalCheapest.itinerary === 'LIM -> PTY -> CLO -> LIM' ?
-                        `✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Cali - Panamá - Lima` :
-                        `✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Bogotá - Panamá - Lima`;
-                    globalCheapestInfo.textContent = `🌍✈️ ¡Atención pastores y hermanos!
-🔥 Aprovechen esta súper oferta 🔥
-
-👉 Pasajes stopover:
-${itineraryText} 
-💵 Todo a ${data.globalCheapest.price} USD 💵
-
-✨ ¡No dejen pasar esta oportunidad! ✨`;
-                    globalCheapestInfo.style.display = 'block';
+                // Itinerario 5 (CTG)
+                if (data.itinerary5.offers.length) {
+                    data.itinerary5.offers.forEach(offer => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${offer.id}</td>
+                            <td>${offer.solutionKeys}</td>
+                            <td>$${offer.pricePerAdult}</td>
+                            <td>${offer.fareFamily}</td>
+                            <td>${offer.classOfService}</td>
+                        `;
+                        if (data.itinerary5.cheapest && data.itinerary5.cheapest.offerIds.includes(offer.id)) {
+                            row.classList.add('cheapest');
+                        }
+                        tbody5.appendChild(row);
+                    });
                 }
 
-                // Mostrar oferta más barata del itinerario 1
-                if (data.itinerary1.cheapest) {
-                    cheapestInfo1.textContent = `👉 Pasajes stopover:
-✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Medellín - Panamá - Lima 
-💵 Todo a ${data.itinerary1.cheapest.price} USD 💵`;
-                    cheapestInfo1.style.display = 'block';
-                } else if (data.itinerary1.error) {
-                    errorDiv.textContent = `Error en itinerario 1: ${data.itinerary1.error}`;
-                    errorDiv.style.display = 'block';
-                }
-
-                // Mostrar oferta más barata del itinerario 2
-                if (data.itinerary2.cheapest) {
-                    cheapestInfo2.textContent = `👉 Pasajes stopover:
-✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Quito - Panamá - Lima 
-💵 Todo a ${data.itinerary2.cheapest.price} USD 💵`;
-                    cheapestInfo2.style.display = 'block';
-                } else if (data.itinerary2.error) {
-                    errorDiv.textContent = `Error en itinerario 2: ${data.itinerary2.error}`;
-                    errorDiv.style.display = 'block';
-                }
-
-                // Mostrar oferta más barata del itinerario 3
-                if (data.itinerary3.cheapest) {
-                    cheapestInfo3.textContent = `👉 Pasajes stopover:
-✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Cali - Panamá - Lima 
-💵 Todo a ${data.itinerary3.cheapest.price} USD 💵`;
-                    cheapestInfo3.style.display = 'block';
-                } else if (data.itinerary3.error) {
-                    errorDiv.textContent = `Error en itinerario 3: ${data.itinerary3.error}`;
-                    errorDiv.style.display = 'block';
-                }
-
-                // Mostrar oferta más barata del itinerario 4
-                if (data.itinerary4.cheapest) {
-                    cheapestInfo4.textContent = `👉 Pasajes stopover:
-✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Bogotá - Panamá - Lima 
-💵 Todo a ${data.itinerary4.cheapest.price} USD 💵`;
-                    cheapestInfo4.style.display = 'block';
-                } else if (data.itinerary4.error) {
-                    errorDiv.textContent = `Error en itinerario 4: ${data.itinerary4.error}`;
-                    errorDiv.style.display = 'block';
-                }
             } catch (error) {
-                errorDiv.textContent = `Error: ${error.message}`;
+                errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error: ${error.message}`;
                 errorDiv.style.display = 'block';
             } finally {
                 loading.style.display = 'none';
