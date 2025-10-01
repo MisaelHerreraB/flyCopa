@@ -624,10 +624,14 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                         ctx.fillStyle = '#0056b3';
                         ctx.fillText(seg.class || 'Económica Basic', 40, y + 20);
                         ctx.fillStyle = '#666';
-                        ctx.fillText(`Vuelo: ${seg.flightNumber}`, 240, y + 20);
+                        if (seg.flightNumber && seg.flightNumber !== 'undefined') {
+                            ctx.fillText(`Vuelo: ${seg.flightNumber}`, 240, y + 20);
+                        }
                         ctx.font = '13px Arial';
                         ctx.fillStyle = '#888';
-                        ctx.fillText(seg.aircraft, 420, y + 20);
+                        if (seg.aircraft && seg.aircraft !== 'undefined') {
+                            ctx.fillText(seg.aircraft, 420, y + 20);
+                        }
                         y += 42;
                         // Separador visual
                         ctx.strokeStyle = '#e0e0e0';
