@@ -1,0 +1,11 @@
+{
+    "name": "flight-offers-api",
+    "version": "1.0.0",
+    "main": "api/offers.js",
+    "dependencies": {
+        "axios": "^1.7.2"
+    },
+    "scripts": {
+        "start": "node api/offers.js"
+    }
+}

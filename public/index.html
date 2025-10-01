@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparador de Ofertas de Vuelos</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; }
+        h1 { text-align: center; color: #0056b3; }
+        button { display: block; margin: 20px auto; padding: 10px 20px; background-color: #0056b3; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background-color: #004494; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; background-color: #fff; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); display: none; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #0056b3; color: white; }
+        tr:hover { background-color: #f1f1f1; }
+        .cheapest { background-color: #d4edda; font-weight: bold; }
+        #cheapest-info { text-align: center; font-size: 18px; margin-top: 20px; padding: 10px; background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 5px; display: none; }
+        #loading, #error { text-align: center; font-size: 16px; margin: 20px; display: none; }
+        #error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Comparador de Ofertas de Vuelos</h1>
+    <button onclick="fetchOffers()">Obtener Ofertas</button>
+    <div id="loading">Cargando ofertas...</div>
+    <div id="error"></div>
+    <table id="offers-table">
+        <thead>
+            <tr>
+                <th>ID de Oferta</th>
+                <th>Claves de Soluciones</th>
+                <th>Precio por Adulto (USD)</th>
+                <th>Familia de Tarifa</th>
+                <th>Clase de Servicio</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <div id="cheapest-info"></div>
+
+    <script>
+        async function fetchOffers() {
+            const loading = document.getElementById('loading');
+            const errorDiv = document.getElementById('error');
+            const table = document.getElementById('offers-table');
+            const tbody = table.querySelector('tbody');
+            const cheapestInfo = document.getElementById('cheapest-info');
+
+            loading.style.display = 'block';
+            errorDiv.style.display = 'none';
+            table.style.display = 'none';
+            cheapestInfo.style.display = 'none';
+            tbody.innerHTML = '';
+
+            try {
+                const response = await fetch('/api/offers');
+                if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                data.offers.forEach(offer => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${offer.id}</td>
+                        <td>${offer.solutionKeys}</td>
+                        <td>$${offer.pricePerAdult}</td>
+                        <td>${offer.fareFamily}</td>
+                        <td>${offer.classOfService}</td>
+                    `;
+                    if (data.cheapest.offerIds.includes(offer.id)) {
+                        row.classList.add('cheapest');
+                    }
+                    tbody.appendChild(row);
+                });
+
+                cheapestInfo.textContent = `Oferta más barata: $${data.cheapest.price} USD (Ofertas: ${data.cheapest.offerIds.join(', ')})`;
+                table.style.display = 'table';
+                cheapestInfo.style.display = 'block';
+            } catch (error) {
+                errorDiv.textContent = `Error: ${error.message}`;
+                errorDiv.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
