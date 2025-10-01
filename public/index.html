@@ -381,19 +381,16 @@ ${stopoverType}
                     </div>`;
                     globalCheapestInfo.style.display = 'block';
 
-                    // Preguntar por confirmación para generar la imagen
-                    if (confirm('¿Deseas generar una imagen con la oferta más barata?')) {
-                        // Crear imagen basada en el diseño proporcionado
-                        const imageData = {
-                            price: data.globalCheapest.price,
-                            itinerary: itineraryText.split('\n'), // Separar líneas del itinerario
-                            stopoverType: stopoverType
-                        };
-                        const generatedImage = await generateOfferImage(imageData); // Nueva función
-                        if (generatedImage) {
-                            offerImage.src = generatedImage;
-                            offerImageContainer.style.display = 'block';
-                        }
+                    // Generar imagen siempre
+                    const imageData = {
+                        price: data.globalCheapest.price,
+                        itinerary: itineraryText.split('\n'), // Separar líneas del itinerario
+                        stopoverType: stopoverType
+                    };
+                    const generatedImage = await generateOfferImage(imageData);
+                    if (generatedImage) {
+                        offerImage.src = generatedImage;
+                        offerImageContainer.style.display = 'block';
                     }
                 }
 
@@ -446,7 +443,7 @@ ${stopoverType}
 👉 Pasajes stopover de ida (Bogotá):
 ✅ Ida ✈️ Lima - Panamá
 ✅ Vuelta ✈️ Panamá - Bogotá - Panamá - Lima 
-💵 Todo a ${data.itinerary4.cheapest.price} USD 💵
+💵 Todo a ${data.itinerary4.cheapest.price} USD �5
                     </div>`;
                     cheapestInfo4.style.display = 'block';
                 } else if (data.itinerary4.error) {
@@ -460,7 +457,7 @@ ${stopoverType}
 👉 Pasajes stopover de ida (Cartagena):
 ✅ Ida ✈️ Lima - Panamá
 ✅ Vuelta ✈️ Panamá - Cartagena - Panamá - Lima 
-💵 Todo a ${data.itinerary5.cheapest.price} USD 💵
+💵 Todo a ${data.itinerary5.cheapest.price} USD �5
                     </div>`;
                     cheapestInfo5.style.display = 'block';
                 } else if (data.itinerary5.error) {
@@ -474,7 +471,7 @@ ${stopoverType}
 👉 Pasajes stopover de regreso (Medellín):
 ✅ Ida ✈️ Lima - Panamá - Medellín - Panamá
 ✅ Vuelta ✈️ Panamá - Lima 
-💵 Todo a ${data.itinerary6.cheapest.price} USD 💵
+�5 Todo a ${data.itinerary6.cheapest.price} USD
                     </div>`;
                     cheapestInfo6.style.display = 'block';
                 } else if (data.itinerary6.error) {
@@ -488,7 +485,7 @@ ${stopoverType}
 👉 Pasajes stopover de regreso (Quito):
 ✅ Ida ✈️ Lima - Panamá - Quito - Panamá
 ✅ Vuelta ✈️ Panamá - Lima 
-💵 Todo a ${data.itinerary7.cheapest.price} USD �5
+�5 Todo a ${data.itinerary7.cheapest.price} USD
                     </div>`;
                     cheapestInfo7.style.display = 'block';
                 } else if (data.itinerary7.error) {
@@ -502,7 +499,7 @@ ${stopoverType}
 👉 Pasajes stopover de regreso (Cali):
 ✅ Ida ✈️ Lima - Panamá - Cali - Panamá
 ✅ Vuelta ✈️ Panamá - Lima 
-💵 Todo a ${data.itinerary8.cheapest.price} USD �5
+�5 Todo a ${data.itinerary8.cheapest.price} USD
                     </div>`;
                     cheapestInfo8.style.display = 'block';
                 } else if (data.itinerary8.error) {
@@ -554,42 +551,45 @@ ${stopoverType}
             canvas.height = 300;
             const ctx = canvas.getContext('2d');
 
-            // Fondo gris claro con borde
-            ctx.fillStyle = '#f5f5f5';
+            // Fondo blanco con borde gris
+            ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = '#ddd';
-            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#cccccc';
+            ctx.lineWidth = 1;
             ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
-            // Título y fecha (simulado)
-            ctx.fillStyle = '#000';
+            // Título en azul
+            ctx.fillStyle = '#0056b3';
             ctx.font = '16px Arial';
             ctx.fillText('Oferta MMM - Congreso 2026', 20, 30);
-            ctx.font = '12px Arial';
-            ctx.fillText('Fecha: ' + new Date().toLocaleDateString(), 20, 50);
 
-            // Itinerario
-            ctx.font = '14px Arial';
+            // Itinerario centrado
+            ctx.fillStyle = '#000000';
+            ctx.font = '12px Arial';
+            const maxWidth = 340; // Espacio para texto, dejando margen para ícono
             data.itinerary.forEach((line, index) => {
-                ctx.fillText(line, 20, 80 + (index * 20));
+                const textWidth = ctx.measureText(line).width;
+                const x = (canvas.width - textWidth) / 2;
+                ctx.fillText(line, x, 80 + (index * 20));
             });
 
-            // Stopover
-            ctx.font = '12px Arial';
-            ctx.fillText(data.stopoverType, 20, 160);
+            // Stopover centrado
+            const stopoverWidth = ctx.measureText(data.stopoverType).width;
+            const stopoverX = (canvas.width - stopoverWidth) / 2;
+            ctx.fillText(data.stopoverType, stopoverX, 160);
 
-            // Precio
-            ctx.font = '18px Arial';
+            // Precio en rojo, abajo a la izquierda
             ctx.fillStyle = '#e63946';
-            ctx.fillText(`Precio: ${data.price} USD`, 20, 200);
+            ctx.font = '14px Arial';
+            ctx.fillText(`Precio: ${data.price} USD`, 20, 250);
 
-            // Ícono de avión (simulado)
+            // Ícono de avión a la derecha
             ctx.beginPath();
-            ctx.moveTo(350, 50);
+            ctx.moveTo(360, 50);
             ctx.lineTo(380, 70);
-            ctx.lineTo(350, 90);
+            ctx.lineTo(360, 90);
             ctx.closePath();
-            ctx.fillStyle = '#007bff';
+            ctx.fillStyle = '#0056b3';
             ctx.fill();
 
             // Convertir a imagen
