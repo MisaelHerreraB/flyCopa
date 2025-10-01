@@ -14,7 +14,7 @@
         th { background-color: #0056b3; color: white; }
         tr:hover { background-color: #f1f1f1; }
         .cheapest { background-color: #d4edda; font-weight: bold; }
-        #cheapest-info { text-align: center; font-size: 18px; margin-top: 20px; padding: 10px; background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 5px; display: none; white-space: pre-wrap; font-family: monospace; }
+        #cheapest-info1, #cheapest-info2, #global-cheapest-info { text-align: center; font-size: 18px; margin-top: 20px; padding: 10px; background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 5px; display: none; white-space: pre-wrap; font-family: monospace; }
         #loading, #error { text-align: center; font-size: 16px; margin: 20px; display: none; }
         #error { color: red; }
     </style>
@@ -27,6 +27,7 @@
     <table id="offers-table">
         <thead>
             <tr>
+                <th>Itinerario</th>
                 <th>ID de Oferta</th>
                 <th>Claves de Soluciones</th>
                 <th>Precio por Adulto (USD)</th>
@@ -36,7 +37,9 @@
         </thead>
         <tbody></tbody>
     </table>
-    <div id="cheapest-info"></div>
+    <div id="cheapest-info1"></div>
+    <div id="cheapest-info2"></div>
+    <div id="global-cheapest-info"></div>
 
     <script>
         async function fetchOffers() {
@@ -44,12 +47,16 @@
             const errorDiv = document.getElementById('error');
             const table = document.getElementById('offers-table');
             const tbody = table.querySelector('tbody');
-            const cheapestInfo = document.getElementById('cheapest-info');
+            const cheapestInfo1 = document.getElementById('cheapest-info1');
+            const cheapestInfo2 = document.getElementById('cheapest-info2');
+            const globalCheapestInfo = document.getElementById('global-cheapest-info');
 
             loading.style.display = 'block';
             errorDiv.style.display = 'none';
             table.style.display = 'none';
-            cheapestInfo.style.display = 'none';
+            cheapestInfo1.style.display = 'none';
+            cheapestInfo2.style.display = 'none';
+            globalCheapestInfo.style.display = 'none';
             tbody.innerHTML = '';
 
             try {
@@ -58,32 +65,88 @@
                 const data = await response.json();
 
                 if (data.error) {
-                    throw new Error(`${data.error} (Status: ${data.details.status}, ${data.details.statusText})`);
+                    throw new Error(data.error);
                 }
 
-                data.offers.forEach(offer => {
+                // Mostrar ofertas del itinerario 1
+                data.itinerary1.offers.forEach(offer => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
+                        <td>LIM -> PTY -> MDE -> LIM</td>
                         <td>${offer.id}</td>
                         <td>${offer.solutionKeys}</td>
                         <td>$${offer.pricePerAdult}</td>
                         <td>${offer.fareFamily}</td>
                         <td>${offer.classOfService}</td>
                     `;
-                    if (data.cheapest.offerIds.includes(offer.id)) {
+                    if (data.itinerary1.cheapest && data.itinerary1.cheapest.offerIds.includes(offer.id)) {
                         row.classList.add('cheapest');
                     }
                     tbody.appendChild(row);
                 });
 
-                // Formatear el mensaje de la oferta más barata
-                cheapestInfo.textContent = `👉 Pasajes stopover:
+                // Mostrar ofertas del itinerario 2
+                data.itinerary2.offers.forEach(offer => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>LIM -> PTY -> UIO -> LIM</td>
+                        <td>${offer.id}</td>
+                        <td>${offer.solutionKeys}</td>
+                        <td>$${offer.pricePerAdult}</td>
+                        <td>${offer.fareFamily}</td>
+                        <td>${offer.classOfService}</td>
+                    `;
+                    if (data.itinerary2.cheapest && data.itinerary2.cheapest.offerIds.includes(offer.id)) {
+                        row.classList.add('cheapest');
+                    }
+                    tbody.appendChild(row);
+                });
+
+                // Mostrar oferta más barata del itinerario 1
+                if (data.itinerary1.cheapest) {
+                    cheapestInfo1.textContent = `👉 Pasajes stopover:
 ✅ Ida ✈️ Lima - Panamá
 ✅ Vuelta ✈️ Panamá - Medellín - Panamá - Lima 
-💵 Todo a ${data.cheapest.price} USD 💵`;
+💵 Todo a ${data.itinerary1.cheapest.price} USD 💵`;
+                    cheapestInfo1.style.display = 'block';
+                } else if (data.itinerary1.error) {
+                    errorDiv.textContent = `Error en itinerario 1: ${data.itinerary1.error}`;
+                    errorDiv.style.display = 'block';
+                }
 
-                table.style.display = 'table';
-                cheapestInfo.style.display = 'block';
+                // Mostrar oferta más barata del itinerario 2
+                if (data.itinerary2.cheapest) {
+                    cheapestInfo2.textContent = `👉 Pasajes stopover:
+✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Quito - Panamá - Lima 
+💵 Todo a ${data.itinerary2.cheapest.price} USD 💵`;
+                    cheapestInfo2.style.display = 'block';
+                } else if (data.itinerary2.error) {
+                    errorDiv.textContent = `Error en itinerario 2: ${data.itinerary2.error}`;
+                    errorDiv.style.display = 'block';
+                }
+
+                // Mostrar oferta más barata global
+                if (data.globalCheapest) {
+                    const itineraryText = data.globalCheapest.itinerary === 'LIM -> PTY -> MDE -> LIM' ?
+                        `✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Medellín - Panamá - Lima` :
+                        `✅ Ida ✈️ Lima - Panamá
+✅ Vuelta ✈️ Panamá - Quito - Panamá - Lima`;
+                    globalCheapestInfo.textContent = `🌍✈️ ¡Atención pastores y hermanos!
+🔥 Aprovechen esta súper oferta 🔥
+
+👉 Pasajes stopover:
+${itineraryText} 
+💵 Todo a ${data.globalCheapest.price} USD 💵
+
+✨ ¡No dejen pasar esta oportunidad! ✨`;
+                    globalCheapestInfo.style.display = 'block';
+                }
+
+                if (data.itinerary1.offers.length || data.itinerary2.offers.length) {
+                    table.style.display = 'table';
+                }
             } catch (error) {
                 errorDiv.textContent = `Error: ${error.message}`;
                 errorDiv.style.display = 'block';
