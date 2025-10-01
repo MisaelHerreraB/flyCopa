@@ -14,7 +14,16 @@ module.exports = async (req, res) => {
     // Intentar recuperar de Redis primero
     const cached = await redis.get(REDIS_KEY);
     if (cached) {
-        res.status(200).json(cached);
+        // Si el valor es string, parsear a objeto
+        let cachedData = cached;
+        if (typeof cached === 'string') {
+            try {
+                cachedData = JSON.parse(cached);
+            } catch (e) {
+                // Si falla el parseo, devolver el string tal cual
+            }
+        }
+        res.status(200).json(cachedData);
         return;
     }
     async function fetchOffers(url, headers, payload) {
