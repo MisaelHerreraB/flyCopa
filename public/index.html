@@ -639,39 +639,38 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                 });
             }
 
-            // Precio destacado centrado
+            // Precio destacado y botón estilo Google Flights
+            ctx.textAlign = 'left';
             ctx.fillStyle = '#333';
-            ctx.font = 'bold 22px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('Precio por adulto', 740, 120);
-            ctx.font = 'bold 45px Arial';
-            ctx.fillStyle = '#0056b3';
-            ctx.fillText(`${data.price} USD`, 740, 185);
-            ctx.font = '22px Arial';
+            ctx.font = 'bold 20px Arial';
+            ctx.fillText('Precio por adulto', 600, 120);
+            ctx.font = 'bold 40px Arial';
+            ctx.fillStyle = '#1976d2';
+            ctx.fillText(`${data.price} USD`, 600, 170);
+            ctx.font = '20px Arial';
             ctx.fillStyle = '#666';
-            ctx.fillText('Clase Económica', 740, 225);
+            ctx.fillText('Clase Económica', 600, 200);
 
-            // Botón seleccionar centrado
+            // Ver detalles (en azul, subrayado)
+            ctx.font = '18px Arial';
+            ctx.fillStyle = '#1976d2';
+            ctx.fillText('Ver detalles', 600, 235);
+
+            // Botón seleccionar estilo Google Flights
             ctx.save();
             ctx.shadowColor = '#1976d2';
             ctx.shadowBlur = 8;
             ctx.fillStyle = '#1976d2';
             ctx.beginPath();
-            ctx.roundRect(650, 260, 180, 54, 8);
+            ctx.roundRect(600, 260, 160, 48, 8);
             ctx.fill();
             ctx.shadowBlur = 0;
             ctx.restore();
-            ctx.font = 'bold 26px Arial';
+            ctx.font = 'bold 24px Arial';
             ctx.fillStyle = '#fff';
             ctx.textAlign = 'center';
-            ctx.fillText('Seleccionar', 650 + 90, 260 + 34);
-
-            // Ver detalles centrado
-            ctx.font = '18px Arial';
-            ctx.fillStyle = '#1976d2';
-            ctx.textAlign = 'center';
-            ctx.fillText('Ver detalles', 740, 325);
-            ctx.textAlign = 'start';
+            ctx.fillText('Seleccionar', 600 + 80, 260 + 32);
+            ctx.textAlign = 'left';
 
             // Icono avión
             ctx.save();
