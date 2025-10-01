@@ -639,18 +639,19 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                 });
             }
 
-            // Precio destacado
+            // Precio destacado centrado
             ctx.fillStyle = '#333';
             ctx.font = 'bold 22px Arial';
-            ctx.fillText('Precio por adulto', 650, 120);
+            ctx.textAlign = 'center';
+            ctx.fillText('Precio por adulto', 740, 120);
             ctx.font = 'bold 48px Arial';
             ctx.fillStyle = '#0056b3';
-            ctx.fillText(`${data.price} USD`, 650, 185);
+            ctx.fillText(`${data.price} USD`, 740, 185);
             ctx.font = '22px Arial';
             ctx.fillStyle = '#666';
-            ctx.fillText('Clase Económica', 650, 225);
+            ctx.fillText('Clase Económica', 740, 225);
 
-            // Botón seleccionar
+            // Botón seleccionar centrado
             ctx.save();
             ctx.shadowColor = '#1976d2';
             ctx.shadowBlur = 8;
@@ -662,12 +663,15 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
             ctx.restore();
             ctx.font = 'bold 26px Arial';
             ctx.fillStyle = '#fff';
-            ctx.fillText('Seleccionar', 700, 295);
+            ctx.textAlign = 'center';
+            ctx.fillText('Seleccionar', 740, 295);
 
-            // Ver detalles
+            // Ver detalles centrado
             ctx.font = '18px Arial';
             ctx.fillStyle = '#1976d2';
-            ctx.fillText('Ver detalles', 760, 325);
+            ctx.textAlign = 'center';
+            ctx.fillText('Ver detalles', 740, 325);
+            ctx.textAlign = 'start';
 
             // Icono avión
             ctx.save();
