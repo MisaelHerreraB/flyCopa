@@ -574,7 +574,14 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                 let i = 0;
                 while (i < data.segments.length) {
                     const seg = data.segments[i];
-                    if (i < data.segments.length - 1 && seg.to === 'PTY' && data.segments[i + 1].from === 'PTY') {
+                    // Solo juntar si ambos segmentos son escala en PTY
+                    if (
+                        i < data.segments.length - 1 &&
+                        seg.to === 'PTY' &&
+                        data.segments[i + 1].from === 'PTY' &&
+                        seg.from !== 'PTY' &&
+                        data.segments[i + 1].to !== 'PTY'
+                    ) {
                         groupedSegments.push({
                             date: seg.date,
                             from: seg.from,
