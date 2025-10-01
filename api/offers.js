@@ -594,7 +594,73 @@ module.exports = async (req, res) => {
         ].filter(item => item !== null);
 
         if (cheapestPrices.length) {
-            response.globalCheapest = cheapestPrices.reduce((min, curr) => curr.price < min.price ? curr : min);
+            const winner = cheapestPrices.reduce((min, curr) => curr.price < min.price ? curr : min);
+            // Determinar ida, vuelta y tipo de stopover según el itinerario
+            let ida = '';
+            let vuelta = '';
+            let stopoverType = '';
+            switch (winner.itinerary) {
+                case 'LIM -> PTY -> MDE -> LIM':
+                    ida = 'Lima - Panamá';
+                    vuelta = 'Panamá - Medellín - Panamá - Lima';
+                    stopoverType = '🛫 Stopover de ida en Panamá';
+                    break;
+                case 'LIM -> PTY -> UIO -> LIM':
+                    ida = 'Lima - Panamá';
+                    vuelta = 'Panamá - Quito - Panamá - Lima';
+                    stopoverType = '🛫 Stopover de ida en Panamá';
+                    break;
+                case 'LIM -> PTY -> CLO -> LIM':
+                    ida = 'Lima - Panamá';
+                    vuelta = 'Panamá - Cali - Panamá - Lima';
+                    stopoverType = '🛫 Stopover de ida en Panamá';
+                    break;
+                case 'LIM -> PTY -> BOG -> LIM':
+                    ida = 'Lima - Panamá';
+                    vuelta = 'Panamá - Bogotá - Panamá - Lima';
+                    stopoverType = '🛫 Stopover de ida en Panamá';
+                    break;
+                case 'LIM -> PTY -> CTG -> LIM':
+                    ida = 'Lima - Panamá';
+                    vuelta = 'Panamá - Cartagena - Panamá - Lima';
+                    stopoverType = '🛫 Stopover de ida en Panamá';
+                    break;
+                case 'LIM -> MDE -> PTY -> LIM':
+                    ida = 'Lima - Panamá - Medellín - Panamá';
+                    vuelta = 'Panamá - Lima';
+                    stopoverType = '🛬 Stopover de regreso en Panamá';
+                    break;
+                case 'LIM -> UIO -> PTY -> LIM':
+                    ida = 'Lima - Panamá - Quito - Panamá';
+                    vuelta = 'Panamá - Lima';
+                    stopoverType = '🛬 Stopover de regreso en Panamá';
+                    break;
+                case 'LIM -> CLO -> PTY -> LIM':
+                    ida = 'Lima - Panamá - Cali - Panamá';
+                    vuelta = 'Panamá - Lima';
+                    stopoverType = '🛬 Stopover de regreso en Panamá';
+                    break;
+                case 'LIM -> BOG -> PTY -> LIM':
+                    ida = 'Lima - Panamá - Bogotá - Panamá';
+                    vuelta = 'Panamá - Lima';
+                    stopoverType = '🛬 Stopover de regreso en Panamá';
+                    break;
+                case 'LIM -> CTG -> PTY -> LIM':
+                    ida = 'Lima - Panamá - Cartagena - Panamá';
+                    vuelta = 'Panamá - Lima';
+                    stopoverType = '🛬 Stopover de regreso en Panamá';
+                    break;
+                default:
+                    ida = '';
+                    vuelta = '';
+                    stopoverType = '';
+            }
+            response.globalCheapest = {
+                ...winner,
+                ida,
+                vuelta,
+                stopoverType
+            };
         }
 
         // Devolver respuesta

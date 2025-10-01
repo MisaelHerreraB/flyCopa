@@ -364,7 +364,9 @@
 🔥 Aprovechen esta súper oferta 🔥
 
 👉 Pasajes stopover:
-${segments.map(s => `${s.date}: ${s.from} (${s.departure}) → ${s.to} (${s.arrival})`).join('\n')}
+✅ Ida ✈️ ${data.globalCheapest.ida }
+✅ Vuelta ✈️ ${data.globalCheapest.vuelta }
+${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
 💵 Todo a ${data.globalCheapest.price} USD 💵
 
 ✨ ¡No dejen pasar esta oportunidad! ✨
