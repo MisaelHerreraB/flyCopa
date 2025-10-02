@@ -345,10 +345,11 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
         function copyCheapestMessage() {
             const msg = document.getElementById('cheapest-message');
             if (msg) {
-                // Respetar los saltos de línea
+                // Respetar los saltos de línea y líneas vacías
                 let text = msg.innerText;
-                // Si el navegador no respeta los saltos, forzar reemplazo de <br> y doble espacio por salto de línea
-                text = text.replace(/\r?\n/g, '\n');
+                // El innerText ya respeta los saltos y líneas vacías en la mayoría de navegadores
+                // Para asegurar, reemplazar múltiples saltos por doble salto (línea vacía)
+                text = text.replace(/\n{2,}/g, '\n\n');
                 navigator.clipboard.writeText(text)
                     .then(() => {
                         alert('Mensaje copiado al portapapeles');
