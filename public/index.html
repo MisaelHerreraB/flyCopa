@@ -469,7 +469,7 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
 👉 Pasajes stopover de regreso (Medellín):
 ✅ Ida ✈️ Lima - Panamá - Medellín - Panamá
 ✅ Vuelta ✈️ Panamá - Lima 
-�5 Todo a ${data.itinerary6.cheapest.price} USD
+💵 Todo a ${data.itinerary6.cheapest.price} USD
                     </div>`;
                     cheapestInfo6.style.display = 'block';
                 } else if (data.itinerary6.error) {
@@ -483,7 +483,7 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
 👉 Pasajes stopover de regreso (Quito):
 ✅ Ida ✈️ Lima - Panamá - Quito - Panamá
 ✅ Vuelta ✈️ Panamá - Lima 
-�5 Todo a ${data.itinerary7.cheapest.price} USD
+💵 Todo a ${data.itinerary7.cheapest.price} USD
                     </div>`;
                     cheapestInfo7.style.display = 'block';
                 } else if (data.itinerary7.error) {
@@ -497,7 +497,7 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
 👉 Pasajes stopover de regreso (Cali):
 ✅ Ida ✈️ Lima - Panamá - Cali - Panamá
 ✅ Vuelta ✈️ Panamá - Lima 
-�5 Todo a ${data.itinerary8.cheapest.price} USD
+💵 Todo a ${data.itinerary8.cheapest.price} USD
                     </div>`;
                     cheapestInfo8.style.display = 'block';
                 } else if (data.itinerary8.error) {
@@ -511,7 +511,7 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
 👉 Pasajes stopover de regreso (Bogotá):
 ✅ Ida ✈️ Lima - Panamá - Bogotá - Panamá
 ✅ Vuelta ✈️ Panamá - Lima 
-�5 Todo a ${data.itinerary9.cheapest.price} USD
+💵 Todo a ${data.itinerary9.cheapest.price} USD
                     </div>`;
                     cheapestInfo9.style.display = 'block';
                 } else if (data.itinerary9.error) {
@@ -525,7 +525,7 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
 👉 Pasajes stopover de regreso (Cartagena):
 ✅ Ida ✈️ Lima - Panamá - Cartagena - Panamá
 ✅ Vuelta ✈️ Panamá - Lima 
-�5 Todo a ${data.itinerary10.cheapest.price} USD
+💵 Todo a ${data.itinerary10.cheapest.price} USD
                     </div>`;
                     cheapestInfo10.style.display = 'block';
                 } else if (data.itinerary10.error) {
@@ -615,13 +615,13 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
             let y = 70;
             if (groupedSegments.length > 0) {
                 groupedSegments.forEach((seg, idx) => {
+                    // Formatear fecha en formato largo
+                    let fecha = new Date(seg.date);
+                    let fechaStr = fecha.toLocaleDateString('es-ES', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
                     if (!seg.direct && seg.stops && seg.stops.toLowerCase().includes('1 escala')) {
                         // VUELO AGRUPADO VISUAL ESPECIAL
-                        // Fecha en formato largo
                         ctx.fillStyle = '#333';
                         ctx.font = 'bold 15px Arial';
-                        let fecha = new Date(seg.date);
-                        let fechaStr = fecha.toLocaleDateString('es-ES', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
                         ctx.fillText(fechaStr, 40, y);
                         // Icono avión y texto escala
                         ctx.font = '16px Arial';
@@ -664,7 +664,7 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                         // VUELO NORMAL
                         ctx.fillStyle = '#333';
                         ctx.font = 'bold 16px Arial';
-                        ctx.fillText(seg.date, 40, y);
+                        ctx.fillText(fechaStr, 40, y);
                         ctx.font = 'italic 14px Arial';
                         ctx.fillStyle = seg.direct ? '#28a745' : '#ff9800';
                         ctx.fillText(seg.direct ? 'Sin escalas' : seg.stops, 320, y);
