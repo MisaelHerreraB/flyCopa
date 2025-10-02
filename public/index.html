@@ -165,7 +165,7 @@
                 <div class="col-12">
                     <div class="card global-cheapest-card" id="global-cheapest-info" style="display: none;">
                         <div class="card-body">
-                            <div class="pre-formatted">
+                            <div class="pre-formatted" id="cheapest-message">
                                 🌍✈️ ¡Atención pastores y hermanos!
                                 🔥 Aprovechen esta súper oferta 🔥
                                 👉 Pasajes stopover:
@@ -174,6 +174,9 @@
                                 💵 Todo a [PRECIO] USD 💵
                                 ✨ ¡No dejen pasar esta oportunidad! ✨
                             </div>
+                            <button class="btn btn-warning mt-2" onclick="copyCheapestMessage()">
+                                <i class="bi bi-clipboard"></i> Copiar mensaje
+                            </button>
                         </div>
                     </div>
                     <!-- Contenedor para la imagen generada -->
@@ -215,6 +218,20 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
     <script>
+        function copyCheapestMessage() {
+            const msg = document.getElementById('cheapest-message');
+            if (msg) {
+                // Eliminar espacios extra y copiar solo el texto visible
+                const text = msg.innerText.replace(/\n\s+/g, '\n').trim();
+                navigator.clipboard.writeText(text)
+                    .then(() => {
+                        alert('Mensaje copiado al portapapeles');
+                    })
+                    .catch(() => {
+                        alert('No se pudo copiar el mensaje');
+                    });
+            }
+        }
         document.addEventListener('DOMContentLoaded', () => {
             fetchOffers();
         });
