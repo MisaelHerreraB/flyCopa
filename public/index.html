@@ -324,7 +324,8 @@
                         });
                     }
 
-                    globalCheapestInfo.innerHTML = `<div class="pre-formatted">
+                    globalCheapestInfo.innerHTML = `
+                        <div class="pre-formatted" id="cheapest-message">
 🌍✈️ ¡Atención pastores y hermanos!
 🔥 Aprovechen esta súper oferta 🔥
 
@@ -335,8 +336,25 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
 💵 Todo a ${data.globalCheapest.price} USD 💵
 
 ✨ ¡No dejen pasar esta oportunidad! ✨
-                    </div>`;
+                        </div>
+                        <button class="btn btn-warning mt-2" onclick="copyCheapestMessage()">
+                            <i class="bi bi-clipboard"></i> Copiar mensaje
+                        </button>
+                    `;
                     globalCheapestInfo.style.display = 'block';
+        function copyCheapestMessage() {
+            const msg = document.getElementById('cheapest-message');
+            if (msg) {
+                const text = msg.innerText.replace(/\n\s+/g, '\n').trim();
+                navigator.clipboard.writeText(text)
+                    .then(() => {
+                        alert('Mensaje copiado al portapapeles');
+                    })
+                    .catch(() => {
+                        alert('No se pudo copiar el mensaje');
+                    });
+            }
+        }
 
                     // Generar imagen con segmentos
                     const imageData = {
