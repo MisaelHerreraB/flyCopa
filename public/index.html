@@ -544,6 +544,11 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
 
         // Función para generar la imagen basada en el diseño proporcionado
         async function generateOfferImage(data) {
+            // Función para parsear fecha localmente (evita desfase por zona horaria)
+            function parseLocalDate(dateStr) {
+                const [year, month, day] = dateStr.split('-').map(Number);
+                return new Date(year, month - 1, day);
+            }
             // Canvas más grande para más detalles visuales
             const canvas = document.createElement('canvas');
             canvas.width = 900;
@@ -615,8 +620,8 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
             let y = 70;
             if (groupedSegments.length > 0) {
                 groupedSegments.forEach((seg, idx) => {
-                    // Formatear fecha en formato largo
-                    let fecha = new Date(seg.date);
+                    // Formatear fecha en formato largo (local)
+                    let fecha = parseLocalDate(seg.date);
                     let fechaStr = fecha.toLocaleDateString('es-ES', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
                     if (!seg.direct && seg.stops && seg.stops.toLowerCase().includes('1 escala')) {
                         // VUELO AGRUPADO VISUAL ESPECIAL
