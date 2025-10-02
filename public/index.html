@@ -587,19 +587,27 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                 let i = 0;
                 while (i < data.segments.length) {
                     const seg = data.segments[i];
-                    // Si el campo stops contiene "Escala en PTY" y el siguiente segmento existe y es la continuación
+                    // Si el campo stops contiene "1 escala" y el siguiente segmento existe y es la continuación
                     if (
-                        seg.stops && seg.stops.toLowerCase().includes('escala en pty') &&
+                        seg.stops && seg.stops.toLowerCase().includes('1 escala') &&
                         i < data.segments.length - 1 &&
                         seg.to === 'PTY' && data.segments[i + 1].from === 'PTY'
                     ) {
-                        // Agrupar ambos como un solo vuelo
+                        // Agrupar ambos como un solo vuelo, eliminando PTY como origen y destino
                         const nextSeg = data.segments[i + 1];
+                        // Fusionar CLO - PTY y PTY - LIM como CLO - LIM
+                        let fromCity = seg.from;
+                        let toCity = nextSeg.to;
+                        // Si el primer segmento termina en PTY y el segundo empieza en PTY, fusionar origen y destino reales
+                        if (seg.to === 'PTY' && nextSeg.from === 'PTY') {
+                            fromCity = seg.from;
+                            toCity = nextSeg.to;
+                        }
                         groupedSegments.push({
                             date: nextSeg.date,
-                            from: seg.from,
+                            from: fromCity,
                             departure: seg.departure,
-                            to: nextSeg.to,
+                            to: toCity,
                             arrival: nextSeg.arrival,
                             class: nextSeg.class,
                             direct: false,
