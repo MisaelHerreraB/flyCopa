@@ -744,7 +744,7 @@ module.exports = async (req, res) => {
         }
 
     // Guardar en Redis para futuras consultas
-    await redis.set(REDIS_KEY, response, { ex: 60 * 60 * 6 }); // Expira en 6 horas
+    await redis.set(REDIS_KEY, response, { ex: 60 * 60 * 3 }); // Expira en 3 horas
     res.status(200).json(response);
     } catch (error) {
         res.status(500).json({ error: `Error en el servidor: ${error.message}` });
