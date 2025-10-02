@@ -39,6 +39,32 @@ module.exports = async (req, res) => {
         }
     }
 
+    // Generar transactionidentifier (UUID v4) y almacenar en Redis cada 12 horas
+    const { v4: uuidv4 } = require('uuid');
+    const now = new Date();
+    const period = `${now.getUTCFullYear()}-${String(now.getUTCMonth()+1).padStart(2,'0')}-${String(now.getUTCDate()).padStart(2,'0')}-` + (now.getUTCHours()<12 ? 'AM' : 'PM');
+    const IDENTIFIERS_KEY = `copaair:identifiers:${period}`;
+    let identifiers = await redis.get(IDENTIFIERS_KEY);
+    let transactionidentifier, useridentifier;
+    if (!identifiers) {
+        transactionidentifier = uuidv4();
+        // Generar useridentifier aleatorio de longitud 21 (letras y números)
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        useridentifier = Array.from({length: 21}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+        await redis.set(IDENTIFIERS_KEY, JSON.stringify({ transactionidentifier, useridentifier }), { ex: 60 * 60 * 12 });
+    } else {
+        try {
+            const parsed = typeof identifiers === 'string' ? JSON.parse(identifiers) : identifiers;
+            transactionidentifier = parsed.transactionidentifier;
+            useridentifier = parsed.useridentifier;
+        } catch (e) {
+            transactionidentifier = uuidv4();
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            useridentifier = Array.from({length: 21}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+            await redis.set(IDENTIFIERS_KEY, JSON.stringify({ transactionidentifier, useridentifier }), { ex: 60 * 60 * 12 });
+        }
+    }
+
     // Encabezados unificados para todas las llamadas
     const headers = {
         'accept': '*/*',
@@ -53,9 +79,9 @@ module.exports = async (req, res) => {
         'sec-fetch-mode': 'cors',
         'sec-fetch-site': 'same-site',
         'storefront': 'GS',
-        'transactionidentifier': '87ca92d5-c8fa-4777-9c90-3686f029b00e',
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36',
-        'useridentifier': 'lZhE37jQmMEqjwZQPphOE',
+    'transactionidentifier': transactionidentifier,
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36',
+    'useridentifier': useridentifier,
         'Cookie': 'incap_ses_1720_2819721=cIY/dXaGL0RLChrvS6veF7qq3GgAAAAAY60WvRGwr7grrEGX+0+nPA==; nlbi_2819721=N9BRVjYGK03BgLfoKqYZMAAAAABsG7hTogBmgphNVsByFhe4; visid_incap_2819721=0ZnecVHbSp+SjvQkyGf2c7iq3GgAAAAAQUIPAAAAAADPyOHpLGA9q+odK9R/dHMH'
     };
 
