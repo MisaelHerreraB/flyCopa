@@ -345,10 +345,15 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
         function copyCheapestMessage() {
             const msg = document.getElementById('cheapest-message');
             if (msg) {
-                // Respetar los saltos de línea y líneas vacías
-                let text = msg.innerText;
-                // El innerText ya respeta los saltos y líneas vacías en la mayoría de navegadores
-                // Para asegurar, reemplazar múltiples saltos por doble salto (línea vacía)
+                // Convertir el HTML a texto plano respetando saltos y líneas vacías
+                let html = msg.innerHTML;
+                // Reemplazar <br> y etiquetas de bloque por saltos de línea
+                html = html.replace(/<br\s*\/?>/gi, '\n');
+                html = html.replace(/<div[^>]*>/gi, '\n').replace(/<\/div>/gi, '');
+                html = html.replace(/<p[^>]*>/gi, '\n').replace(/<\/p>/gi, '');
+                // Eliminar cualquier otra etiqueta HTML
+                let text = html.replace(/<[^>]+>/g, '').trim();
+                // Reemplazar múltiples saltos por doble salto para líneas vacías
                 text = text.replace(/\n{2,}/g, '\n\n');
                 navigator.clipboard.writeText(text)
                     .then(() => {
