@@ -280,6 +280,19 @@
                 toast.style.display = 'none';
             }, 1800);
         }
+
+        function showErrorToast(failedCities) {
+            if (failedCities.length === 0) return;
+            
+            const toast = document.getElementById('copy-toast');
+            toast.textContent = `Búsqueda falló en: ${failedCities.join(', ')}`;
+            toast.style.background = '#dc3545';
+            toast.style.color = '#fff';
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
         document.addEventListener('DOMContentLoaded', () => {
             // Verificar si hay ciudades pendientes al cargar
             const failedApis = localStorage.getItem('failedApis');
@@ -462,7 +475,34 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                     }
                 }
 
-                // Mostrar ofertas más baratas individuales
+                // Recopilar ciudades con errores para mostrar en toast
+                const failedCities = [];
+                
+                // Función para agregar ciudad fallida a la lista
+                const addFailedCity = (itinerary, cityName, stopoverType) => {
+                    if (itinerary.error) {
+                        failedCities.push(`${cityName}, stopover de ${stopoverType}`);
+                    }
+                };
+                
+                // Verificar errores en todos los itinerarios
+                addFailedCity(data.itinerary1, 'Medellín', 'ida');
+                addFailedCity(data.itinerary2, 'Quito', 'ida');
+                addFailedCity(data.itinerary3, 'Cali', 'ida');
+                addFailedCity(data.itinerary4, 'Bogotá', 'ida');
+                addFailedCity(data.itinerary5, 'Cartagena', 'ida');
+                addFailedCity(data.itinerary6, 'Medellín', 'regreso');
+                addFailedCity(data.itinerary7, 'Quito', 'regreso');
+                addFailedCity(data.itinerary8, 'Cali', 'regreso');
+                addFailedCity(data.itinerary9, 'Bogotá', 'regreso');
+                addFailedCity(data.itinerary10, 'Cartagena', 'regreso');
+                
+                // Mostrar toast con ciudades fallidas si las hay
+                if (failedCities.length > 0) {
+                    showErrorToast(failedCities);
+                }
+
+                // Mostrar ofertas más baratas individuales (solo las exitosas)
                 // Itinerario 1 (MDE, stopover de ida)
                 if (data.itinerary1.cheapest) {
                     cheapestInfo1.innerHTML = `<div class="pre-formatted">
@@ -472,9 +512,6 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
 💵 Todo a ${data.itinerary1.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo1.style.display = 'block';
-                } else if (data.itinerary1.error) {
-                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 1 (Medellín, stopover de ida): ${data.itinerary1.error}`;
-                    errorDiv.style.display = 'block';
                 }
 
                 // Itinerario 2 (UIO, stopover de ida)
@@ -486,9 +523,6 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
 💵 Todo a ${data.itinerary2.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo2.style.display = 'block';
-                } else if (data.itinerary2.error) {
-                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 2 (Quito, stopover de ida): ${data.itinerary2.error}`;
-                    errorDiv.style.display = 'block';
                 }
 
                 // Itinerario 3 (CLO, stopover de ida)
@@ -500,9 +534,6 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
 💵 Todo a ${data.itinerary3.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo3.style.display = 'block';
-                } else if (data.itinerary3.error) {
-                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 3 (Cali, stopover de ida): ${data.itinerary3.error}`;
-                    errorDiv.style.display = 'block';
                 }
 
                 // Itinerario 4 (BOG, stopover de ida)
@@ -511,12 +542,9 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
 👉 Pasajes stopover de ida (Bogotá):
 ✅ Ida ✈️ Lima - Panamá
 ✅ Vuelta ✈️ Panamá - Bogotá - Panamá - Lima 
-💵 Todo a ${data.itinerary4.cheapest.price} USD �5
+💵 Todo a ${data.itinerary4.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo4.style.display = 'block';
-                } else if (data.itinerary4.error) {
-                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 4 (Bogotá, stopover de ida): ${data.itinerary4.error}`;
-                    errorDiv.style.display = 'block';
                 }
 
                 // Itinerario 5 (CTG, stopover de ida)
@@ -525,12 +553,9 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
 👉 Pasajes stopover de ida (Cartagena):
 ✅ Ida ✈️ Lima - Panamá
 ✅ Vuelta ✈️ Panamá - Cartagena - Panamá - Lima 
-💵 Todo a ${data.itinerary5.cheapest.price} USD �5
+💵 Todo a ${data.itinerary5.cheapest.price} USD 💵
                     </div>`;
                     cheapestInfo5.style.display = 'block';
-                } else if (data.itinerary5.error) {
-                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 5 (Cartagena, stopover de ida): ${data.itinerary5.error}`;
-                    errorDiv.style.display = 'block';
                 }
 
                 // Itinerario 6 (MDE, stopover de regreso)
@@ -542,9 +567,6 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
 💵 Todo a ${data.itinerary6.cheapest.price} USD
                     </div>`;
                     cheapestInfo6.style.display = 'block';
-                } else if (data.itinerary6.error) {
-                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 6 (Medellín, stopover de regreso): ${data.itinerary6.error}`;
-                    errorDiv.style.display = 'block';
                 }
 
                 // Itinerario 7 (UIO, stopover de regreso)
@@ -556,9 +578,6 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
 💵 Todo a ${data.itinerary7.cheapest.price} USD
                     </div>`;
                     cheapestInfo7.style.display = 'block';
-                } else if (data.itinerary7.error) {
-                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 7 (Quito, stopover de regreso): ${data.itinerary7.error}`;
-                    errorDiv.style.display = 'block';
                 }
 
                 // Itinerario 8 (CLO, stopover de regreso)
@@ -570,9 +589,6 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
 💵 Todo a ${data.itinerary8.cheapest.price} USD
                     </div>`;
                     cheapestInfo8.style.display = 'block';
-                } else if (data.itinerary8.error) {
-                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 8 (Cali, stopover de regreso): ${data.itinerary8.error}`;
-                    errorDiv.style.display = 'block';
                 }
 
                 // Itinerario 9 (BOG, stopover de regreso)
@@ -584,9 +600,6 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
 💵 Todo a ${data.itinerary9.cheapest.price} USD
                     </div>`;
                     cheapestInfo9.style.display = 'block';
-                } else if (data.itinerary9.error) {
-                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 9 (Bogotá, stopover de regreso): ${data.itinerary9.error}`;
-                    errorDiv.style.display = 'block';
                 }
 
                 // Itinerario 10 (CTG, stopover de regreso)
@@ -598,9 +611,6 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
 💵 Todo a ${data.itinerary10.cheapest.price} USD
                     </div>`;
                     cheapestInfo10.style.display = 'block';
-                } else if (data.itinerary10.error) {
-                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error en itinerario 10 (Cartagena, stopover de regreso): ${data.itinerary10.error}`;
-                    errorDiv.style.display = 'block';
                 }
             } catch (error) {
                 errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> ${error.message}`;
