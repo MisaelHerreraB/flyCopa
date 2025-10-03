@@ -31,7 +31,7 @@ module.exports = async (req, res) => {
             
             // Añadir un pequeño delay para que el usuario vea la barra de progreso
             // incluso cuando los datos vienen de cache
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            await new Promise(resolve => setTimeout(resolve, 400));
             
             res.status(200).json(cachedData);
             return;
