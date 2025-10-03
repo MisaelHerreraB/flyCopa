@@ -5,7 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MMM - Congreso Centroamericano 2026 - Comparador de Ofertas de Vuelos - Copa Airlines</title>
     <!-- Bootstrap 5 CSS CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsde                // Verificar si hay APIs fallidas previas para reintentar
+                let apiUrl = '/api/offers';
+                const failedApis = localStorage.getItem('failedApis');
+                if (failedApis) {
+                    const parsedFailed = JSON.parse(failedApis);
+                    if (parsedFailed.length > 0) {
+                        apiUrl += `?retry=${parsedFailed.join(',')}`;
+                        console.log(`Reintentando APIs fallidas: ${parsedFailed.join(', ')}`);
+                        progressText.textContent = `Reintentando APIs fallidas (${parsedFailed.join(', ')})... Progreso: ${progress}%`;
+                    }
+                }
+                
+                const response = await fetch(apiUrl);
+                updateProgress(); // ~14.5%
+                if (!response.ok) throw new Error(`HTTP error: ${response.status}`);r.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <!-- Bootstrap Icons CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <style>
@@ -150,6 +164,9 @@
                     <button class="btn btn-primary btn-lg w-100" id="fetch-button" style="display:none">
                         <i class="bi bi-airplane-fill"></i> ¡Buscar Ofertas de Vuelos Ahora!
                     </button>
+                    <button class="btn btn-warning btn-lg w-100 mt-2" id="retry-button" style="display:none">
+                        <i class="bi bi-arrow-clockwise"></i> Reintentar Búsqueda en Ciudades Pendientes
+                    </button>
                 </div>
             </div>
             <!-- Progress Bar -->
@@ -248,6 +265,16 @@
             }, 1800);
         }
         document.addEventListener('DOMContentLoaded', () => {
+            // Verificar si hay ciudades pendientes al cargar
+            const failedApis = localStorage.getItem('failedApis');
+            if (failedApis) {
+                const retryButton = document.getElementById('retry-button');
+                retryButton.style.display = 'block';
+                retryButton.addEventListener('click', () => {
+                    localStorage.removeItem('failedApis'); // Limpiar para forzar nueva búsqueda
+                    fetchOffers();
+                });
+            }
             fetchOffers();
         });
         async function fetchOffers() {
@@ -278,8 +305,8 @@
 
             // Mostrar barra de progreso
             loading.style.display = 'block';
-            progressBar.style.width = '0%';
-            progressText.textContent = 'Buscando las mejores ofertas para Medellín, Quito, Cali, Bogotá, Cartagena (stopover de ida y regreso en Panamá)... Progreso: 0%';
+            progressBar.style.width = '10%';
+            progressText.textContent = 'Iniciando búsqueda de ofertas... Progreso: 10%';
             errorDiv.style.display = 'none';
             globalCheapestInfo.style.display = 'none';
             offerImageContainer.style.display = 'none';
@@ -295,29 +322,56 @@
             cheapestInfo10.style.display = 'none';
 
             try {
-                // Simular progreso (10% por cada una de las 10 llamadas)
-                let progress = 0;
-                const updateProgress = () => {
-                    progress += 10;
+                // Iniciar progreso en 10% (inicio de búsqueda)
+                let progress = 10;
+                progressBar.style.width = `${progress}%`;
+                progressText.textContent = `Buscando ofertas en todas las ciudades... Progreso: ${progress}%`;
+                
+                const updateProgress = (newProgress) => {
+                    progress = newProgress;
                     progressBar.style.width = `${progress}%`;
-                    progressText.textContent = `Buscando las mejores ofertas para Medellín, Quito, Cali, Bogotá, Cartagena (stopover de ida y regreso en Panamá)... Progreso: ${progress}%`;
+                    progressText.textContent = `Buscando ofertas en todas las ciudades... Progreso: ${Math.round(progress)}%`;
                 };
 
-                const response = await fetch('/api/offers');
-                updateProgress(); // 10%
+                // Verificar si hay APIs fallidas previas para reintentar
+                let apiUrl = '/api/offers';
+                const failedApis = localStorage.getItem('failedApis');
+                if (failedApis) {
+                    const parsedFailed = JSON.parse(failedApis);
+                    if (parsedFailed.length > 0) {
+                        apiUrl += `?retry=${parsedFailed.join(',')}`;
+                        console.log(`Reintentando búsqueda en ciudades: ${parsedFailed.join(', ')}`);
+                        progressText.textContent = `Reintentando búsqueda en ciudades pendientes... Progreso: ${progress}%`;
+                    }
+                }
+                
+                const response = await fetch(apiUrl);
+                updateProgress(50); // 50% al recibir respuesta
                 if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
                 const data = await response.json();
-                updateProgress(); // 20% (simulando el procesamiento de la respuesta)
+                updateProgress(90); // 90% al procesar respuesta
 
                 if (data.error) {
                     throw new Error(data.error);
                 }
-
-                // Simular progreso para las 8 llamadas restantes
-                for (let i = 0; i < 8; i++) {
-                    await new Promise(resolve => setTimeout(resolve, 1500));
-                    updateProgress(); // 30% a 100%
+                
+                // Gestionar ciudades con búsqueda fallida
+                if (data.failedApis && data.failedApis.length > 0) {
+                    localStorage.setItem('failedApis', JSON.stringify(data.failedApis));
+                    console.log(`Ciudades con búsqueda fallida: ${data.failedApis.join(', ')}`);
+                    
+                    // Mostrar error específico cuando fallen algunas ciudades
+                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Falló la búsqueda con algunas ciudades`;
+                    errorDiv.style.display = 'block';
+                } else {
+                    // Limpiar ciudades fallidas si todo está bien
+                    localStorage.removeItem('failedApis');
                 }
+
+                // Progreso completado (100%)
+                progress = 100;
+                progressBar.style.width = `${progress}%`;
+                progressText.textContent = `¡Búsqueda completada! Progreso: ${progress}%`;
 
                 // Mostrar oferta más barata global
                 if (data.globalCheapest) {
@@ -539,6 +593,22 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                 loading.style.display = 'none';
                 fetchButton.disabled = false;
                 fetchButton.innerHTML = '<i class="bi bi-search"></i> Actualizar Búsqueda';
+                
+                // Mostrar/ocultar botón de reintento según si hay ciudades pendientes
+                const retryButton = document.getElementById('retry-button');
+                const failedApis = localStorage.getItem('failedApis');
+                if (failedApis && JSON.parse(failedApis).length > 0) {
+                    retryButton.style.display = 'block';
+                    if (!retryButton.hasAttribute('data-listener')) {
+                        retryButton.setAttribute('data-listener', 'true');
+                        retryButton.addEventListener('click', () => {
+                            localStorage.removeItem('failedApis');
+                            fetchOffers();
+                        });
+                    }
+                } else {
+                    retryButton.style.display = 'none';
+                }
             }
         }
 

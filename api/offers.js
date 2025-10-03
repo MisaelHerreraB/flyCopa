@@ -10,21 +10,27 @@ const redis = new Redis({
 module.exports = async (req, res) => {
     // Clave única para la cache de ofertas
     const REDIS_KEY = "copaair:offers:2026-02-13";
-
-    // Intentar recuperar de Redis primero
-    const cached = await redis.get(REDIS_KEY);
-    if (cached) {
-        // Si el valor es string, parsear a objeto
-        let cachedData = cached;
-        if (typeof cached === 'string') {
-            try {
-                cachedData = JSON.parse(cached);
-            } catch (e) {
-                // Si falla el parseo, devolver el string tal cual
+    const FAILED_KEY = "copaair:failed:2026-02-13";
+    
+    // Verificar si se solicita reintento de APIs específicas
+    const retryApis = req.query.retry ? req.query.retry.split(',') : null;
+    
+    // Intentar recuperar de Redis primero (solo si no es un reintento)
+    if (!retryApis) {
+        const cached = await redis.get(REDIS_KEY);
+        if (cached) {
+            // Si el valor es string, parsear a objeto
+            let cachedData = cached;
+            if (typeof cached === 'string') {
+                try {
+                    cachedData = JSON.parse(cached);
+                } catch (e) {
+                    // Si falla el parseo, devolver el string tal cual
+                }
             }
+            res.status(200).json(cachedData);
+            return;
         }
-        res.status(200).json(cachedData);
-        return;
     }
     async function fetchOffers(url, headers, payload) {
         try {
@@ -236,26 +242,70 @@ module.exports = async (req, res) => {
     };
 
     try {
-    // Solo si no hay cache, hacer las llamadas POST
-    const data1 = await fetchOffers(url1, headers, payload1);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    const data2 = await fetchOffers(url2, headers, payload2);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    const data3 = await fetchOffers(url3, headers, payload3);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    const data4 = await fetchOffers(url4, headers, payload4);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    const data5 = await fetchOffers(url5, headers, payload5);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    const data6 = await fetchOffers(url6, headers, payload6);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    const data7 = await fetchOffers(url7, headers, payload7);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    const data8 = await fetchOffers(url8, headers, payload8);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    const data9 = await fetchOffers(url9, headers, payload9);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    const data10 = await fetchOffers(url10, headers, payload10);
+    // Configuración de APIs para llamadas selectivas
+    const apiConfigs = {
+        '1': { url: url1, payload: payload1, name: 'MDE (stopover de ida)' },
+        '2': { url: url2, payload: payload2, name: 'UIO (stopover de ida)' },
+        '3': { url: url3, payload: payload3, name: 'CLO (stopover de ida)' },
+        '4': { url: url4, payload: payload4, name: 'BOG (stopover de ida)' },
+        '5': { url: url5, payload: payload5, name: 'CTG (stopover de ida)' },
+        '6': { url: url6, payload: payload6, name: 'MDE (stopover de regreso)' },
+        '7': { url: url7, payload: payload7, name: 'UIO (stopover de regreso)' },
+        '8': { url: url8, payload: payload8, name: 'CLO (stopover de regreso)' },
+        '9': { url: url9, payload: payload9, name: 'BOG (stopover de regreso)' },
+        '10': { url: url10, payload: payload10, name: 'CTG (stopover de regreso)' }
+    };
+    
+    // Obtener datos existentes si es un reintento
+    let existingData = {};
+    if (retryApis) {
+        const cached = await redis.get(REDIS_KEY);
+        if (cached) {
+            existingData = typeof cached === 'string' ? JSON.parse(cached) : cached;
+        }
+    }
+    
+    // Ejecutar llamadas (todas o solo las solicitadas para reintento)
+    const apisToCall = retryApis || Object.keys(apiConfigs);
+    const results = {};
+    
+    for (const apiId of apisToCall) {
+        const config = apiConfigs[apiId];
+        if (config) {
+            console.log(`[${new Date().toISOString()}] Llamada ${apiId} iniciada para ${config.name}`);
+            results[`data${apiId}`] = await fetchOffers(config.url, headers, config.payload);
+            await new Promise(resolve => setTimeout(resolve, 1500));
+        }
+    }
+    
+    // Usar datos existentes para APIs no reintentadas, o hacer llamada si no hay datos previos exitosos
+    let data1, data2, data3, data4, data5, data6, data7, data8, data9, data10;
+    
+    if (retryApis) {
+        // Si es un reintento, usar datos exitosos existentes y solo reejecutar las fallidas
+        data1 = results.data1 || (existingData.itinerary1 && !existingData.itinerary1.error ? existingData.itinerary1 : null);
+        data2 = results.data2 || (existingData.itinerary2 && !existingData.itinerary2.error ? existingData.itinerary2 : null);
+        data3 = results.data3 || (existingData.itinerary3 && !existingData.itinerary3.error ? existingData.itinerary3 : null);
+        data4 = results.data4 || (existingData.itinerary4 && !existingData.itinerary4.error ? existingData.itinerary4 : null);
+        data5 = results.data5 || (existingData.itinerary5 && !existingData.itinerary5.error ? existingData.itinerary5 : null);
+        data6 = results.data6 || (existingData.itinerary6 && !existingData.itinerary6.error ? existingData.itinerary6 : null);
+        data7 = results.data7 || (existingData.itinerary7 && !existingData.itinerary7.error ? existingData.itinerary7 : null);
+        data8 = results.data8 || (existingData.itinerary8 && !existingData.itinerary8.error ? existingData.itinerary8 : null);
+        data9 = results.data9 || (existingData.itinerary9 && !existingData.itinerary9.error ? existingData.itinerary9 : null);
+        data10 = results.data10 || (existingData.itinerary10 && !existingData.itinerary10.error ? existingData.itinerary10 : null);
+    } else {
+        // Si no es un reintento, hacer todas las llamadas
+        data1 = results.data1 || await fetchOffers(url1, headers, payload1);
+        data2 = results.data2 || await fetchOffers(url2, headers, payload2);
+        data3 = results.data3 || await fetchOffers(url3, headers, payload3);
+        data4 = results.data4 || await fetchOffers(url4, headers, payload4);
+        data5 = results.data5 || await fetchOffers(url5, headers, payload5);
+        data6 = results.data6 || await fetchOffers(url6, headers, payload6);
+        data7 = results.data7 || await fetchOffers(url7, headers, payload7);
+        data8 = results.data8 || await fetchOffers(url8, headers, payload8);
+        data9 = results.data9 || await fetchOffers(url9, headers, payload9);
+        data10 = results.data10 || await fetchOffers(url10, headers, payload10);
+    }
 
         // Procesar respuestas
         let response = {
@@ -769,6 +819,25 @@ module.exports = async (req, res) => {
             return;
         }
 
+    // Rastrear APIs fallidas
+    const failedApis = [];
+    Object.keys(response).forEach(key => {
+        if (key.startsWith('itinerary') && response[key].error) {
+            const apiNum = key.replace('itinerary', '');
+            failedApis.push(apiNum);
+        }
+    });
+    
+    // Guardar información de APIs fallidas
+    if (failedApis.length > 0) {
+        await redis.set(FAILED_KEY, JSON.stringify(failedApis), { ex: 60 * 60 * 3 });
+        response.failedApis = failedApis;
+        console.log(`[${new Date().toISOString()}] APIs fallidas detectadas: ${failedApis.join(', ')}`);
+    } else {
+        // Limpiar APIs fallidas si todo está bien
+        await redis.del(FAILED_KEY);
+    }
+    
     // Guardar en Redis para futuras consultas
     await redis.set(REDIS_KEY, response, { ex: 60 * 60 * 3 }); // Expira en 3 horas
     res.status(200).json(response);
