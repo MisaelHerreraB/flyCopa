@@ -662,6 +662,18 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                 return new Date(year, month - 1, day);
             }
             
+            // Función para convertir hora 24h a formato AM/PM
+            function formatTimeAMPM(time24) {
+                if (!time24 || typeof time24 !== 'string') return time24;
+                
+                const [hours, minutes] = time24.split(':');
+                const hour = parseInt(hours, 10);
+                const ampm = hour >= 12 ? 'PM' : 'AM';
+                const hour12 = hour % 12 || 12;
+                
+                return `${hour12}:${minutes} ${ampm}`;
+            }
+            
             // Canvas inicial con altura temporal
             const canvas = document.createElement('canvas');
             canvas.width = 900;
@@ -765,16 +777,16 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                         ctx.font = 'bold 22px Arial';
                         ctx.fillStyle = '#222';
                         ctx.fillText(seg.from, 40, y);
-                        ctx.font = 'bold 20px Arial';
-                        ctx.fillText(seg.departure, 120, y);
+                        ctx.font = 'bold 18px Arial';
+                        ctx.fillText(formatTimeAMPM(seg.departure), 120, y);
                         ctx.font = 'bold 28px Arial';
                         ctx.fillStyle = '#bbb';
                         ctx.fillText('→', 200, y);
                         ctx.font = 'bold 22px Arial';
                         ctx.fillStyle = '#222';
                         ctx.fillText(seg.to, 240, y);
-                        ctx.font = 'bold 20px Arial';
-                        ctx.fillText(seg.arrival, 320, y);
+                        ctx.font = 'bold 18px Arial';
+                        ctx.fillText(formatTimeAMPM(seg.arrival), 320, y);
                         // Clase en azul
                         ctx.font = '15px Arial';
                         ctx.fillStyle = '#1976d2';
@@ -802,7 +814,7 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                         ctx.fillStyle = '#222';
                         ctx.fillText(seg.from, 40, y);
                         ctx.font = 'bold 18px Arial';
-                        ctx.fillText(seg.departure, 110, y);
+                        ctx.fillText(formatTimeAMPM(seg.departure), 110, y);
                         ctx.font = 'bold 24px Arial';
                         ctx.fillStyle = '#0056b3';
                         ctx.fillText('→', 180, y);
@@ -810,7 +822,7 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                         ctx.fillStyle = '#222';
                         ctx.fillText(seg.to, 240, y);
                         ctx.font = 'bold 18px Arial';
-                        ctx.fillText(seg.arrival, 310, y);
+                        ctx.fillText(formatTimeAMPM(seg.arrival), 310, y);
                         // Clase y número de vuelo
                         ctx.font = '14px Arial';
                         ctx.fillStyle = '#0056b3';
