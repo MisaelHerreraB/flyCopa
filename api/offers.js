@@ -385,7 +385,7 @@ module.exports = async (req, res) => {
             console.log(`[${new Date().toISOString()}] Iniciando llamada ${apiId} para ${config.name}`);
             results[`data${apiId}`] = await fetchOffers(config.url, headers, config.payload, `API ${apiId} (${config.name})`);
             console.log(`[${new Date().toISOString()}] Completada llamada ${apiId} para ${config.name}`);
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            await new Promise(resolve => setTimeout(resolve, 800));
         }
     }
     

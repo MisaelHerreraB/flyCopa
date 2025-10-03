@@ -375,11 +375,11 @@
                 const startTime = Date.now();
                 const progressInterval = setInterval(() => {
                     const elapsed = Date.now() - startTime;
-                    const timeProgress = (elapsed / estimatedTime) * 80; // 80% del progreso total
-                    const newProgress = Math.min(10 + timeProgress, 85); // Máximo 85% durante simulación
+                    const timeProgress = (elapsed / estimatedTime) * 85; // 85% del progreso total
+                    const newProgress = Math.min(10 + timeProgress, 90); // Máximo 90% durante simulación
                     updateProgress(newProgress);
                     
-                    if (newProgress >= 85) {
+                    if (newProgress >= 90) {
                         clearInterval(progressInterval);
                     }
                 }, 200); // Actualizar cada 200ms
@@ -388,10 +388,10 @@
                 try {
                     const response = await fetch(apiUrl);
                     clearInterval(progressInterval); // Detener simulación al recibir respuesta
-                    updateProgress(90); // 90% al recibir respuesta
+                    updateProgress(95); // 95% al recibir respuesta
                     if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
                     data = await response.json();
-                    updateProgress(95); // 95% al procesar respuesta
+                    updateProgress(98); // 98% al procesar respuesta
                 } catch (error) {
                     clearInterval(progressInterval); // Asegurarse de detener simulación en caso de error
                     throw error;
