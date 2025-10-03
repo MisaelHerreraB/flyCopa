@@ -360,20 +360,41 @@
                 // Verificar si hay APIs fallidas previas para reintentar
                 let apiUrl = '/api/offers';
                 const failedApis = localStorage.getItem('failedApis');
+                let estimatedTime = 18000; // 18 segundos para búsqueda completa
                 if (failedApis) {
                     const parsedFailed = JSON.parse(failedApis);
                     if (parsedFailed.length > 0) {
                         apiUrl += `?retry=${parsedFailed.join(',')}`;
                         console.log(`Reintentando búsqueda en ciudades: ${parsedFailed.join(', ')}`);
                         progressText.textContent = `Reintentando búsqueda en ciudades pendientes... Progreso: ${progress}%`;
+                        estimatedTime = parsedFailed.length * 1800; // 1.8 segundos por API fallida
                     }
                 }
                 
-                const response = await fetch(apiUrl);
-                updateProgress(50); // 50% al recibir respuesta
-                if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
-                const data = await response.json();
-                updateProgress(90); // 90% al procesar respuesta
+                // Simular progreso incremental durante las llamadas a APIs
+                const startTime = Date.now();
+                const progressInterval = setInterval(() => {
+                    const elapsed = Date.now() - startTime;
+                    const timeProgress = (elapsed / estimatedTime) * 80; // 80% del progreso total
+                    const newProgress = Math.min(10 + timeProgress, 85); // Máximo 85% durante simulación
+                    updateProgress(newProgress);
+                    
+                    if (newProgress >= 85) {
+                        clearInterval(progressInterval);
+                    }
+                }, 200); // Actualizar cada 200ms
+                
+                try {
+                    const response = await fetch(apiUrl);
+                    clearInterval(progressInterval); // Detener simulación al recibir respuesta
+                    updateProgress(90); // 90% al recibir respuesta
+                    if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+                    const data = await response.json();
+                    updateProgress(95); // 95% al procesar respuesta
+                } catch (error) {
+                    clearInterval(progressInterval); // Asegurarse de detener simulación en caso de error
+                    throw error;
+                }
 
                 if (data.error) {
                     throw new Error(data.error);
@@ -393,9 +414,8 @@
                 }
 
                 // Progreso completado (100%)
-                progress = 100;
-                progressBar.style.width = `${progress}%`;
-                progressText.textContent = `¡Búsqueda completada! Progreso: ${progress}%`;
+                updateProgress(100);
+                progressText.textContent = `¡Búsqueda completada! Progreso: 100%`;
 
                 // Mostrar oferta más barata global
                 if (data.globalCheapest) {
