@@ -774,7 +774,7 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                         if (escalaDur) ctx.fillText(`(${escalaDur})`, 320, y);
                         y += 28;
                         // Ruta y horas
-                        ctx.font = 'bold 22px Arial';
+                        ctx.font = 'bold 20px Arial';
                         ctx.fillStyle = '#222';
                         ctx.fillText(seg.from, 40, y);
                         ctx.font = 'bold 18px Arial';
@@ -782,7 +782,7 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                         ctx.font = 'bold 28px Arial';
                         ctx.fillStyle = '#bbb';
                         ctx.fillText('→', 200, y);
-                        ctx.font = 'bold 22px Arial';
+                        ctx.font = 'bold 20px Arial';
                         ctx.fillStyle = '#222';
                         ctx.fillText(seg.to, 240, y);
                         ctx.font = 'bold 18px Arial';
@@ -814,15 +814,15 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                         ctx.fillStyle = '#222';
                         ctx.fillText(seg.from, 40, y);
                         ctx.font = 'bold 18px Arial';
-                        ctx.fillText(formatTimeAMPM(seg.departure), 110, y);
+                        ctx.fillText(formatTimeAMPM(seg.departure), 120, y);
                         ctx.font = 'bold 24px Arial';
                         ctx.fillStyle = '#0056b3';
-                        ctx.fillText('→', 180, y);
+                        ctx.fillText('→', 200, y);
                         ctx.font = 'bold 20px Arial';
                         ctx.fillStyle = '#222';
                         ctx.fillText(seg.to, 240, y);
                         ctx.font = 'bold 18px Arial';
-                        ctx.fillText(formatTimeAMPM(seg.arrival), 310, y);
+                        ctx.fillText(formatTimeAMPM(seg.arrival), 320, y);
                         // Clase y número de vuelo
                         ctx.font = '14px Arial';
                         ctx.fillStyle = '#0056b3';

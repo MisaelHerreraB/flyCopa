@@ -906,7 +906,7 @@ module.exports = async (req, res) => {
     
     // Guardar información de APIs fallidas
     if (failedApis.length > 0) {
-        await redis.set(FAILED_KEY, JSON.stringify(failedApis), { ex: 60 * 60 * 3 });
+        await redis.set(FAILED_KEY, JSON.stringify(failedApis), { ex: 60 * 60 * 2 });
         response.failedApis = failedApis;
         console.log(`[${new Date().toISOString()}] APIs fallidas detectadas: ${failedApis.join(', ')}`);
     } else {
