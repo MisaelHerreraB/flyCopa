@@ -384,12 +384,13 @@
                     }
                 }, 200); // Actualizar cada 200ms
                 
+                let data;
                 try {
                     const response = await fetch(apiUrl);
                     clearInterval(progressInterval); // Detener simulación al recibir respuesta
                     updateProgress(90); // 90% al recibir respuesta
                     if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
-                    const data = await response.json();
+                    data = await response.json();
                     updateProgress(95); // 95% al procesar respuesta
                 } catch (error) {
                     clearInterval(progressInterval); // Asegurarse de detener simulación en caso de error
