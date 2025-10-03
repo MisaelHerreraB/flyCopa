@@ -662,16 +662,10 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                 return new Date(year, month - 1, day);
             }
             
-            // Calcular altura dinámica basada en el número de segmentos
-            const numSegments = data.segments ? data.segments.length : 2;
-            const baseHeight = 120; // Altura para header y precio
-            const segmentHeight = 68; // Altura promedio por segmento (incluyendo espaciado)
-            const dynamicHeight = Math.max(280, baseHeight + (numSegments * segmentHeight) + 80);
-            
-            // Canvas con altura dinámica
+            // Canvas inicial con altura temporal
             const canvas = document.createElement('canvas');
             canvas.width = 900;
-            canvas.height = dynamicHeight;
+            canvas.height = 800; // Altura temporal, se ajustará al final
             const ctx = canvas.getContext('2d');
 
             // Fondo y borde
@@ -860,10 +854,21 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
             ctx.fillStyle = '#1976d2';
             ctx.fillText('Ver detalles', 600, 235);
 
-            // ...eliminado botón seleccionar y figura esquina inferior derecha...
+            // Calcular altura real necesaria basada en el contenido dibujado
+            let contentHeight = Math.max(y, 255); // y de los vuelos vs posición fija del precio
+            contentHeight += 30; // Padding inferior
+            
+            // Crear canvas final con altura optimizada
+            const finalCanvas = document.createElement('canvas');
+            finalCanvas.width = canvas.width;
+            finalCanvas.height = contentHeight;
+            const finalCtx = finalCanvas.getContext('2d');
+            
+            // Copiar contenido al canvas final (recortado)
+            finalCtx.drawImage(canvas, 0, 0, canvas.width, contentHeight, 0, 0, finalCanvas.width, finalCanvas.height);
 
-            // Convertir a imagen
-            return canvas.toDataURL('image/png');
+            // Convertir a imagen el canvas optimizado
+            return finalCanvas.toDataURL('image/png');
         }
     </script>
 </body>
