@@ -11,6 +11,8 @@ module.exports = async (req, res) => {
     // Clave única para la cache de ofertas
     const REDIS_KEY = "copaair:offers:2026-02-13";
     const FAILED_KEY = "copaair:failed:2026-02-13";
+    const LOCK_KEY = "copaair:lock:2026-02-13";
+    const PROCESSING_KEY = "copaair:processing:2026-02-13";
     
     // Verificar si se solicita reintento de APIs específicas
     const retryApis = req.query.retry ? req.query.retry.split(',') : null;
@@ -36,6 +38,56 @@ module.exports = async (req, res) => {
             res.status(200).json(cachedData);
             return;
         }
+        
+        // Si no hay cache, verificar si alguien más está procesando
+        const isProcessing = await redis.get(PROCESSING_KEY);
+        if (isProcessing) {
+            console.log(`[${new Date().toISOString()}] Otro proceso está ejecutando APIs, esperando...`);
+            
+            // Esperar hasta 25 segundos por el resultado
+            for (let i = 0; i < 50; i++) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                const newCached = await redis.get(REDIS_KEY);
+                if (newCached) {
+                    console.log(`[${new Date().toISOString()}] Datos disponibles después de espera`);
+                    let cachedData = newCached;
+                    if (typeof newCached === 'string') {
+                        try {
+                            cachedData = JSON.parse(newCached);
+                        } catch (e) {
+                            // Si falla el parseo, devolver el string tal cual
+                        }
+                    }
+                    res.status(200).json(cachedData);
+                    return;
+                }
+            }
+            console.log(`[${new Date().toISOString()}] Timeout esperando datos, ejecutando APIs propias`);
+        }
+        
+        // Intentar obtener el lock para ejecutar las APIs
+        const lockAcquired = await redis.set(PROCESSING_KEY, Date.now(), { ex: 30, nx: true });
+        if (!lockAcquired) {
+            // Otro proceso obtuvo el lock, esperar
+            console.log(`[${new Date().toISOString()}] No se pudo obtener lock, esperando...`);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            // Reintentar verificación de cache después de espera
+            const newCached = await redis.get(REDIS_KEY);
+            if (newCached) {
+                let cachedData = newCached;
+                if (typeof newCached === 'string') {
+                    try {
+                        cachedData = JSON.parse(newCached);
+                    } catch (e) {
+                        // Si falla el parseo, devolver el string tal cual
+                    }
+                }
+                res.status(200).json(cachedData);
+                return;
+            }
+        }
+        
+        console.log(`[${new Date().toISOString()}] Obtenido lock para ejecutar APIs`);
     }
     async function fetchOffers(url, headers, payload, apiName = 'API') {
         const requestId = Math.random().toString(36).substring(7);
@@ -919,8 +971,16 @@ module.exports = async (req, res) => {
     console.log(`[${new Date().toISOString()}] Tamaño de respuesta: ${JSON.stringify(response).length} caracteres`);
     await redis.set(REDIS_KEY, response, { ex: 60 * 60 * 3 }); // Expira en 3 horas
     console.log(`[${new Date().toISOString()}] Respuesta guardada exitosamente en Redis (expira en 3 horas)`);
+    
+    // Liberar el lock de procesamiento
+    await redis.del(PROCESSING_KEY);
+    console.log(`[${new Date().toISOString()}] Lock de procesamiento liberado`);
+    
     res.status(200).json(response);
     } catch (error) {
+        // Liberar el lock en caso de error
+        await redis.del(PROCESSING_KEY);
+        console.log(`[${new Date().toISOString()}] Lock de procesamiento liberado por error`);
         res.status(500).json({ error: `Error en el servidor: ${error.message}` });
     }
 };
