@@ -27,6 +27,9 @@
             background-color: #f8f9fa;
             color: #333;
         }
+        .container {
+            max-width: 1200px;
+        }
         .header-title {
             color: #0056b3;
             font-weight: bold;
@@ -53,21 +56,25 @@
         }
         .loading-progress {
             display: none;
-            margin: 20px 0;
+            margin: 20px auto;
+            max-width: 600px;
         }
         .error-alert {
             display: none;
-            margin: 20px 0;
+            margin: 20px auto;
+            max-width: 600px;
         }
         .cheapest-card {
             background-color: #d4edda !important;
             border-left: 5px solid #28a745 !important;
-            margin: 15px 0;
+            margin: 15px auto;
+            max-width: 700px;
         }
         .global-cheapest-card {
             background-color: #ffe5b4 !important;
             border-left: 5px solid #ffca2c !important;
-            margin: 20px 0;
+            margin: 20px auto;
+            max-width: 800px;
             font-size: 1.1em;
             font-weight: bold;
         }
@@ -83,8 +90,9 @@
             align-items: flex-end;
             justify-content: flex-start;
             min-width: 500px;
-            max-width: 1200px;
+            max-width: 800px;
             width: 100%;
+            margin: 0 auto;
             padding: 20px 20px 20px 20px;
             background: #fff;
             border-radius: 12px;
@@ -160,7 +168,7 @@
                 </div>
             </div>
             <div class="row justify-content-center">
-                <div class="col-12 col-md-6">
+                <div class="col-12 col-md-8 col-lg-6">
                     <button class="btn btn-primary btn-lg w-100" id="fetch-button" style="display:none">
                         <i class="bi bi-airplane-fill"></i> ¡Buscar Ofertas de Vuelos Ahora!
                     </button>
