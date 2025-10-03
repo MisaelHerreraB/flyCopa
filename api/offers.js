@@ -28,6 +28,11 @@ module.exports = async (req, res) => {
                     // Si falla el parseo, devolver el string tal cual
                 }
             }
+            
+            // Añadir un pequeño delay para que el usuario vea la barra de progreso
+            // incluso cuando los datos vienen de cache
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
             res.status(200).json(cachedData);
             return;
         }
