@@ -661,10 +661,17 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                 const [year, month, day] = dateStr.split('-').map(Number);
                 return new Date(year, month - 1, day);
             }
-            // Canvas más grande para más detalles visuales
+            
+            // Calcular altura dinámica basada en el número de segmentos
+            const numSegments = data.segments ? data.segments.length : 2;
+            const baseHeight = 120; // Altura para header y precio
+            const segmentHeight = 68; // Altura promedio por segmento (incluyendo espaciado)
+            const dynamicHeight = Math.max(280, baseHeight + (numSegments * segmentHeight) + 80);
+            
+            // Canvas con altura dinámica
             const canvas = document.createElement('canvas');
             canvas.width = 900;
-            canvas.height = 480;
+            canvas.height = dynamicHeight;
             const ctx = canvas.getContext('2d');
 
             // Fondo y borde
