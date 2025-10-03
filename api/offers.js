@@ -32,15 +32,64 @@ module.exports = async (req, res) => {
             return;
         }
     }
-    async function fetchOffers(url, headers, payload) {
+    async function fetchOffers(url, headers, payload, apiName = 'API') {
+        const requestId = Math.random().toString(36).substring(7);
+        const timestamp = new Date().toISOString();
+        
+        // Log detallado de la solicitud
+        console.log(`\n=== [${timestamp}] ${apiName} - REQUEST ${requestId} ===`);
+        console.log(`URL: ${url}`);
+        console.log(`HEADERS:`, JSON.stringify(headers, null, 2));
+        console.log(`BODY:`, JSON.stringify(payload, null, 2));
+        console.log(`========================================\n`);
+        
         try {
+            const startTime = Date.now();
             const response = await axios.post(url, payload, { headers });
+            const endTime = Date.now();
+            const duration = endTime - startTime;
+            
+            // Log detallado de la respuesta exitosa
+            console.log(`\n=== [${new Date().toISOString()}] ${apiName} - RESPONSE ${requestId} ===`);
+            console.log(`STATUS: ${response.status} ${response.statusText}`);
+            console.log(`DURATION: ${duration}ms`);
+            console.log(`RESPONSE HEADERS:`, JSON.stringify(response.headers, null, 2));
+            console.log(`RESPONSE SIZE: ${JSON.stringify(response.data).length} characters`);
+            if (response.data.offers) {
+                console.log(`OFFERS FOUND: ${response.data.offers.length}`);
+                if (response.data.offers.length > 0) {
+                    const prices = response.data.offers.map(o => o.pricePerAdult);
+                    console.log(`PRICE RANGE: $${Math.min(...prices)} - $${Math.max(...prices)}`);
+                }
+            }
+            console.log(`RESPONSE BODY:`, JSON.stringify(response.data, null, 2));
+            console.log(`=========================================\n`);
+            
             return response.data;
         } catch (error) {
+            const endTime = Date.now();
+            const duration = Date.now() - (startTime || Date.now());
+            
+            // Log detallado del error
+            console.log(`\n=== [${new Date().toISOString()}] ${apiName} - ERROR ${requestId} ===`);
+            console.log(`DURATION: ${duration}ms`);
+            console.log(`ERROR MESSAGE: ${error.message}`);
+            if (error.response) {
+                console.log(`ERROR STATUS: ${error.response.status} ${error.response.statusText}`);
+                console.log(`ERROR HEADERS:`, JSON.stringify(error.response.headers, null, 2));
+                console.log(`ERROR BODY:`, JSON.stringify(error.response.data, null, 2));
+            } else if (error.request) {
+                console.log(`NO RESPONSE RECEIVED`);
+                console.log(`REQUEST CONFIG:`, JSON.stringify(error.config, null, 2));
+            }
+            console.log(`ERROR STACK:`, error.stack);
+            console.log(`=====================================\n`);
+            
             return { 
                 error: `Error al conectar con la API: ${error.message}`,
                 status: error.response ? error.response.status : null,
-                statusText: error.response ? error.response.statusText : null
+                statusText: error.response ? error.response.statusText : null,
+                requestId: requestId
             };
         }
     }
@@ -259,9 +308,13 @@ module.exports = async (req, res) => {
     // Obtener datos existentes si es un reintento
     let existingData = {};
     if (retryApis) {
+        console.log(`[${new Date().toISOString()}] Modo reintento activado para APIs: ${retryApis.join(', ')}`);
         const cached = await redis.get(REDIS_KEY);
         if (cached) {
             existingData = typeof cached === 'string' ? JSON.parse(cached) : cached;
+            console.log(`[${new Date().toISOString()}] Datos existentes recuperados desde Redis`);
+        } else {
+            console.log(`[${new Date().toISOString()}] No se encontraron datos existentes en Redis`);
         }
     }
     
@@ -272,8 +325,9 @@ module.exports = async (req, res) => {
     for (const apiId of apisToCall) {
         const config = apiConfigs[apiId];
         if (config) {
-            console.log(`[${new Date().toISOString()}] Llamada ${apiId} iniciada para ${config.name}`);
-            results[`data${apiId}`] = await fetchOffers(config.url, headers, config.payload);
+            console.log(`[${new Date().toISOString()}] Iniciando llamada ${apiId} para ${config.name}`);
+            results[`data${apiId}`] = await fetchOffers(config.url, headers, config.payload, `API ${apiId} (${config.name})`);
+            console.log(`[${new Date().toISOString()}] Completada llamada ${apiId} para ${config.name}`);
             await new Promise(resolve => setTimeout(resolve, 1500));
         }
     }
@@ -283,6 +337,7 @@ module.exports = async (req, res) => {
     
     if (retryApis) {
         // Si es un reintento, usar datos exitosos existentes y solo reejecutar las fallidas
+        console.log(`[${new Date().toISOString()}] Combinando datos existentes con resultados de reintento`);
         data1 = results.data1 || (existingData.itinerary1 && !existingData.itinerary1.error ? existingData.itinerary1 : null);
         data2 = results.data2 || (existingData.itinerary2 && !existingData.itinerary2.error ? existingData.itinerary2 : null);
         data3 = results.data3 || (existingData.itinerary3 && !existingData.itinerary3.error ? existingData.itinerary3 : null);
@@ -293,18 +348,34 @@ module.exports = async (req, res) => {
         data8 = results.data8 || (existingData.itinerary8 && !existingData.itinerary8.error ? existingData.itinerary8 : null);
         data9 = results.data9 || (existingData.itinerary9 && !existingData.itinerary9.error ? existingData.itinerary9 : null);
         data10 = results.data10 || (existingData.itinerary10 && !existingData.itinerary10.error ? existingData.itinerary10 : null);
+        
+        // Log de qué datos se están usando
+        const dataStatus = {
+            data1: results.data1 ? 'NUEVO' : (existingData.itinerary1 && !existingData.itinerary1.error ? 'CACHE' : 'NULL'),
+            data2: results.data2 ? 'NUEVO' : (existingData.itinerary2 && !existingData.itinerary2.error ? 'CACHE' : 'NULL'),
+            data3: results.data3 ? 'NUEVO' : (existingData.itinerary3 && !existingData.itinerary3.error ? 'CACHE' : 'NULL'),
+            data4: results.data4 ? 'NUEVO' : (existingData.itinerary4 && !existingData.itinerary4.error ? 'CACHE' : 'NULL'),
+            data5: results.data5 ? 'NUEVO' : (existingData.itinerary5 && !existingData.itinerary5.error ? 'CACHE' : 'NULL'),
+            data6: results.data6 ? 'NUEVO' : (existingData.itinerary6 && !existingData.itinerary6.error ? 'CACHE' : 'NULL'),
+            data7: results.data7 ? 'NUEVO' : (existingData.itinerary7 && !existingData.itinerary7.error ? 'CACHE' : 'NULL'),
+            data8: results.data8 ? 'NUEVO' : (existingData.itinerary8 && !existingData.itinerary8.error ? 'CACHE' : 'NULL'),
+            data9: results.data9 ? 'NUEVO' : (existingData.itinerary9 && !existingData.itinerary9.error ? 'CACHE' : 'NULL'),
+            data10: results.data10 ? 'NUEVO' : (existingData.itinerary10 && !existingData.itinerary10.error ? 'CACHE' : 'NULL')
+        };
+        console.log(`[${new Date().toISOString()}] Estado de datos por API:`, dataStatus);
     } else {
         // Si no es un reintento, hacer todas las llamadas
-        data1 = results.data1 || await fetchOffers(url1, headers, payload1);
-        data2 = results.data2 || await fetchOffers(url2, headers, payload2);
-        data3 = results.data3 || await fetchOffers(url3, headers, payload3);
-        data4 = results.data4 || await fetchOffers(url4, headers, payload4);
-        data5 = results.data5 || await fetchOffers(url5, headers, payload5);
-        data6 = results.data6 || await fetchOffers(url6, headers, payload6);
-        data7 = results.data7 || await fetchOffers(url7, headers, payload7);
-        data8 = results.data8 || await fetchOffers(url8, headers, payload8);
-        data9 = results.data9 || await fetchOffers(url9, headers, payload9);
-        data10 = results.data10 || await fetchOffers(url10, headers, payload10);
+        console.log(`[${new Date().toISOString()}] Ejecutando todas las llamadas a las APIs (primera ejecución)`);
+        data1 = results.data1 || await fetchOffers(url1, headers, payload1, 'API 1 (MDE stopover ida)');
+        data2 = results.data2 || await fetchOffers(url2, headers, payload2, 'API 2 (UIO stopover ida)');
+        data3 = results.data3 || await fetchOffers(url3, headers, payload3, 'API 3 (CLO stopover ida)');
+        data4 = results.data4 || await fetchOffers(url4, headers, payload4, 'API 4 (BOG stopover ida)');
+        data5 = results.data5 || await fetchOffers(url5, headers, payload5, 'API 5 (CTG stopover ida)');
+        data6 = results.data6 || await fetchOffers(url6, headers, payload6, 'API 6 (MDE stopover regreso)');
+        data7 = results.data7 || await fetchOffers(url7, headers, payload7, 'API 7 (UIO stopover regreso)');
+        data8 = results.data8 || await fetchOffers(url8, headers, payload8, 'API 8 (CLO stopover regreso)');
+        data9 = results.data9 || await fetchOffers(url9, headers, payload9, 'API 9 (BOG stopover regreso)');
+        data10 = results.data10 || await fetchOffers(url10, headers, payload10, 'API 10 (CTG stopover regreso)');
     }
 
         // Procesar respuestas
@@ -839,7 +910,10 @@ module.exports = async (req, res) => {
     }
     
     // Guardar en Redis para futuras consultas
+    console.log(`[${new Date().toISOString()}] Guardando respuesta completa en Redis con clave: ${REDIS_KEY}`);
+    console.log(`[${new Date().toISOString()}] Tamaño de respuesta: ${JSON.stringify(response).length} caracteres`);
     await redis.set(REDIS_KEY, response, { ex: 60 * 60 * 3 }); // Expira en 3 horas
+    console.log(`[${new Date().toISOString()}] Respuesta guardada exitosamente en Redis (expira en 3 horas)`);
     res.status(200).json(response);
     } catch (error) {
         res.status(500).json({ error: `Error en el servidor: ${error.message}` });
