@@ -34,6 +34,9 @@
             color: #0056b3;
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 0 15px;
         }
         .btn-primary {
             background-color: #0056b3;
@@ -58,11 +61,13 @@
             display: none;
             margin: 20px auto;
             max-width: 600px;
+            text-align: center;
         }
         .error-alert {
             display: none;
             margin: 20px auto;
             max-width: 600px;
+            text-align: center;
         }
         .cheapest-card {
             background-color: #d4edda !important;
@@ -146,9 +151,14 @@
             }
             .cheapest-card, .global-cheapest-card {
                 font-size: 0.9em;
+                margin: 15px 10px;
             }
             .offer-image {
                 max-width: 100%;
+            }
+            .header-title {
+                font-size: 1.5rem;
+                margin-bottom: 20px;
             }
         }
     </style>
@@ -190,7 +200,7 @@
                 <span id="error-message"></span>
             </div>
             <!-- Global Cheapest Offer -->
-            <div class="row" id="global-cheapest-section">
+            <div class="row justify-content-center" id="global-cheapest-section">
                 <div class="col-12">
                     <div class="card global-cheapest-card" id="global-cheapest-info" style="display: none;">
                         <div class="card-body">
@@ -217,7 +227,7 @@
                 </div>
             </div>
             <!-- Individual Cheapest Offers -->
-            <div class="row" id="individual-offers-section">
+            <div class="row justify-content-center" id="individual-offers-section">
                 <div class="col-12">
                     <!-- Itinerario 1: Medellín (stopover de ida) -->
                     <div class="card cheapest-card" id="cheapest-info1" style="display: none;"></div>
