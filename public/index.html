@@ -778,13 +778,15 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                         ctx.font = '15px Arial';
                         ctx.fillStyle = '#1976d2';
                         ctx.fillText(seg.class || 'Económica Basic', 40, y + 22);
-                        y += 48;
-                        // Separador visual
-                        ctx.strokeStyle = '#e0e0e0';
+                        y += 58; // Más espacio antes del separador
+                        // Separador visual con mejor espaciado
+                        ctx.strokeStyle = '#d0d0d0';
+                        ctx.lineWidth = 1;
                         ctx.beginPath();
-                        ctx.moveTo(40, y - 10);
-                        ctx.lineTo(500, y - 10);
+                        ctx.moveTo(40, y - 20);
+                        ctx.lineTo(520, y - 20);
                         ctx.stroke();
+                        y += 10; // Espacio después del separador
                     } else {
                         // VUELO NORMAL
                         ctx.fillStyle = '#333';
@@ -821,13 +823,15 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                         if (seg.aircraft && seg.aircraft !== 'undefined') {
                             ctx.fillText(seg.aircraft, 420, y + 20);
                         }
-                        y += 42;
-                        // Separador visual
-                        ctx.strokeStyle = '#e0e0e0';
+                        y += 52; // Más espacio antes del separador
+                        // Separador visual con mejor espaciado
+                        ctx.strokeStyle = '#d0d0d0';
+                        ctx.lineWidth = 1;
                         ctx.beginPath();
-                        ctx.moveTo(40, y - 10);
-                        ctx.lineTo(500, y - 10);
+                        ctx.moveTo(40, y - 20);
+                        ctx.lineTo(520, y - 20);
                         ctx.stroke();
+                        y += 10; // Espacio después del separador
                     }
                 });
             }
