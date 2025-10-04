@@ -996,8 +996,8 @@ module.exports = async (req, res) => {
     // Guardar información de APIs fallidas con timestamp
     if (failedApis.length > 0) {
         const currentTime = Date.now();
-        await redis.set(FAILED_KEY, JSON.stringify(failedApis), { ex: 60 * 60 * 1 });
-        await redis.set(FAILED_TIMESTAMP_KEY, currentTime.toString(), { ex: 60 * 60 * 1 });
+        await redis.set(FAILED_KEY, JSON.stringify(failedApis), { ex: 60 * 10 }); // Expira en 10 minutos
+        await redis.set(FAILED_TIMESTAMP_KEY, currentTime.toString(), { ex: 60 * 10 }); // Expira en 10 minutos
         response.failedApis = failedApis;
         console.log(`[${new Date().toISOString()}] APIs fallidas detectadas: ${failedApis.join(', ')} - Reintento automático en 5 minutos`);
     } else {
@@ -1014,7 +1014,7 @@ module.exports = async (req, res) => {
     // Guardar en Redis para futuras consultas
     console.log(`[${new Date().toISOString()}] Guardando respuesta completa en Redis con clave: ${REDIS_KEY}`);
     console.log(`[${new Date().toISOString()}] Tamaño de respuesta: ${JSON.stringify(response).length} caracteres`);
-    await redis.set(REDIS_KEY, response, { ex: 60 * 60 * 2 }); // Expira en 2 horas
+    await redis.set(REDIS_KEY, response, { ex: 60 * 30 }); // Expira en 30 minutos
     console.log(`[${new Date().toISOString()}] Respuesta guardada exitosamente en Redis (expira en 3 horas)`);
     
     // Liberar el lock de procesamiento
