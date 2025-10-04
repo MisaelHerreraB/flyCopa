@@ -1,23 +1,7 @@
 {
-    "version": 2,
-    "builds": [
-        {
-            "src": "api/offers.js",
-            "use": "@vercel/node"
-        },
-        {
-            "src": "public/**",
-            "use": "@vercel/static"
+    "functions": {
+        "api/offers.js": {
+            "maxDuration": 30
         }
-    ],
-    "routes": [
-        {
-            "src": "/api/offers",
-            "dest": "api/offers.js"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "public/$1"
-        }
-    ]
+    }
 }
