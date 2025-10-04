@@ -529,116 +529,158 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                     showErrorToast(failedCities);
                 }
 
-                // Mostrar ofertas más baratas individuales (solo las exitosas)
-                // Itinerario 1 (MDE, stopover de ida)
+                // Recopilar y ordenar ofertas más baratas individuales (solo las exitosas)
+                const validItineraries = [];
+                
+                // Recopilar todos los itinerarios exitosos
                 if (data.itinerary1.cheapest) {
-                    cheapestInfo1.innerHTML = `<div class="pre-formatted">
+                    validItineraries.push({
+                        id: 1,
+                        element: cheapestInfo1,
+                        price: data.itinerary1.cheapest.price,
+                        html: `<div class="pre-formatted">
 👉 Pasajes stopover de ida (Medellín):
 ✅ Ida ✈️ Lima - Panamá
 ✅ Vuelta ✈️ Panamá - Medellín - Panamá - Lima 
 💵 Todo a ${data.itinerary1.cheapest.price} USD 💵
-                    </div>`;
-                    cheapestInfo1.style.display = 'block';
+                        </div>`
+                    });
                 }
-
-                // Itinerario 2 (UIO, stopover de ida)
+                
                 if (data.itinerary2.cheapest) {
-                    cheapestInfo2.innerHTML = `<div class="pre-formatted">
+                    validItineraries.push({
+                        id: 2,
+                        element: cheapestInfo2,
+                        price: data.itinerary2.cheapest.price,
+                        html: `<div class="pre-formatted">
 👉 Pasajes stopover de ida (Quito):
 ✅ Ida ✈️ Lima - Panamá
 ✅ Vuelta ✈️ Panamá - Quito - Panamá - Lima 
 💵 Todo a ${data.itinerary2.cheapest.price} USD 💵
-                    </div>`;
-                    cheapestInfo2.style.display = 'block';
+                        </div>`
+                    });
                 }
-
-                // Itinerario 3 (CLO, stopover de ida)
+                
                 if (data.itinerary3.cheapest) {
-                    cheapestInfo3.innerHTML = `<div class="pre-formatted">
+                    validItineraries.push({
+                        id: 3,
+                        element: cheapestInfo3,
+                        price: data.itinerary3.cheapest.price,
+                        html: `<div class="pre-formatted">
 👉 Pasajes stopover de ida (Cali):
 ✅ Ida ✈️ Lima - Panamá
 ✅ Vuelta ✈️ Panamá - Cali - Panamá - Lima 
 💵 Todo a ${data.itinerary3.cheapest.price} USD 💵
-                    </div>`;
-                    cheapestInfo3.style.display = 'block';
+                        </div>`
+                    });
                 }
-
-                // Itinerario 4 (BOG, stopover de ida)
+                
                 if (data.itinerary4.cheapest) {
-                    cheapestInfo4.innerHTML = `<div class="pre-formatted">
+                    validItineraries.push({
+                        id: 4,
+                        element: cheapestInfo4,
+                        price: data.itinerary4.cheapest.price,
+                        html: `<div class="pre-formatted">
 👉 Pasajes stopover de ida (Bogotá):
 ✅ Ida ✈️ Lima - Panamá
 ✅ Vuelta ✈️ Panamá - Bogotá - Panamá - Lima 
 💵 Todo a ${data.itinerary4.cheapest.price} USD 💵
-                    </div>`;
-                    cheapestInfo4.style.display = 'block';
+                        </div>`
+                    });
                 }
-
-                // Itinerario 5 (CTG, stopover de ida)
+                
                 if (data.itinerary5.cheapest) {
-                    cheapestInfo5.innerHTML = `<div class="pre-formatted">
+                    validItineraries.push({
+                        id: 5,
+                        element: cheapestInfo5,
+                        price: data.itinerary5.cheapest.price,
+                        html: `<div class="pre-formatted">
 👉 Pasajes stopover de ida (Cartagena):
 ✅ Ida ✈️ Lima - Panamá
 ✅ Vuelta ✈️ Panamá - Cartagena - Panamá - Lima 
 💵 Todo a ${data.itinerary5.cheapest.price} USD 💵
-                    </div>`;
-                    cheapestInfo5.style.display = 'block';
+                        </div>`
+                    });
                 }
-
-                // Itinerario 6 (MDE, stopover de regreso)
+                
                 if (data.itinerary6.cheapest) {
-                    cheapestInfo6.innerHTML = `<div class="pre-formatted">
+                    validItineraries.push({
+                        id: 6,
+                        element: cheapestInfo6,
+                        price: data.itinerary6.cheapest.price,
+                        html: `<div class="pre-formatted">
 👉 Pasajes stopover de regreso (Medellín):
 ✅ Ida ✈️ Lima - Panamá - Medellín - Panamá
 ✅ Vuelta ✈️ Panamá - Lima 
-💵 Todo a ${data.itinerary6.cheapest.price} USD
-                    </div>`;
-                    cheapestInfo6.style.display = 'block';
+💵 Todo a ${data.itinerary6.cheapest.price} USD 💵
+                        </div>`
+                    });
                 }
-
-                // Itinerario 7 (UIO, stopover de regreso)
+                
                 if (data.itinerary7.cheapest) {
-                    cheapestInfo7.innerHTML = `<div class="pre-formatted">
+                    validItineraries.push({
+                        id: 7,
+                        element: cheapestInfo7,
+                        price: data.itinerary7.cheapest.price,
+                        html: `<div class="pre-formatted">
 👉 Pasajes stopover de regreso (Quito):
 ✅ Ida ✈️ Lima - Panamá - Quito - Panamá
 ✅ Vuelta ✈️ Panamá - Lima 
-💵 Todo a ${data.itinerary7.cheapest.price} USD
-                    </div>`;
-                    cheapestInfo7.style.display = 'block';
+💵 Todo a ${data.itinerary7.cheapest.price} USD 💵
+                        </div>`
+                    });
                 }
-
-                // Itinerario 8 (CLO, stopover de regreso)
+                
                 if (data.itinerary8.cheapest) {
-                    cheapestInfo8.innerHTML = `<div class="pre-formatted">
+                    validItineraries.push({
+                        id: 8,
+                        element: cheapestInfo8,
+                        price: data.itinerary8.cheapest.price,
+                        html: `<div class="pre-formatted">
 👉 Pasajes stopover de regreso (Cali):
 ✅ Ida ✈️ Lima - Panamá - Cali - Panamá
 ✅ Vuelta ✈️ Panamá - Lima 
-💵 Todo a ${data.itinerary8.cheapest.price} USD
-                    </div>`;
-                    cheapestInfo8.style.display = 'block';
+💵 Todo a ${data.itinerary8.cheapest.price} USD 💵
+                        </div>`
+                    });
                 }
-
-                // Itinerario 9 (BOG, stopover de regreso)
+                
                 if (data.itinerary9.cheapest) {
-                    cheapestInfo9.innerHTML = `<div class="pre-formatted">
+                    validItineraries.push({
+                        id: 9,
+                        element: cheapestInfo9,
+                        price: data.itinerary9.cheapest.price,
+                        html: `<div class="pre-formatted">
 👉 Pasajes stopover de regreso (Bogotá):
 ✅ Ida ✈️ Lima - Panamá - Bogotá - Panamá
 ✅ Vuelta ✈️ Panamá - Lima 
-💵 Todo a ${data.itinerary9.cheapest.price} USD
-                    </div>`;
-                    cheapestInfo9.style.display = 'block';
+💵 Todo a ${data.itinerary9.cheapest.price} USD 💵
+                        </div>`
+                    });
                 }
-
-                // Itinerario 10 (CTG, stopover de regreso)
+                
                 if (data.itinerary10.cheapest) {
-                    cheapestInfo10.innerHTML = `<div class="pre-formatted">
+                    validItineraries.push({
+                        id: 10,
+                        element: cheapestInfo10,
+                        price: data.itinerary10.cheapest.price,
+                        html: `<div class="pre-formatted">
 👉 Pasajes stopover de regreso (Cartagena):
 ✅ Ida ✈️ Lima - Panamá - Cartagena - Panamá
 ✅ Vuelta ✈️ Panamá - Lima 
-💵 Todo a ${data.itinerary10.cheapest.price} USD
-                    </div>`;
-                    cheapestInfo10.style.display = 'block';
+💵 Todo a ${data.itinerary10.cheapest.price} USD 💵
+                        </div>`
+                    });
                 }
+                
+                // Ordenar de menor a mayor precio
+                validItineraries.sort((a, b) => a.price - b.price);
+                
+                // Mostrar ofertas ordenadas por precio
+                validItineraries.forEach(itinerary => {
+                    itinerary.element.innerHTML = itinerary.html;
+                    itinerary.element.style.display = 'block';
+                });
             } catch (error) {
                 errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> ${error.message}`;
                 errorDiv.style.display = 'block';
