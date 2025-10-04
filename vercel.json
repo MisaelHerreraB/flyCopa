@@ -1,9 +1,8 @@
 {
+    "buildCommand": "npm run build",
+    "installCommand": "npm install",
     "functions": {
         "api/offers.js": {
-            "maxDuration": 30
-        },
-        "api/offers-new.js": {
             "maxDuration": 30
         },
         "api/cache.js": {

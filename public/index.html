@@ -373,10 +373,16 @@
                 let apiUrl = '/api/offers';
                 const failedApis = localStorage.getItem('failedApis');
                 let estimatedTime = 18000; // 18 segundos para búsqueda completa
+                
+                // Agregar timestamp para evitar cache del navegador
+                const timestamp = new Date().getTime();
+                const separator = apiUrl.includes('?') ? '&' : '?';
+                apiUrl += `${separator}_t=${timestamp}`;
+                
                 if (failedApis) {
                     const parsedFailed = JSON.parse(failedApis);
                     if (parsedFailed.length > 0) {
-                        apiUrl += `?retry=${parsedFailed.join(',')}`;
+                        apiUrl += `&retry=${parsedFailed.join(',')}`;
                         console.log(`Reintentando búsqueda en ciudades: ${parsedFailed.join(', ')}`);
                         progressText.textContent = `Reintentando búsqueda en ciudades pendientes... Progreso: ${progress}%`;
                         estimatedTime = parsedFailed.length * 1800; // 1.8 segundos por API fallida
@@ -431,10 +437,14 @@
 
                 // Mostrar oferta más barata global
                 if (data.globalCheapest) {
+                    console.log('Debug Frontend - data.globalCheapest completo:', data.globalCheapest);
+                    console.log('Debug Frontend - segments del backend:', data.globalCheapest.segments);
+                    
                     // Construir segmentos de vuelo para la imagen
                     const segments = [];
                     if (data.globalCheapest.segments && Array.isArray(data.globalCheapest.segments)) {
-                        data.globalCheapest.segments.forEach(seg => {
+                        data.globalCheapest.segments.forEach((seg, index) => {
+                            console.log(`Debug Frontend - Segmento ${index}:`, seg);
                             segments.push({
                                 date: seg.date,
                                 from: seg.from,
@@ -448,6 +458,7 @@
                             });
                         });
                     }
+                    console.log('Debug Frontend - segments construidos para imagen:', segments);
 
                     globalCheapestInfo.innerHTML = `
                         <div class="pre-formatted" id="cheapest-message">
@@ -467,34 +478,18 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                         </button>
                     `;
                     globalCheapestInfo.style.display = 'block';
-        function copyCheapestMessage() {
-            const msg = document.getElementById('cheapest-message');
-            if (msg) {
-                // Convertir el HTML a texto plano respetando saltos y líneas vacías
-                let html = msg.innerHTML;
-                // Reemplazar <br> y etiquetas de bloque por saltos de línea
-                html = html.replace(/<br\s*\/?>/gi, '\n');
-                html = html.replace(/<div[^>]*>/gi, '\n').replace(/<\/div>/gi, '');
-                html = html.replace(/<p[^>]*>/gi, '\n').replace(/<\/p>/gi, '');
-                // Eliminar cualquier otra etiqueta HTML
-                let text = html.replace(/<[^>]+>/g, '').trim();
-                // Reemplazar múltiples saltos por doble salto para líneas vacías
-                text = text.replace(/\n{2,}/g, '\n\n');
-                navigator.clipboard.writeText(text)
-                    .then(() => {
-                        alert('Mensaje copiado al portapapeles');
-                    })
-                    .catch(() => {
-                        alert('No se pudo copiar el mensaje');
-                    });
-            }
-        }
+
+                    // Debug: Verificar si llegaron los segments
+                    console.log('Debug - data.globalCheapest:', data.globalCheapest);
+                    console.log('Debug - segments construidos:', segments);
 
                     // Generar imagen con segmentos
                     const imageData = {
                         price: data.globalCheapest.price,
-                        segments: segments
+                        segments: segments.length > 0 ? segments : data.globalCheapest.segments || []
                     };
+                    console.log('Debug - imageData enviado a generateOfferImage:', imageData);
+                    
                     const generatedImage = await generateOfferImage(imageData);
                     if (generatedImage) {
                         offerImage.src = generatedImage;
@@ -709,6 +704,9 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
 
         // Función para generar la imagen basada en el diseño proporcionado
         async function generateOfferImage(data) {
+            console.log('Debug generateOfferImage - datos recibidos:', data);
+            console.log('Debug generateOfferImage - segments:', data.segments);
+            
             // Función para parsear fecha localmente (evita desfase por zona horaria)
             function parseLocalDate(dateStr) {
                 const [year, month, day] = dateStr.split('-').map(Number);

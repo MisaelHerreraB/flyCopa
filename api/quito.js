@@ -68,11 +68,24 @@ module.exports = async (req, res) => {
         return res.status(400).json({ error: 'transactionidentifier y useridentifier son requeridos' });
     }
     
-    const url = 'https://uat-proxy.panama.prod.copaair.com/pdb/offer-context-search';
+    const url = 'https://api.copaair.com/ibe/booking/plan-multicity';
     const headers = {
-        'Authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJwZGItb2ZmZXItY29udGV4dC1zZWFyY2giLCJzdWIiOiJwZGItb2ZmZXItY29udGV4dC1zZWFyY2giLCJzY29wZXMiOlsib2ZmZXItY29udGV4dC1zZWFyY2giXSwiaXNzIjoiZGItc2VydmljZSIsImV4cCI6MjAyNDAzMzEyMywiaWF0IjoxNzA4Njk5MTIzfQ.k2y1iHkqA6KOxqjdgpKRHdqB3qPk9qVqGE2Nw8sL6a0JqTcXV7kU9rO5mJ8H3LyI2pN8vQ9wC1kR7xA4zS6tH2uB9mG3fO8jE5lQ0rV9nH6bX1cN7wS4dM8fR2oL0pB6qE',
-        'Content-Type': 'application/json',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        'accept': '*/*',
+        'accept-language': 'es-PA',
+        'content-type': 'application/json',
+        'origin': 'https://shopping.copaair.com',
+        'priority': 'u=1, i',
+        'sec-ch-ua': '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-site',
+        'storefront': 'GS',
+        'transactionidentifier': transactionidentifier,
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36',
+        'useridentifier': useridentifier,
+        'Cookie': 'incap_ses_1720_2819721=cIY/dXaGL0RLChrvS6veF7qq3GgAAAAAY60WvRGwr7grrEGX+0+nPA==; nlbi_2819721=N9BRVjYGK03BgLfoKqYZMAAAAABsG7hTogBmgphNVsByFhe4; visid_incap_2819721=0ZnecVHbSp+SjvQkyGf2c7iq3GgAAAAAQUIPAAAAAADPyOHpLGA9q+odK9R/dHMH'
     };
     
     const results = {};
@@ -81,35 +94,16 @@ module.exports = async (req, res) => {
         // Quito ida (LIM -> PTY -> UIO -> LIM)
         if (stopover === 'both' || stopover === 'ida') {
             const payload1 = {
-                "searchRequestData": {
-                    "transactionidentifier": transactionidentifier,
-                    "useridentifier": useridentifier,
-                    "version": "1.0",
-                    "language": "es",
-                    "passengerTypeQuantities": [{"passengerType": "ADT", "quantity": 1}],
-                    "originDestinationRequests": [
-                        {
-                            "originLocationCode": "LIM",
-                            "destinationLocationCode": "PTY",
-                            "departureDate": "2026-02-13"
-                        },
-                        {
-                            "originLocationCode": "PTY",
-                            "destinationLocationCode": "UIO",
-                            "departureDate": "2026-02-13"
-                        },
-                        {
-                            "originLocationCode": "UIO",
-                            "destinationLocationCode": "PTY",
-                            "departureDate": "2026-02-15"
-                        },
-                        {
-                            "originLocationCode": "PTY",
-                            "destinationLocationCode": "LIM",
-                            "departureDate": "2026-02-15"
-                        }
-                    ]
-                }
+                numberOfAdults: 1,
+                numberOfChildren: 0,
+                numberOfInfants: 0,
+                cabinType: 'Y',
+                isStopOver: true,
+                originDestinations: [
+                    { od: 'OD1', departure: { airportCode: 'LIM', date: '2026-02-13' }, arrival: { airportCode: 'PTY' } },
+                    { od: 'OD2', departure: { airportCode: 'PTY', date: '2026-02-18' }, arrival: { airportCode: 'UIO' } },
+                    { od: 'OD3', departure: { airportCode: 'UIO', date: '2026-02-18' }, arrival: { airportCode: 'LIM' } }
+                ]
             };
             
             results.ida = await fetchOffers(url, headers, payload1, 'Quito IDA');
@@ -118,30 +112,16 @@ module.exports = async (req, res) => {
         // Quito regreso (LIM -> UIO -> PTY -> LIM)
         if (stopover === 'both' || stopover === 'regreso') {
             const payload2 = {
-                "searchRequestData": {
-                    "transactionidentifier": transactionidentifier,
-                    "useridentifier": useridentifier,
-                    "version": "1.0",
-                    "language": "es",
-                    "passengerTypeQuantities": [{"passengerType": "ADT", "quantity": 1}],
-                    "originDestinationRequests": [
-                        {
-                            "originLocationCode": "LIM",
-                            "destinationLocationCode": "UIO",
-                            "departureDate": "2026-02-13"
-                        },
-                        {
-                            "originLocationCode": "UIO",
-                            "destinationLocationCode": "PTY",
-                            "departureDate": "2026-02-13"
-                        },
-                        {
-                            "originLocationCode": "PTY",
-                            "destinationLocationCode": "LIM",
-                            "departureDate": "2026-02-15"
-                        }
-                    ]
-                }
+                numberOfAdults: 1,
+                numberOfChildren: 0,
+                numberOfInfants: 0,
+                cabinType: 'Y',
+                isStopOver: true,
+                originDestinations: [
+                    { od: 'OD1', departure: { airportCode: 'LIM', date: '2026-02-13' }, arrival: { airportCode: 'UIO' } },
+                    { od: 'OD2', departure: { airportCode: 'UIO', date: '2026-02-13' }, arrival: { airportCode: 'PTY' } },
+                    { od: 'OD3', departure: { airportCode: 'PTY', date: '2026-02-18' }, arrival: { airportCode: 'LIM' } }
+                ]
             };
             
             results.regreso = await fetchOffers(url, headers, payload2, 'Quito REGRESO');
@@ -150,7 +130,11 @@ module.exports = async (req, res) => {
         return res.status(200).json({
             success: true,
             city: 'Quito',
-            data: results
+            data: results,
+            originDestinations: {
+                ida: results.ida ? results.ida.originDestinations : null,
+                regreso: results.regreso ? results.regreso.originDestinations : null
+            }
         });
         
     } catch (error) {
