@@ -673,13 +673,29 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                     });
                 }
                 
+                // Limpiar todas las tarjetas primero
+                const allCards = [cheapestInfo1, cheapestInfo2, cheapestInfo3, cheapestInfo4, cheapestInfo5, 
+                                 cheapestInfo6, cheapestInfo7, cheapestInfo8, cheapestInfo9, cheapestInfo10];
+                allCards.forEach(card => {
+                    card.style.display = 'none';
+                    card.innerHTML = '';
+                });
+                
                 // Ordenar de menor a mayor precio
                 validItineraries.sort((a, b) => a.price - b.price);
                 
-                // Mostrar ofertas ordenadas por precio
+                // Obtener el contenedor padre
+                const container = document.getElementById('individual-offers-section').querySelector('.col-12');
+                
+                // Reordenar físicamente los elementos en el DOM
                 validItineraries.forEach(itinerary => {
+                    // Remover el elemento de su posición actual
+                    itinerary.element.remove();
+                    // Agregar contenido
                     itinerary.element.innerHTML = itinerary.html;
                     itinerary.element.style.display = 'block';
+                    // Añadir al final del contenedor (ahora en orden de precio)
+                    container.appendChild(itinerary.element);
                 });
             } catch (error) {
                 errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> ${error.message}`;
