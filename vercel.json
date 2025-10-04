@@ -2,6 +2,27 @@
     "functions": {
         "api/offers.js": {
             "maxDuration": 30
+        },
+        "api/offers-new.js": {
+            "maxDuration": 30
+        },
+        "api/cache.js": {
+            "maxDuration": 10
+        },
+        "api/medellin.js": {
+            "maxDuration": 30
+        },
+        "api/quito.js": {
+            "maxDuration": 30
+        },
+        "api/cali.js": {
+            "maxDuration": 30
+        },
+        "api/bogota.js": {
+            "maxDuration": 30
+        },
+        "api/cartagena.js": {
+            "maxDuration": 30
         }
     }
 }
