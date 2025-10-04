@@ -177,9 +177,16 @@
                     <button class="btn btn-primary btn-lg w-100" id="fetch-button" style="display:none">
                         <i class="bi bi-airplane-fill"></i> ¡Buscar Ofertas de Vuelos Ahora!
                     </button>
-                    <button class="btn btn-warning btn-lg w-100 mt-2" id="retry-button" style="display:none">
-                        <i class="bi bi-arrow-clockwise"></i> Reintentar Búsqueda en Ciudades Pendientes
-                    </button>
+                    
+                    <!-- Información de reintento automático -->
+                    <div class="alert alert-warning mt-2" id="auto-retry-info" style="display:none">
+                        <div class="text-center">
+                            <i class="bi bi-clock"></i>
+                            <strong>Algunas ciudades fallan. Reintento automático en:</strong><br>
+                            <span id="retry-countdown" class="badge bg-warning text-dark">-</span>
+                            <br><small class="text-muted mt-1 d-block">El sistema reintentará automáticamente las ciudades que fallaron</small>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- Progress Bar -->
@@ -250,6 +257,21 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
     <script>
+        // Función para mostrar información de reintento automático pendiente
+        function displayPendingRetry(pendingRetry) {
+            const autoRetryInfo = document.getElementById('auto-retry-info');
+            const retryCountdown = document.getElementById('retry-countdown');
+            
+            if (pendingRetry && pendingRetry.minutesUntilRetry > 0) {
+                retryCountdown.textContent = `${pendingRetry.minutesUntilRetry} minuto${pendingRetry.minutesUntilRetry > 1 ? 's' : ''}`;
+                autoRetryInfo.style.display = 'block';
+                
+                console.log(`APIs pendientes de reintento: ${pendingRetry.failedApis.join(', ')} - ${pendingRetry.minutesUntilRetry} minutos restantes`);
+            } else {
+                autoRetryInfo.style.display = 'none';
+            }
+        }
+        
         function copyCheapestMessage() {
             const msg = document.getElementById('cheapest-message');
             if (msg) {
@@ -289,16 +311,6 @@
             }, 3000);
         }
         document.addEventListener('DOMContentLoaded', () => {
-            // Verificar si hay ciudades pendientes al cargar
-            const failedApis = localStorage.getItem('failedApis');
-            if (failedApis) {
-                const retryButton = document.getElementById('retry-button');
-                retryButton.style.display = 'block';
-                retryButton.addEventListener('click', () => {
-                    localStorage.removeItem('failedApis'); // Limpiar para forzar nueva búsqueda
-                    fetchOffers();
-                });
-            }
             fetchOffers();
         });
         async function fetchOffers() {
@@ -401,17 +413,16 @@
                     throw new Error(data.error);
                 }
                 
-                // Gestionar ciudades con búsqueda fallida
+                // Gestionar ciudades con búsqueda fallida o pendingRetry
                 if (data.failedApis && data.failedApis.length > 0) {
-                    localStorage.setItem('failedApis', JSON.stringify(data.failedApis));
                     console.log(`Ciudades con búsqueda fallida: ${data.failedApis.join(', ')}`);
                     
                     // Mostrar error específico cuando fallen algunas ciudades
-                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Falló la búsqueda con algunas ciudades`;
+                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Falló la búsqueda con algunas ciudades - Reintento automático en 5 minutos`;
                     errorDiv.style.display = 'block';
-                } else {
-                    // Limpiar ciudades fallidas si todo está bien
-                    localStorage.removeItem('failedApis');
+                } else if (data.pendingRetry) {
+                    // Mostrar información de reintento pendiente
+                    displayPendingRetry(data.pendingRetry);
                 }
 
                 // Progreso completado (100%)
@@ -635,22 +646,6 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
                 loading.style.display = 'none';
                 fetchButton.disabled = false;
                 fetchButton.innerHTML = '<i class="bi bi-search"></i> Actualizar Búsqueda';
-                
-                // Mostrar/ocultar botón de reintento según si hay ciudades pendientes
-                const retryButton = document.getElementById('retry-button');
-                const failedApis = localStorage.getItem('failedApis');
-                if (failedApis && JSON.parse(failedApis).length > 0) {
-                    retryButton.style.display = 'block';
-                    if (!retryButton.hasAttribute('data-listener')) {
-                        retryButton.setAttribute('data-listener', 'true');
-                        retryButton.addEventListener('click', () => {
-                            localStorage.removeItem('failedApis');
-                            fetchOffers();
-                        });
-                    }
-                } else {
-                    retryButton.style.display = 'none';
-                }
             }
         }
 

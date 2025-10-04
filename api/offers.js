@@ -11,14 +11,35 @@ module.exports = async (req, res) => {
     // Clave única para la cache de ofertas
     const REDIS_KEY = "copaair:offers:2026-02-13";
     const FAILED_KEY = "copaair:failed:2026-02-13";
+    const FAILED_TIMESTAMP_KEY = "copaair:failed:timestamp:2026-02-13";
     const LOCK_KEY = "copaair:lock:2026-02-13";
     const PROCESSING_KEY = "copaair:processing:2026-02-13";
     
-    // Verificar si se solicita reintento de APIs específicas
-    const retryApis = req.query.retry ? req.query.retry.split(',') : null;
+    // Tiempo mínimo antes de reintento automático: 5 minutos
+    const MIN_RETRY_INTERVAL = 5 * 60 * 1000; // 5 minutos en milisegundos
     
-    // Intentar recuperar de Redis primero (solo si no es un reintento)
-    if (!retryApis) {
+    // Verificar APIs fallidas y si es momento de reintentarlas automáticamente
+    let autoRetryApis = null;
+    const failedApis = await redis.get(FAILED_KEY);
+    const failedTimestamp = await redis.get(FAILED_TIMESTAMP_KEY);
+    
+    if (failedApis && failedTimestamp) {
+        const failedApisList = typeof failedApis === 'string' ? JSON.parse(failedApis) : failedApis;
+        const lastFailureTime = parseInt(failedTimestamp);
+        const timeSinceFailure = Date.now() - lastFailureTime;
+        
+        // Si han pasado más de 5 minutos desde la última falla, reintentar automáticamente
+        if (timeSinceFailure >= MIN_RETRY_INTERVAL) {
+            autoRetryApis = failedApisList;
+            console.log(`[${new Date().toISOString()}] Reintento automático activado para APIs: ${autoRetryApis.join(', ')} (${Math.round(timeSinceFailure / 1000 / 60)} minutos desde la falla)`);
+        } else {
+            const minutesRemaining = Math.ceil((MIN_RETRY_INTERVAL - timeSinceFailure) / 1000 / 60);
+            console.log(`[${new Date().toISOString()}] APIs fallidas detectadas, pero faltan ${minutesRemaining} minutos para reintento automático`);
+        }
+    }
+    
+    // Intentar recuperar de Redis primero (solo si no es un reintento automático)
+    if (!autoRetryApis) {
         const cached = await redis.get(REDIS_KEY);
         if (cached) {
             // Si el valor es string, parsear a objeto
@@ -28,6 +49,22 @@ module.exports = async (req, res) => {
                     cachedData = JSON.parse(cached);
                 } catch (e) {
                     // Si falla el parseo, devolver el string tal cual
+                }
+            }
+            
+            // Añadir información sobre APIs fallidas pendientes si las hay
+            if (failedApis && failedTimestamp) {
+                const failedApisList = typeof failedApis === 'string' ? JSON.parse(failedApis) : failedApis;
+                const lastFailureTime = parseInt(failedTimestamp);
+                const timeSinceFailure = Date.now() - lastFailureTime;
+                const minutesRemaining = Math.ceil((MIN_RETRY_INTERVAL - timeSinceFailure) / 1000 / 60);
+                
+                if (timeSinceFailure < MIN_RETRY_INTERVAL) {
+                    cachedData.pendingRetry = {
+                        failedApis: failedApisList,
+                        minutesUntilRetry: minutesRemaining,
+                        lastFailureTime: new Date(lastFailureTime).toISOString()
+                    };
                 }
             }
             
@@ -163,7 +200,7 @@ module.exports = async (req, res) => {
         // Generar useridentifier aleatorio de longitud 21 (letras y números)
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         useridentifier = Array.from({length: 21}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-        await redis.set(IDENTIFIERS_KEY, JSON.stringify({ transactionidentifier, useridentifier }), { ex: 60 * 60 * 12 });
+        await redis.set(IDENTIFIERS_KEY, JSON.stringify({ transactionidentifier, useridentifier }), { ex: 60 * 60 * 6 });
     } else {
         try {
             const parsed = typeof identifiers === 'string' ? JSON.parse(identifiers) : identifiers;
@@ -173,7 +210,7 @@ module.exports = async (req, res) => {
             transactionidentifier = uuidv4();
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
             useridentifier = Array.from({length: 21}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-            await redis.set(IDENTIFIERS_KEY, JSON.stringify({ transactionidentifier, useridentifier }), { ex: 60 * 60 * 12 });
+            await redis.set(IDENTIFIERS_KEY, JSON.stringify({ transactionidentifier, useridentifier }), { ex: 60 * 60 * 6 });
         }
     }
 
@@ -362,10 +399,10 @@ module.exports = async (req, res) => {
         '10': { url: url10, payload: payload10, name: 'CTG (stopover de regreso)' }
     };
     
-    // Obtener datos existentes si es un reintento
+    // Obtener datos existentes si es un reintento automático
     let existingData = {};
-    if (retryApis) {
-        console.log(`[${new Date().toISOString()}] Modo reintento activado para APIs: ${retryApis.join(', ')}`);
+    if (autoRetryApis) {
+        console.log(`[${new Date().toISOString()}] Modo reintento automático activado para APIs: ${autoRetryApis.join(', ')}`);
         const cached = await redis.get(REDIS_KEY);
         if (cached) {
             existingData = typeof cached === 'string' ? JSON.parse(cached) : cached;
@@ -375,8 +412,8 @@ module.exports = async (req, res) => {
         }
     }
     
-    // Ejecutar llamadas (todas o solo las solicitadas para reintento)
-    const apisToCall = retryApis || Object.keys(apiConfigs);
+    // Ejecutar llamadas (todas o solo las solicitadas para reintento automático)
+    const apisToCall = autoRetryApis || Object.keys(apiConfigs);
     const results = {};
     
     for (const apiId of apisToCall) {
@@ -392,9 +429,9 @@ module.exports = async (req, res) => {
     // Usar datos existentes para APIs no reintentadas, o hacer llamada si no hay datos previos exitosos
     let data1, data2, data3, data4, data5, data6, data7, data8, data9, data10;
     
-    if (retryApis) {
-        // Si es un reintento, usar datos exitosos existentes y solo reejecutar las fallidas
-        console.log(`[${new Date().toISOString()}] Combinando datos existentes con resultados de reintento`);
+    if (autoRetryApis) {
+        // Si es un reintento automático, usar datos exitosos existentes y solo reejecutar las fallidas
+        console.log(`[${new Date().toISOString()}] Combinando datos existentes con resultados de reintento automático`);
         data1 = results.data1 || (existingData.itinerary1 && !existingData.itinerary1.error ? existingData.itinerary1 : null);
         data2 = results.data2 || (existingData.itinerary2 && !existingData.itinerary2.error ? existingData.itinerary2 : null);
         data3 = results.data3 || (existingData.itinerary3 && !existingData.itinerary3.error ? existingData.itinerary3 : null);
@@ -956,20 +993,28 @@ module.exports = async (req, res) => {
         }
     });
     
-    // Guardar información de APIs fallidas
+    // Guardar información de APIs fallidas con timestamp
     if (failedApis.length > 0) {
-        await redis.set(FAILED_KEY, JSON.stringify(failedApis), { ex: 60 * 60 * 2 });
+        const currentTime = Date.now();
+        await redis.set(FAILED_KEY, JSON.stringify(failedApis), { ex: 60 * 60 * 1 });
+        await redis.set(FAILED_TIMESTAMP_KEY, currentTime.toString(), { ex: 60 * 60 * 1 });
         response.failedApis = failedApis;
-        console.log(`[${new Date().toISOString()}] APIs fallidas detectadas: ${failedApis.join(', ')}`);
+        console.log(`[${new Date().toISOString()}] APIs fallidas detectadas: ${failedApis.join(', ')} - Reintento automático en 5 minutos`);
     } else {
-        // Limpiar APIs fallidas si todo está bien
+        // Limpiar APIs fallidas y timestamp si todo está bien
         await redis.del(FAILED_KEY);
+        await redis.del(FAILED_TIMESTAMP_KEY);
+        
+        // Si era un reintento automático exitoso, informar
+        if (autoRetryApis) {
+            console.log(`[${new Date().toISOString()}] Reintento automático exitoso - APIs recuperadas: ${autoRetryApis.join(', ')}`);
+        }
     }
     
     // Guardar en Redis para futuras consultas
     console.log(`[${new Date().toISOString()}] Guardando respuesta completa en Redis con clave: ${REDIS_KEY}`);
     console.log(`[${new Date().toISOString()}] Tamaño de respuesta: ${JSON.stringify(response).length} caracteres`);
-    await redis.set(REDIS_KEY, response, { ex: 60 * 60 * 3 }); // Expira en 3 horas
+    await redis.set(REDIS_KEY, response, { ex: 60 * 60 * 2 }); // Expira en 2 horas
     console.log(`[${new Date().toISOString()}] Respuesta guardada exitosamente en Redis (expira en 3 horas)`);
     
     // Liberar el lock de procesamiento
