@@ -6,7 +6,6 @@
     "scripts": {
         "dev": "node server.js",
         "vercel-dev": "vercel dev",
-        "build": "vercel build",
         "start": "node server.js",
         "serve": "npx serve public"
     },
@@ -15,10 +14,10 @@
         "axios": "^1.7.2",
         "dotenv": "^16.6.1",
         "express": "^4.21.2",
-        "uuid": "^9.0.0"
+        "uuid": "^10.0.0"
     },
     "devDependencies": {
         "serve": "^14.2.0",
-        "vercel": "^37.0.0"
+        "vercel": "^48.2.0"
     }
 }

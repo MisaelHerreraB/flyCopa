@@ -1,6 +1,5 @@
 {
-    "buildCommand": "npm run build",
-    "installCommand": "npm install",
+    "version": 2,
     "functions": {
         "api/offers.js": {
             "maxDuration": 30
@@ -23,5 +22,11 @@
         "api/cartagena.js": {
             "maxDuration": 30
         }
-    }
+    },
+    "rewrites": [
+        {
+            "source": "/",
+            "destination": "/index.html"
+        }
+    ]
 }
