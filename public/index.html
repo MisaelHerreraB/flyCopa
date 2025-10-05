@@ -2552,21 +2552,8 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
             console.log('\n🧪🧪🧪 FIN DE PRUEBAS ESPECÍFICAS 🧪🧪🧪');
         }
         
-        // Agregar botón de prueba al DOM
-        function addTestButton() {
-            const button = document.createElement('button');
-            button.textContent = '🧪 Probar Route Generation';
-            button.className = 'btn btn-info position-fixed';
-            button.style.top = '10px';
-            button.style.right = '10px';
-            button.style.zIndex = '9999';
-            button.onclick = testRouteGeneration;
-            document.body.appendChild(button);
-        }
-        
         // Agregar botón cuando se carga la página
         document.addEventListener('DOMContentLoaded', function() {
-            addTestButton();
             
             // También agregar una función global para pruebas manuales
             window.debugRouteGeneration = testRouteGeneration;
@@ -2578,7 +2565,6 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
             console.log('🛠️ FUNCIONES DE DEBUG DISPONIBLES:');
             console.log('   - window.debugRouteGeneration() - Prueba con datos simulados');
             console.log('   - window.testRealData() - Ejecuta búsqueda real de ofertas');
-            console.log('   - También hay un botón "🧪 Probar Route Generation" en la esquina superior derecha');
             
             // Ejecutar pruebas automáticamente al cargar
             setTimeout(() => {
