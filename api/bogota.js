@@ -62,7 +62,13 @@ async function fetchOffers(url, headers, payload, apiName = 'API') {
 }
 
 module.exports = async (req, res) => {
-    const { transactionidentifier, useridentifier, stopover = 'both' } = req.body;
+    const { 
+        transactionidentifier, 
+        useridentifier, 
+        stopover = 'both',
+        searchDate = '2026-02-13', // Fecha de salida
+        returnDate = '2026-02-18'  // Fecha de regreso
+    } = req.body;
     
     if (!transactionidentifier || !useridentifier) {
         return res.status(400).json({ error: 'transactionidentifier y useridentifier son requeridos' });
@@ -100,9 +106,9 @@ module.exports = async (req, res) => {
                 cabinType: 'Y',
                 isStopOver: true,
                 originDestinations: [
-                    { od: 'OD1', departure: { airportCode: 'LIM', date: '2026-02-13' }, arrival: { airportCode: 'PTY' } },
-                    { od: 'OD2', departure: { airportCode: 'PTY', date: '2026-02-18' }, arrival: { airportCode: 'BOG' } },
-                    { od: 'OD3', departure: { airportCode: 'BOG', date: '2026-02-18' }, arrival: { airportCode: 'LIM' } }
+                    { od: 'OD1', departure: { airportCode: 'LIM', date: searchDate }, arrival: { airportCode: 'PTY' } },
+                    { od: 'OD2', departure: { airportCode: 'PTY', date: returnDate }, arrival: { airportCode: 'BOG' } },
+                    { od: 'OD3', departure: { airportCode: 'BOG', date: returnDate }, arrival: { airportCode: 'LIM' } }
                 ]
             };
             
@@ -118,9 +124,9 @@ module.exports = async (req, res) => {
                 cabinType: 'Y',
                 isStopOver: true,
                 originDestinations: [
-                    { od: 'OD1', departure: { airportCode: 'LIM', date: '2026-02-13' }, arrival: { airportCode: 'BOG' } },
-                    { od: 'OD2', departure: { airportCode: 'BOG', date: '2026-02-13' }, arrival: { airportCode: 'PTY' } },
-                    { od: 'OD3', departure: { airportCode: 'PTY', date: '2026-02-18' }, arrival: { airportCode: 'LIM' } }
+                    { od: 'OD1', departure: { airportCode: 'LIM', date: searchDate }, arrival: { airportCode: 'BOG' } },
+                    { od: 'OD2', departure: { airportCode: 'BOG', date: searchDate }, arrival: { airportCode: 'PTY' } },
+                    { od: 'OD3', departure: { airportCode: 'PTY', date: returnDate }, arrival: { airportCode: 'LIM' } }
                 ]
             };
             

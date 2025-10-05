@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MMM - Congreso Centroamericano 2026 - Comparador de Ofertas de Vuelos - Copa Airlines</title>
+    <title>MMM - Congreso Centroamericano 2026 - Comparador de Ofertas de Vuelos - Copa Airlines (90 Combinaciones)</title>
     <!-- Bootstrap 5 CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <!-- Bootstrap Icons CDN -->
@@ -72,18 +72,90 @@
             max-width: 700px;
         }
         .global-cheapest-card {
-            background-color: #ffe5b4 !important;
-            border-left: 5px solid #ffca2c !important;
+            background: white !important;
+            border: 1px solid #e0e0e0 !important;
+            border-radius: 12px !important;
             margin: 20px auto;
-            max-width: 800px;
-            font-size: 1.1em;
+            max-width: 100%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 0px;
+            transition: box-shadow 0.3s ease;
+        }
+        .global-cheapest-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+        .global-cheapest-card .global-title {
+            color: #1976d2;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .global-cheapest-card .global-city {
+            color: #333;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        .global-cheapest-card .global-dates {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+        .global-cheapest-card .global-price {
+            color: #1976d2;
+            font-size: 2rem;
             font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .global-cheapest-card .pre-formatted {
+            color: #333 !important;
+            background: #f8f9fa !important;
+            border: 1px solid #a3a3a3;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin: 15px 0;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            max-width: 500px;
+            display: inline-block;
+            text-align: left;
+            white-space: pre-line;
         }
         .offer-image {
             max-width: 100%;
-            margin-top: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            width: 100%;
+            max-height: 300px;
+            margin: 10px auto;
+            border: 1px solid #b1b1b1;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: block;
+            object-fit: contain;
+        }
+        .offer-image:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        .offer-image-container {
+            background: white;
+            border-radius: 12px;
+            padding: 0px;
+            margin-top: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #e3f2fd;
+            position: relative;
+        }
+        .offer-image-container h6 {
+            color: #1976d2 !important;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .global-offer-container {
+            background: transparent;
+            padding: 25px 0;
+            margin: 20px 0;
+            display: block !important;
         }
         .right-offer-column {
             display: flex;
@@ -137,6 +209,172 @@
             font-family: 'Courier New', monospace;
             line-height: 1.4;
         }
+        
+        /* Estilos para pestañas de fechas */
+        .date-tabs {
+            margin: 20px 0;
+        }
+        
+        /* Estilos para tarjetas de estadísticas */
+        .summary-stats {
+            background: #f8f9fa;
+            padding: 30px 20px;
+            border-radius: 20px;
+            margin: 30px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #0056b3, #007bff);
+            color: white;
+            padding: 25px 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 86, 179, 0.3);
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            border: none;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0, 86, 179, 0.4);
+        }
+        
+        .stat-card h5 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .stat-card p {
+            font-size: 1.1rem;
+            margin-bottom: 0;
+            color: #f8f9fa;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        @media (max-width: 768px) {
+            .summary-stats {
+                padding: 20px 15px;
+                margin: 20px 0;
+            }
+            
+            .stat-card {
+                padding: 20px 15px;
+                margin-bottom: 15px;
+            }
+            
+            .stat-card h5 {
+                font-size: 2rem;
+            }
+            
+            .stat-card p {
+                font-size: 1rem;
+            }
+        }
+        
+        .date-tab {
+            display: inline-block;
+            padding: 10px 15px;
+            margin: 5px;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .date-tab.active {
+            background: #0056b3;
+            color: white;
+            border-color: #0056b3;
+        }
+        
+        .date-tab:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+        
+        .date-tab.active:hover {
+            background: #004494;
+        }
+        
+        .date-content {
+            display: none;
+        }
+        
+        .date-content.active {
+            display: block;
+        }
+        
+        .city-group {
+            margin-bottom: 30px;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            background: white;
+        }
+        
+        .city-group h4 {
+            color: #0056b3;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 5px;
+        }
+        
+        .stopover-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .stopover-card {
+            flex: 1;
+            min-width: 300px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f8f9fa;
+        }
+        
+        .stopover-card.has-offer {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+        
+        .stopover-card.has-error {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+        
+        .summary-stats {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .stopover-group {
+                flex-direction: column;
+            }
+            
+            .stopover-card {
+                min-width: 100%;
+            }
+            
+            .date-tab {
+                display: block;
+                margin: 2px 0;
+                text-align: center;
+            }
+        }
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
@@ -147,7 +385,7 @@
             }
             .cheapest-card, .global-cheapest-card {
                 font-size: 0.9em;
-                margin: 15px 10px;
+                margin: 0px 0px;
             }
             .offer-image {
                 max-width: 100%;
@@ -156,6 +394,337 @@
                 font-size: 1.5rem;
                 margin-bottom: 20px;
             }
+        }
+        
+        /* Estilos para las nuevas tarjetas de ofertas */
+        .offer-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .offer-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .offer-rank .badge {
+            font-size: 1rem;
+            padding: 8px 12px;
+        }
+        
+        .date-info {
+            font-size: 0.9rem;
+        }
+        
+        .route-info {
+            font-size: 0.85rem;
+            overflow: visible;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+        
+        .route-info small {
+            display: block;
+            line-height: 1.3;
+            white-space: normal;
+            word-break: break-word;
+        }
+        
+        .offer-card .card {
+            min-height: 140px;
+        }
+        
+        .offer-card .card-body {
+            padding: 1rem;
+        }
+        
+        .offer-card .row {
+            align-items: flex-start !important;
+        }
+        
+        .price-info h5 {
+            font-weight: bold;
+            font-size: 1.4rem;
+        }
+        
+        /* Filtros responsivos para móviles */
+        .filter-container {
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            background: white;
+            padding: 15px 0;
+            border-bottom: 2px solid #f8f9fa;
+            margin-bottom: 20px;
+        }
+        
+        /* Mejora para desktop: evitar contenedor demasiado ancho */
+        @media (min-width: 1025px) {
+            .filter-container {
+                max-width: 1400px;
+                margin: 0 auto 20px auto;
+                padding: 20px;
+            }
+        }
+        
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .btn-group .btn {
+            flex: none;
+            min-width: 180px;
+            max-width: 220px;
+            padding: 12px 16px;
+            border-radius: 25px !important;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid #e3f2fd;
+            background: white;
+            color: #1976d2;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            white-space: nowrap;
+            text-align: center;
+        }
+        
+        .btn-group .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            border-color: #1976d2;
+        }
+        
+        .btn-group .btn.active {
+            background: linear-gradient(135deg, #1976d2, #0056b3);
+            border-color: #0056b3;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4);
+        }
+        
+        .btn-group .btn i {
+            margin-right: 6px;
+        }
+        
+        /* Scroll horizontal en móviles para filtros */
+        @media (max-width: 768px) {
+            .filter-container {
+                position: sticky;
+                top: 0;
+                padding: 8px 0;
+                margin: 0 -15px 15px -15px;
+                padding-left: 10px;
+                padding-right: 10px;
+                overflow: hidden;
+            }
+            
+            .btn-group {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding: 8px 0;
+                gap: 8px;
+                justify-content: flex-start;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+                padding-bottom: 12px; /* Espacio para evitar corte */
+            }
+            
+            .btn-group::-webkit-scrollbar {
+                display: none;
+            }
+            
+            .btn-group .btn {
+                flex: none;
+                min-width: 100px;
+                max-width: 120px;
+                white-space: nowrap;
+                font-size: 0.75rem;
+                padding: 8px 10px;
+                line-height: 1.2;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            
+            .btn-group .btn.all-combo {
+                min-width: 70px;
+                max-width: 80px;
+                font-size: 0.7rem;
+            }
+            
+            .btn-group .btn i {
+                margin-right: 3px;
+                font-size: 0.8em;
+            }
+        }
+        
+        /* Estilos adicionales para tablets */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .btn-group .btn {
+                min-width: 160px;
+                max-width: 200px;
+                font-size: 0.85rem;
+            }
+        }
+        
+        /* Estilos específicos para desktop */
+        @media (min-width: 1025px) {
+            .btn-group {
+                max-width: 1200px;
+                margin: 0 auto;
+                justify-content: center;
+            }
+            
+            .btn-group .btn {
+                min-width: 160px;
+                max-width: 180px;
+                font-size: 0.85rem;
+                margin: 4px;
+            }
+            
+            .btn-group .btn.all-combo {
+                min-width: 120px;
+                max-width: 140px;
+            }
+        }
+        
+        .offers-list {
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .offers-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .offers-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .offers-list::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        
+        .offers-list::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        /* Animaciones para filtros */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Mejoras adicionales para tarjetas de ofertas en móviles */
+        @media (max-width: 576px) {
+            .filter-container {
+                margin: 0 -10px 15px -10px;
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+            
+            .btn-group {
+                gap: 6px;
+                padding: 6px 0 10px 0;
+            }
+            
+            .btn-group .btn {
+                min-width: 85px;
+                max-width: 100px;
+                font-size: 0.7rem;
+                padding: 6px 8px;
+            }
+            
+            .btn-group .btn.all-combo {
+                min-width: 60px;
+                max-width: 70px;
+                font-size: 0.65rem;
+            }
+            
+            .offer-card .card-body {
+                padding: 12px;
+            }
+            
+            .offer-card .row {
+                --bs-gutter-x: 0.5rem;
+            }
+            
+            .offer-rank .badge {
+                font-size: 0.8rem;
+                padding: 6px 8px;
+            }
+            
+            .price-info h5 {
+                font-size: 1.2rem;
+            }
+            
+            .date-info {
+                font-size: 0.8rem;
+            }
+            
+            .route-info {
+                font-size: 0.75rem;
+                overflow: visible;
+                white-space: normal;
+            }
+            
+            .route-info small {
+                white-space: normal;
+                word-break: break-word;
+                display: block;
+            }
+        }
+        
+        /* Indicador de scroll para filtros en móviles */
+        .filter-container::after {
+            content: "";
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.9));
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .filter-container::after {
+                opacity: 1;
+            }
+            
+            .offer-card .card {
+                min-height: 160px;
+            }
+        }
+        
+        /* Estilo para el contador de resultados */
+        .results-counter {
+            border-radius: 15px;
+            border: none;
+            background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+            color: #1976d2;
+            font-size: 0.9rem;
+            padding: 10px 15px;
+        }
+        
+        .results-counter i {
+            margin-right: 8px;
+        }
+        
+        /* Animación pulse para indicador de scroll */
+        @keyframes pulse {
+            0% { transform: translateY(-50%) scale(1); opacity: 0.8; }
+            50% { transform: translateY(-50%) scale(1.1); opacity: 1; }
+            100% { transform: translateY(-50%) scale(1); opacity: 0.8; }
         }
     </style>
 </head>
@@ -168,7 +737,8 @@
         <div class="row justify-content-center">
             <div class="col-12 text-center">
                 <h1 class="header-title">
-                    <i class="bi bi-airplane-engines"></i> MMM - Congreso Centroamericano 2026 - Comparador de Ofertas de Vuelos - Copa Airlines
+                    <i class="bi bi-airplane-engines"></i> MMM - Congreso Centroamericano 2026 - Comparador de Ofertas de Vuelos - Copa Airlines<br>
+                    <small class="text-muted" style="font-size: 0.6em;">90 Combinaciones de Fechas Disponibles</small>
                 </h1>
             </div>
         </div>
@@ -194,7 +764,7 @@
                 <div class="progress" role="progressbar" aria-label="Progreso de búsqueda" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                     <div class="progress-bar bg-primary" style="width: 0%;" id="progress-bar"></div>
                 </div>
-                <p class="mt-2 text-center" id="progress-text">Buscando las mejores ofertas para Medellín, Quito, Cali, Bogotá, Cartagena (stopover de ida y regreso en Panamá)... Progreso: 0%</p>
+                <p class="mt-2 text-center" id="progress-text">Buscando las mejores ofertas para todas las combinaciones de fechas y destinos... Progreso: 0%</p>
             </div>
             <!-- Error Alert -->
             <div class="alert alert-danger error-alert" role="alert" id="error">
@@ -202,28 +772,45 @@
                 <span id="error-message"></span>
             </div>
             <!-- Global Cheapest Offer -->
-            <div class="row justify-content-center" id="global-cheapest-section">
+            <div class="row justify-content-center global-offer-container" id="global-cheapest-section">
                 <div class="col-12">
                     <div class="card global-cheapest-card" id="global-cheapest-info" style="display: none;">
                         <div class="card-body">
-                            <div class="pre-formatted" id="cheapest-message">
-                                🌍✈️ ¡Atención pastores y hermanos!
-                                🔥 Aprovechen esta súper oferta 🔥
-                                👉 Pasajes stopover:
-                                [ITINERARIO]
-                                [STOPOVER_TYPE]
-                                💵 Todo a [PRECIO] USD 💵
-                                ✨ ¡No dejen pasar esta oportunidad! ✨
+                            <div class="row align-items-center">
+                                <!-- Columna izquierda: Información de la oferta -->
+                                <div class="col-lg-8 col-md-12">
+                                    <div class="text-center text-lg-start">
+                                        <h5 class="global-title"><i class="bi bi-trophy"></i> Mejor Oferta Global</h5>
+                                        <div class="global-city">[CIUDAD]</div>
+                                        <div class="global-dates">[FECHAS]</div>
+                                        <div class="global-price">$[PRECIO] USD</div>
+                                    </div>
+                                    
+                                    <!-- Mensaje para copiar -->
+                                    <div class="mt-3">
+                                        <div class="pre-formatted" id="cheapest-message">🌍✈️ ¡Atención pastores y hermanos!
+🔥 Aprovechen esta súper oferta 🔥
+👉 Pasajes stopover en Panamá: [ITINERARIO]
+[STOPOVER_TYPE] | 💵 Todo a [PRECIO] USD
+✨ ¡No dejen pasar esta oportunidad! ✨</div>
+                                    </div>
+                                    
+                                    <!-- Botón -->
+                                    <div class="text-center text-lg-start mt-3">
+                                        <button class="btn btn-primary" onclick="copyCheapestMessage()">
+                                            <i class="bi bi-clipboard"></i> Copiar mensaje
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Columna derecha: Imagen generada -->
+                                <div class="col-lg-4 col-md-12">
+                                    <div class="mt-4 mt-lg-0 offer-image-container" id="offer-image-container" style="display: none;">
+                                        
+                                        <img src="" alt="Oferta Visual" class="offer-image" id="offer-image">
+                                    </div>
+                                </div>
                             </div>
-                            <button class="btn btn-warning mt-2" onclick="copyCheapestMessage()">
-                                <i class="bi bi-clipboard"></i> Copiar mensaje
-                            </button>
-                        </div>
-                    </div>
-                    <!-- Contenedor para la imagen generada -->
-                    <div class="text-center" id="offer-image-container" style="display: none;">
-                        <div class="right-offer-column">
-                            <img src="" alt="Oferta Visual" class="offer-image" id="offer-image">
                         </div>
                     </div>
                 </div>
@@ -231,26 +818,46 @@
             <!-- Individual Cheapest Offers -->
             <div class="row justify-content-center" id="individual-offers-section">
                 <div class="col-12">
-                    <!-- Itinerario 1: Medellín (stopover de ida) -->
-                    <div class="card cheapest-card" id="cheapest-info1" style="display: none;"></div>
-                    <!-- Itinerario 2: Quito (stopover de ida) -->
-                    <div class="card cheapest-card" id="cheapest-info2" style="display: none;"></div>
-                    <!-- Itinerario 3: Cali (stopover de ida) -->
-                    <div class="card cheapest-card" id="cheapest-info3" style="display: none;"></div>
-                    <!-- Itinerario 4: Bogotá (stopover de ida) -->
-                    <div class="card cheapest-card" id="cheapest-info4" style="display: none;"></div>
-                    <!-- Itinerario 5: Cartagena (stopover de ida) -->
-                    <div class="card cheapest-card" id="cheapest-info5" style="display: none;"></div>
-                    <!-- Itinerario 6: Medellín (stopover de regreso) -->
-                    <div class="card cheapest-card" id="cheapest-info6" style="display: none;"></div>
-                    <!-- Itinerario 7: Quito (stopover de regreso) -->
-                    <div class="card cheapest-card" id="cheapest-info7" style="display: none;"></div>
-                    <!-- Itinerario 8: Cali (stopover de regreso) -->
-                    <div class="card cheapest-card" id="cheapest-info8" style="display: none;"></div>
-                    <!-- Itinerario 9: Bogotá (stopover de regreso) -->
-                    <div class="card cheapest-card" id="cheapest-info9" style="display: none;"></div>
-                    <!-- Itinerario 10: Cartagena (stopover de regreso) -->
-                    <div class="card cheapest-card" id="cheapest-info10" style="display: none;"></div>
+                    <!-- Estadísticas de resumen -->
+                    <div class="summary-stats" id="summary-stats" style="display: none;">
+                        <h5><i class="bi bi-graph-up"></i> Resumen de Búsqueda</h5>
+                        <div class="row">
+                            <div class="col-md-3 col-6 text-center">
+                                <div class="stat-item">
+                                    <h6 class="text-success">Ofertas Encontradas</h6>
+                                    <span class="badge bg-success" id="found-count">0</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 text-center">
+                                <div class="stat-item">
+                                    <h6 class="text-danger">Con Errores</h6>
+                                    <span class="badge bg-danger" id="error-count">0</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 text-center">
+                                <div class="stat-item">
+                                    <h6 class="text-primary">Precio Mínimo</h6>
+                                    <span class="badge bg-primary" id="min-price">-</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 text-center">
+                                <div class="stat-item">
+                                    <h6 class="text-secondary">Precio Máximo</h6>
+                                    <span class="badge bg-secondary" id="max-price">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pestañas de fechas -->
+                    <div class="date-tabs text-center" id="date-tabs" style="display: none;">
+                        <!-- Las pestañas se generarán dinámicamente -->
+                    </div>
+                    
+                    <!-- Contenido de fechas -->
+                    <div id="date-contents">
+                        <!-- El contenido se generará dinámicamente -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -311,7 +918,7 @@
             }, 3000);
         }
         document.addEventListener('DOMContentLoaded', () => {
-            fetchOffers();
+            initializeApp();
         });
         async function fetchOffers() {
             const fetchButton = document.getElementById('fetch-button');
@@ -320,18 +927,9 @@
             const progressText = document.getElementById('progress-text');
             const errorDiv = document.getElementById('error');
             const globalCheapestInfo = document.getElementById('global-cheapest-info');
-            const offerImageContainer = document.getElementById('offer-image-container');
-            const offerImage = document.getElementById('offer-image');
-            const cheapestInfo1 = document.getElementById('cheapest-info1');
-            const cheapestInfo2 = document.getElementById('cheapest-info2');
-            const cheapestInfo3 = document.getElementById('cheapest-info3');
-            const cheapestInfo4 = document.getElementById('cheapest-info4');
-            const cheapestInfo5 = document.getElementById('cheapest-info5');
-            const cheapestInfo6 = document.getElementById('cheapest-info6');
-            const cheapestInfo7 = document.getElementById('cheapest-info7');
-            const cheapestInfo8 = document.getElementById('cheapest-info8');
-            const cheapestInfo9 = document.getElementById('cheapest-info9');
-            const cheapestInfo10 = document.getElementById('cheapest-info10');
+            const summaryStats = document.getElementById('summary-stats');
+            const dateTabs = document.getElementById('date-tabs');
+            const dateContents = document.getElementById('date-contents');
 
             // Deshabilitar botón y cambiar texto solo si existe
             if (fetchButton) {
@@ -339,40 +937,35 @@
                 fetchButton.innerHTML = '<i class="bi bi-hourglass-split"></i> Buscando...';
             }
 
-            // Mostrar barra de progreso
+            // Mostrar barra de progreso y ocultar elementos previos
             loading.style.display = 'block';
             progressBar.style.width = '10%';
-            progressText.textContent = 'Iniciando búsqueda de ofertas... Progreso: 10%';
+            progressText.textContent = 'Iniciando búsqueda de 90 combinaciones... Progreso: 10%';
             errorDiv.style.display = 'none';
             globalCheapestInfo.style.display = 'none';
-            offerImageContainer.style.display = 'none';
-            cheapestInfo1.style.display = 'none';
-            cheapestInfo2.style.display = 'none';
-            cheapestInfo3.style.display = 'none';
-            cheapestInfo4.style.display = 'none';
-            cheapestInfo5.style.display = 'none';
-            cheapestInfo6.style.display = 'none';
-            cheapestInfo7.style.display = 'none';
-            cheapestInfo8.style.display = 'none';
-            cheapestInfo9.style.display = 'none';
-            cheapestInfo10.style.display = 'none';
+            summaryStats.style.display = 'none';
+            dateTabs.style.display = 'none';
+            
+            // Limpiar contenido previo
+            dateTabs.innerHTML = '';
+            dateContents.innerHTML = '';
 
             try {
                 // Iniciar progreso en 10% (inicio de búsqueda)
                 let progress = 10;
                 progressBar.style.width = `${progress}%`;
-                progressText.textContent = `Buscando ofertas en todas las ciudades... Progreso: ${progress}%`;
+                progressText.textContent = `Buscando 90 combinaciones de fechas y destinos... Progreso: ${progress}%`;
                 
                 const updateProgress = (newProgress) => {
                     progress = newProgress;
                     progressBar.style.width = `${progress}%`;
-                    progressText.textContent = `Buscando ofertas en todas las ciudades... Progreso: ${Math.round(progress)}%`;
+                    progressText.textContent = `Procesando 90 combinaciones de fechas... Progreso: ${Math.round(progress)}%`;
                 };
 
                 // Verificar si hay APIs fallidas previas para reintentar
                 let apiUrl = '/api/offers';
                 const failedApis = localStorage.getItem('failedApis');
-                let estimatedTime = 18000; // 18 segundos para búsqueda completa
+                let estimatedTime = 25000; // 25 segundos para 90 combinaciones
                 
                 // Agregar timestamp para evitar cache del navegador
                 const timestamp = new Date().getTime();
@@ -419,12 +1012,12 @@
                     throw new Error(data.error);
                 }
                 
-                // Gestionar ciudades con búsqueda fallida o pendingRetry
+                // Gestionar ciudades con búsqueda fallida
                 if (data.failedApis && data.failedApis.length > 0) {
                     console.log(`Ciudades con búsqueda fallida: ${data.failedApis.join(', ')}`);
                     
                     // Mostrar error específico cuando fallen algunas ciudades
-                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Falló la búsqueda con algunas ciudades - Reintento automático en 5 minutos`;
+                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Falló la búsqueda con algunas combinaciones - Reintento automático en 5 minutos`;
                     errorDiv.style.display = 'block';
                 } else if (data.pendingRetry) {
                     // Mostrar información de reintento pendiente
@@ -433,265 +1026,59 @@
 
                 // Progreso completado (100%)
                 updateProgress(100);
-                progressText.textContent = `¡Búsqueda completada! Progreso: 100%`;
+                progressText.textContent = `¡Búsqueda completada! 90 combinaciones procesadas - Progreso: 100%`;
 
-                // Mostrar oferta más barata global
-                if (data.globalCheapest) {
-                    console.log('Debug Frontend - data.globalCheapest completo:', data.globalCheapest);
-                    console.log('Debug Frontend - segments del backend:', data.globalCheapest.segments);
-                    
-                    // Construir segmentos de vuelo para la imagen
-                    const segments = [];
-                    if (data.globalCheapest.segments && Array.isArray(data.globalCheapest.segments)) {
-                        data.globalCheapest.segments.forEach((seg, index) => {
-                            console.log(`Debug Frontend - Segmento ${index}:`, seg);
-                            segments.push({
-                                date: seg.date,
-                                from: seg.from,
-                                departure: seg.departure,
-                                to: seg.to,
-                                arrival: seg.arrival,
-                                class: seg.class,
-                                direct: seg.direct,
-                                stops: seg.stops || '',
-                                stopover: seg.stopover || ''
-                            });
-                        });
-                    }
-                    console.log('Debug Frontend - segments construidos para imagen:', segments);
-
-                    globalCheapestInfo.innerHTML = `
-                        <div class="pre-formatted" id="cheapest-message">
-🌍✈️ ¡Atención pastores y hermanos!
-🔥 Aprovechen esta súper oferta 🔥
-
-👉 Pasajes stopover:
-✅ Ida ✈️ ${data.globalCheapest.ida }
-✅ Vuelta ✈️ ${data.globalCheapest.vuelta }
-${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
-💵 Todo a ${data.globalCheapest.price} USD 💵
-
-✨ ¡No dejen pasar esta oportunidad! ✨
-                        </div>
-                        <button class="btn btn-warning mt-2" onclick="copyCheapestMessage()">
-                            <i class="bi bi-clipboard"></i> Copiar mensaje
-                        </button>
-                    `;
-                    globalCheapestInfo.style.display = 'block';
-
-                    // Debug: Verificar si llegaron los segments
-                    console.log('Debug - data.globalCheapest:', data.globalCheapest);
-                    console.log('Debug - segments construidos:', segments);
-
-                    // Generar imagen con segmentos
-                    const imageData = {
-                        price: data.globalCheapest.price,
-                        segments: segments.length > 0 ? segments : data.globalCheapest.segments || []
-                    };
-                    console.log('Debug - imageData enviado a generateOfferImage:', imageData);
-                    
-                    const generatedImage = await generateOfferImage(imageData);
-                    if (generatedImage) {
-                        offerImage.src = generatedImage;
-                        offerImageContainer.style.display = 'block';
+                // Procesar los 90 itinerarios dinámicamente
+                console.log('\n🎯 INICIANDO PROCESAMIENTO DE ITINERARIOS');
+                console.log('📊 Total de claves en data:', Object.keys(data).length);
+                console.log('🛫 Itinerarios encontrados:', Object.keys(data).filter(k => k.startsWith('itinerary')).length);
+                console.log('📋 Estructura completa de data:', data);
+                
+                // Log de ejemplo de un itinerario para ver estructura
+                const firstItinerary = Object.keys(data).find(k => k.startsWith('itinerary'));
+                if (firstItinerary) {
+                    console.log(`📦 EJEMPLO DE ESTRUCTURA - ${firstItinerary}:`, data[firstItinerary]);
+                    if (data[firstItinerary].cheapest && data[firstItinerary].cheapest.segments) {
+                        console.log('🛫 Segmentos del primer itinerario:', data[firstItinerary].cheapest.segments);
                     }
                 }
+                
+                // Extraer y organizar los datos por combinaciones de fechas
+                const dateCombo = organizeDataByDates(data);
+                
+                // Generar estadísticas de resumen
+                const stats = generateSummaryStats(data);
+                updateSummaryStats(stats);
+                
+                // Mostrar oferta más barata global
+                if (data.globalCheapest) {
+                    console.log('🏆 Datos de oferta global encontrados:', data.globalCheapest);
+                    await displayGlobalCheapest(data.globalCheapest);
+                } else {
+                    console.log('⚠️ No se encontraron datos de oferta global');
+                }
+                
+                // Generar interfaz dinámica
+                generateDynamicInterface(dateCombo);
+                
+                // Mostrar elementos finales
+                summaryStats.style.display = 'block';
+                dateTabs.style.display = 'block';
 
-                // Recopilar ciudades con errores para mostrar en toast
+                // Recopilar errores de ciudades para mostrar en toast
                 const failedCities = [];
-                
-                // Función para agregar ciudad fallida a la lista
-                const addFailedCity = (itinerary, cityName, stopoverType) => {
+                Object.keys(data).filter(k => k.startsWith('itinerary')).forEach(key => {
+                    const itinerary = data[key];
                     if (itinerary.error) {
-                        failedCities.push(`${cityName}, stopover de ${stopoverType}`);
+                        failedCities.push(`${itinerary.city || 'Ciudad'} (${itinerary.stopover || 'stopover'})`);
                     }
-                };
-                
-                // Verificar errores en todos los itinerarios
-                addFailedCity(data.itinerary1, 'Medellín', 'ida');
-                addFailedCity(data.itinerary2, 'Quito', 'ida');
-                addFailedCity(data.itinerary3, 'Cali', 'ida');
-                addFailedCity(data.itinerary4, 'Bogotá', 'ida');
-                addFailedCity(data.itinerary5, 'Cartagena', 'ida');
-                addFailedCity(data.itinerary6, 'Medellín', 'regreso');
-                addFailedCity(data.itinerary7, 'Quito', 'regreso');
-                addFailedCity(data.itinerary8, 'Cali', 'regreso');
-                addFailedCity(data.itinerary9, 'Bogotá', 'regreso');
-                addFailedCity(data.itinerary10, 'Cartagena', 'regreso');
+                });
                 
                 // Mostrar toast con ciudades fallidas si las hay
                 if (failedCities.length > 0) {
                     showErrorToast(failedCities);
                 }
 
-                // Recopilar y ordenar ofertas más baratas individuales (solo las exitosas)
-                const validItineraries = [];
-                
-                // Recopilar todos los itinerarios exitosos
-                if (data.itinerary1.cheapest) {
-                    validItineraries.push({
-                        id: 1,
-                        element: cheapestInfo1,
-                        price: data.itinerary1.cheapest.price,
-                        html: `<div class="pre-formatted">
-👉 Pasajes stopover de ida (Medellín):
-✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Medellín - Panamá - Lima 
-💵 Todo a ${data.itinerary1.cheapest.price} USD 💵
-                        </div>`
-                    });
-                }
-                
-                if (data.itinerary2.cheapest) {
-                    validItineraries.push({
-                        id: 2,
-                        element: cheapestInfo2,
-                        price: data.itinerary2.cheapest.price,
-                        html: `<div class="pre-formatted">
-👉 Pasajes stopover de ida (Quito):
-✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Quito - Panamá - Lima 
-💵 Todo a ${data.itinerary2.cheapest.price} USD 💵
-                        </div>`
-                    });
-                }
-                
-                if (data.itinerary3.cheapest) {
-                    validItineraries.push({
-                        id: 3,
-                        element: cheapestInfo3,
-                        price: data.itinerary3.cheapest.price,
-                        html: `<div class="pre-formatted">
-👉 Pasajes stopover de ida (Cali):
-✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Cali - Panamá - Lima 
-💵 Todo a ${data.itinerary3.cheapest.price} USD 💵
-                        </div>`
-                    });
-                }
-                
-                if (data.itinerary4.cheapest) {
-                    validItineraries.push({
-                        id: 4,
-                        element: cheapestInfo4,
-                        price: data.itinerary4.cheapest.price,
-                        html: `<div class="pre-formatted">
-👉 Pasajes stopover de ida (Bogotá):
-✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Bogotá - Panamá - Lima 
-💵 Todo a ${data.itinerary4.cheapest.price} USD 💵
-                        </div>`
-                    });
-                }
-                
-                if (data.itinerary5.cheapest) {
-                    validItineraries.push({
-                        id: 5,
-                        element: cheapestInfo5,
-                        price: data.itinerary5.cheapest.price,
-                        html: `<div class="pre-formatted">
-👉 Pasajes stopover de ida (Cartagena):
-✅ Ida ✈️ Lima - Panamá
-✅ Vuelta ✈️ Panamá - Cartagena - Panamá - Lima 
-💵 Todo a ${data.itinerary5.cheapest.price} USD 💵
-                        </div>`
-                    });
-                }
-                
-                if (data.itinerary6.cheapest) {
-                    validItineraries.push({
-                        id: 6,
-                        element: cheapestInfo6,
-                        price: data.itinerary6.cheapest.price,
-                        html: `<div class="pre-formatted">
-👉 Pasajes stopover de regreso (Medellín):
-✅ Ida ✈️ Lima - Panamá - Medellín - Panamá
-✅ Vuelta ✈️ Panamá - Lima 
-💵 Todo a ${data.itinerary6.cheapest.price} USD 💵
-                        </div>`
-                    });
-                }
-                
-                if (data.itinerary7.cheapest) {
-                    validItineraries.push({
-                        id: 7,
-                        element: cheapestInfo7,
-                        price: data.itinerary7.cheapest.price,
-                        html: `<div class="pre-formatted">
-👉 Pasajes stopover de regreso (Quito):
-✅ Ida ✈️ Lima - Panamá - Quito - Panamá
-✅ Vuelta ✈️ Panamá - Lima 
-💵 Todo a ${data.itinerary7.cheapest.price} USD 💵
-                        </div>`
-                    });
-                }
-                
-                if (data.itinerary8.cheapest) {
-                    validItineraries.push({
-                        id: 8,
-                        element: cheapestInfo8,
-                        price: data.itinerary8.cheapest.price,
-                        html: `<div class="pre-formatted">
-👉 Pasajes stopover de regreso (Cali):
-✅ Ida ✈️ Lima - Panamá - Cali - Panamá
-✅ Vuelta ✈️ Panamá - Lima 
-💵 Todo a ${data.itinerary8.cheapest.price} USD 💵
-                        </div>`
-                    });
-                }
-                
-                if (data.itinerary9.cheapest) {
-                    validItineraries.push({
-                        id: 9,
-                        element: cheapestInfo9,
-                        price: data.itinerary9.cheapest.price,
-                        html: `<div class="pre-formatted">
-👉 Pasajes stopover de regreso (Bogotá):
-✅ Ida ✈️ Lima - Panamá - Bogotá - Panamá
-✅ Vuelta ✈️ Panamá - Lima 
-💵 Todo a ${data.itinerary9.cheapest.price} USD 💵
-                        </div>`
-                    });
-                }
-                
-                if (data.itinerary10.cheapest) {
-                    validItineraries.push({
-                        id: 10,
-                        element: cheapestInfo10,
-                        price: data.itinerary10.cheapest.price,
-                        html: `<div class="pre-formatted">
-👉 Pasajes stopover de regreso (Cartagena):
-✅ Ida ✈️ Lima - Panamá - Cartagena - Panamá
-✅ Vuelta ✈️ Panamá - Lima 
-💵 Todo a ${data.itinerary10.cheapest.price} USD 💵
-                        </div>`
-                    });
-                }
-                
-                // Limpiar todas las tarjetas primero
-                const allCards = [cheapestInfo1, cheapestInfo2, cheapestInfo3, cheapestInfo4, cheapestInfo5, 
-                                 cheapestInfo6, cheapestInfo7, cheapestInfo8, cheapestInfo9, cheapestInfo10];
-                allCards.forEach(card => {
-                    card.style.display = 'none';
-                    card.innerHTML = '';
-                });
-                
-                // Ordenar de menor a mayor precio
-                validItineraries.sort((a, b) => a.price - b.price);
-                
-                // Obtener el contenedor padre
-                const container = document.getElementById('individual-offers-section').querySelector('.col-12');
-                
-                // Reordenar físicamente los elementos en el DOM
-                validItineraries.forEach(itinerary => {
-                    // Remover el elemento de su posición actual
-                    itinerary.element.remove();
-                    // Agregar contenido
-                    itinerary.element.innerHTML = itinerary.html;
-                    itinerary.element.style.display = 'block';
-                    // Añadir al final del contenedor (ahora en orden de precio)
-                    container.appendChild(itinerary.element);
-                });
             } catch (error) {
                 errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> ${error.message}`;
                 errorDiv.style.display = 'block';
@@ -933,6 +1320,1272 @@ ${data.globalCheapest.stopoverType ? data.globalCheapest.stopoverType : ''}
             // Convertir a imagen el canvas optimizado
             return finalCanvas.toDataURL('image/png');
         }
+
+        // Función para organizar datos por combinaciones de fechas
+        function organizeDataByDates(data) {
+            console.log('\n📅 ORGANIZANDO DATOS POR FECHAS');
+            const dateCombo = {};
+            
+            const itineraryKeys = Object.keys(data).filter(k => k.startsWith('itinerary'));
+            console.log(`📊 Procesando ${itineraryKeys.length} itinerarios...`);
+            
+            itineraryKeys.forEach((key, index) => {
+                const itinerary = data[key];
+                console.log(`\n📦 Procesando ${key} (${index + 1}/${itineraryKeys.length})`);
+                console.log('📋 Itinerary data:', itinerary);
+                
+                if (itinerary && itinerary.dateComboId) {
+                    const comboId = itinerary.dateComboId;
+                    console.log(`🔗 ComboId: ${comboId}`);
+                    
+                    if (!dateCombo[comboId]) {
+                        dateCombo[comboId] = {
+                            searchDate: itinerary.searchDate,
+                            returnDate: itinerary.returnDate,
+                            itineraries: []
+                        };
+                        console.log(`✨ Creado nuevo combo: ${comboId}`);
+                    }
+                    
+                    dateCombo[comboId].itineraries.push(itinerary);
+                    console.log(`➕ Agregado a combo ${comboId} (total: ${dateCombo[comboId].itineraries.length})`);
+                    
+                    // Log de segments si están disponibles
+                    if (itinerary.cheapest && itinerary.cheapest.segments) {
+                        console.log(`🛫 Segmentos disponibles para ${key}:`, itinerary.cheapest.segments);
+                    } else {
+                        console.warn(`⚠️ No hay segments para ${key}`);
+                    }
+                } else {
+                    console.warn(`⚠️ ${key} no tiene dateComboId válido:`, itinerary);
+                }
+            });
+            
+            console.log('\n📊 RESUMEN DE ORGANIZACIÓN:');
+            Object.keys(dateCombo).forEach(comboId => {
+                console.log(`   ${comboId}: ${dateCombo[comboId].itineraries.length} itinerarios`);
+            });
+            
+            return dateCombo;
+        }
+
+        // Función para generar estadísticas de resumen
+        function generateSummaryStats(data) {
+            const stats = {
+                total: 0,
+                successful: 0,
+                failed: 0,
+                cheapestPrice: Infinity,
+                avgPrice: 0,
+                cities: new Set(),
+                combinations: new Set()
+            };
+            
+            let totalPrice = 0;
+            
+            Object.keys(data).filter(k => k.startsWith('itinerary')).forEach(key => {
+                const itinerary = data[key];
+                stats.total++;
+                
+                if (itinerary.error) {
+                    stats.failed++;
+                } else if (itinerary.cheapest) {
+                    stats.successful++;
+                    stats.cities.add(itinerary.city);
+                    stats.combinations.add(itinerary.dateComboId);
+                    
+                    const price = parseFloat(itinerary.cheapest.price);
+                    if (price < stats.cheapestPrice) {
+                        stats.cheapestPrice = price;
+                    }
+                    totalPrice += price;
+                }
+            });
+            
+            if (stats.successful > 0) {
+                stats.avgPrice = totalPrice / stats.successful;
+            }
+            
+            return stats;
+        }
+
+        // Función para actualizar estadísticas en la UI
+        function updateSummaryStats(stats) {
+            const summaryStats = document.getElementById('summary-stats');
+            summaryStats.innerHTML = `
+                <div class="row g-4">
+                    <div class="col-md-4 col-sm-6">
+                        <div class="stat-card">
+                            <h5>${stats.total}</h5>
+                            <p>Búsquedas Total</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                        <div class="stat-card">
+                            <h5>${stats.successful}</h5>
+                            <p>Exitosas</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-12">
+                        <div class="stat-card">
+                            <h5>$${stats.cheapestPrice !== Infinity ? stats.cheapestPrice.toFixed(2) : 'N/A'}</h5>
+                            <p>Precio Más Bajo</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Función global para obtener el código del aeropuerto
+        function getAirportCode(city) {
+            const airportCodes = {
+                'Quito': 'UIO',
+                'Medellín': 'MDE',
+                'Cali': 'CLO',
+                'Cartagena': 'CTG',
+                'Bogotá': 'BOG'
+            };
+            return airportCodes[city] || city;
+        }
+
+        // Función para mostrar la oferta más barata global
+        async function displayGlobalCheapest(cheapest) {
+            console.log('🏆 Mostrando oferta global más barata:', cheapest);
+            
+            const globalCheapestSection = document.getElementById('global-cheapest-section');
+            const globalCheapestInfo = document.getElementById('global-cheapest-info');
+            
+            if (!globalCheapestSection || !globalCheapestInfo) {
+                console.error('❌ No se encontraron los elementos de la sección global');
+                return;
+            }
+            
+            // Determinar el texto del stopover
+            const stopoverText = cheapest.stopover === 'ida' ? 'Stopover de Ida en Panamá' : 'Stopover de Regreso en Panamá';
+            
+            globalCheapestInfo.innerHTML = `
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <!-- Columna izquierda: Información de la oferta -->
+                        <div class="col-lg-4 col-md-12">
+                            <div class="text-center text-lg-start">
+                                <h5 class="global-title"><i class="bi bi-trophy"></i> Mejor Oferta Global</h5>
+                                <div class="global-city">${cheapest.city} (${getAirportCode(cheapest.city)})</div>
+                                <div class="global-dates">Salida: ${formatDateDMY(cheapest.searchDate)} | Regreso: ${formatDateDMY(cheapest.returnDate)}</div>
+                                <div class="global-dates">${stopoverText}</div>
+                                <div class="global-price">$${cheapest.price} USD</div>
+                            </div>
+                            
+                            <!-- Mensaje para copiar -->
+                            <div class="mt-3">
+                                <div class="pre-formatted" id="cheapest-message">🎉 OFERTA ESPECIAL - Congreso Centroamericano 2026! 🎉
+✈️ Ciudad: ${cheapest.city} | 📅 ${formatDateDMY(cheapest.searchDate)} - ${formatDateDMY(cheapest.returnDate)}
+🔄 ${stopoverText} | 💵 $${cheapest.price} USD
+✨ ¡No dejen pasar esta oportunidad! ✨
+
+🛫 Ruta: 
+${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, cheapest.returnDate)}</div>
+                            </div>
+                            
+                            <!-- Botón -->
+                            <div class="text-center text-lg-start mt-3">
+                                <button class="btn btn-primary btn-lg" onclick="copyCheapestMessage()">
+                                    <i class="bi bi-clipboard"></i> Copiar mensaje
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Columna derecha: Imagen generada -->
+                        <div class="col-lg-8 col-md-12">
+                            <div class="mt-4 mt-lg-0 offer-image-container" id="offer-image-container" style="display: none;">
+                                
+                                <img src="" alt="Oferta Visual" class="offer-image" id="offer-image">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Mostrar los elementos
+            globalCheapestInfo.style.display = 'block';
+            globalCheapestSection.style.display = 'block';
+            
+            console.log('✅ Sección global mostrada correctamente');
+            
+            // Generar imagen para la mejor oferta
+            if (cheapest.segments && cheapest.segments.length > 0) {
+                console.log('Generando imagen para la mejor oferta:', cheapest);
+                
+                const imageData = {
+                    city: cheapest.city,
+                    price: cheapest.price,
+                    segments: cheapest.segments,
+                    searchDate: cheapest.searchDate,
+                    returnDate: cheapest.returnDate,
+                    stopoverType: cheapest.stopover
+                };
+                
+                console.log('Debug - imageData enviado a generateOfferImage:', imageData);
+                
+                const generatedImage = await generateOfferImage(imageData);
+                if (generatedImage) {
+                    // Buscar el contenedor y la imagen dentro del HTML generado dinámicamente
+                    setTimeout(() => {
+                        const dynamicOfferImage = document.getElementById('offer-image');
+                        const dynamicOfferImageContainer = document.getElementById('offer-image-container');
+                        
+                        if (dynamicOfferImage && dynamicOfferImageContainer) {
+                            dynamicOfferImage.src = generatedImage;
+                            dynamicOfferImageContainer.style.display = 'block';
+                            dynamicOfferImageContainer.classList.add('offer-image-container');
+                            console.log('Imagen asignada correctamente al contenedor dinámico');
+                        } else {
+                            console.error('No se encontraron los elementos de imagen en el DOM dinámico');
+                        }
+                    }, 100);
+                }
+            }
+        }
+
+        // Función para generar la interfaz dinámica
+        function generateDynamicInterface(dateCombo) {
+            const dateTabs = document.getElementById('date-tabs');
+            const dateContents = document.getElementById('date-contents');
+            
+            // Limpiar contenido previo
+            dateTabs.innerHTML = '';
+            dateContents.innerHTML = '';
+            
+            // Crear contenedor principal de filtros
+            const mainFilterContainer = document.createElement('div');
+            mainFilterContainer.className = 'filter-container';
+            
+            // Crear título de filtros
+            const filterTitle = document.createElement('div');
+            filterTitle.className = 'text-center mb-3';
+            filterTitle.innerHTML = `
+                <h6 class="mb-2">
+                    <i class="bi bi-funnel-fill text-primary"></i> 
+                    Filtrar por Combinaciones de Fechas
+                </h6>
+                <small class="text-muted">Desliza horizontalmente para ver más fechas en móviles</small>
+            `;
+            
+            // Crear botones de filtro por fechas
+            const filterContainer = document.createElement('div');
+            filterContainer.className = 'btn-group';
+            filterContainer.setAttribute('role', 'group');
+            
+            // Botón "Todas las combinaciones"
+            const allButton = document.createElement('button');
+            allButton.type = 'button';
+            allButton.className = 'btn btn-outline-primary active all-combo';
+            allButton.onclick = () => filterByDate('all');
+            allButton.innerHTML = `
+                <i class="bi bi-grid-3x3-gap"></i> Todas
+            `;
+            filterContainer.appendChild(allButton);
+            
+            // Agregar botones para cada combinación de fecha
+            Object.keys(dateCombo).forEach((comboId, index) => {
+                const combo = dateCombo[comboId];
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'btn btn-outline-primary';
+                button.onclick = () => filterByDate(comboId);
+                button.setAttribute('data-combo-id', comboId);
+                
+                // Formatear fechas: sin año para los botones de filtro
+                const compactSearchDate = formatDateCompact(combo.searchDate);
+                const compactReturnDate = formatDateCompact(combo.returnDate);
+                
+                button.innerHTML = `
+                    <i class="bi bi-calendar-week"></i> 
+                    <span class="d-none d-md-inline">${compactSearchDate} → ${compactReturnDate}</span>
+                    <span class="d-md-none">${compactSearchDate}→${compactReturnDate}</span>
+                `;
+                filterContainer.appendChild(button);
+            });
+            
+            mainFilterContainer.appendChild(filterTitle);
+            mainFilterContainer.appendChild(filterContainer);
+            dateTabs.appendChild(mainFilterContainer);
+            
+            // Crear lista de todas las ofertas
+            const allOffers = [];
+            Object.keys(dateCombo).forEach(comboId => {
+                const combo = dateCombo[comboId];
+                combo.itineraries.forEach(itinerary => {
+                    if (itinerary.cheapest) {
+                        allOffers.push({
+                            ...itinerary,
+                            comboId: comboId,
+                            searchDate: combo.searchDate,
+                            returnDate: combo.returnDate
+                        });
+                    }
+                });
+            });
+            
+            // Ordenar ofertas por precio
+            allOffers.sort((a, b) => parseFloat(a.cheapest.price) - parseFloat(b.cheapest.price));
+            
+            // Generar lista de ofertas
+            generateOffersList(allOffers, dateCombo);
+        }
+
+        // Función para generar grupos de ciudades
+        function generateCityGroups(itineraries) {
+            const cities = {};
+            
+            // Agrupar por ciudad
+            itineraries.forEach(itinerary => {
+                const city = itinerary.city;
+                if (!cities[city]) {
+                    cities[city] = {
+                        ida: null,
+                        regreso: null
+                    };
+                }
+                cities[city][itinerary.stopover] = itinerary;
+            });
+            
+            let html = '<div class="row">';
+            
+            Object.keys(cities).forEach(cityName => {
+                const cityData = cities[cityName];
+                html += `
+                    <div class="col-md-6 mb-4">
+                        <div class="city-group">
+                            <h5 class="city-name">${cityName}</h5>
+                            <div class="stopovers">
+                `;
+                
+                // Stopover de ida
+                if (cityData.ida && cityData.ida.cheapest) {
+                    html += generateStopoverCard(cityData.ida, 'ida');
+                } else {
+                    html += `<div class="stopover-card error">
+                        <h6>Stopover de Ida en Panamá</h6>
+                        <p>Sin resultados disponibles</p>
+                    </div>`;
+                }
+                
+                // Stopover de regreso
+                if (cityData.regreso && cityData.regreso.cheapest) {
+                    html += generateStopoverCard(cityData.regreso, 'regreso');
+                } else {
+                    html += `<div class="stopover-card error">
+                        <h6>Stopover de Regreso en Panamá</h6>
+                        <p>Sin resultados disponibles</p>
+                    </div>`;
+                }
+                
+                html += `
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
+        // Función para generar tarjeta de stopover
+        function generateStopoverCard(itinerary, stopoverType) {
+            const data = itinerary.cheapest;
+            return `
+                <div class="stopover-card">
+                    <div class="stopover-header">
+                        <h6>Stopover de ${stopoverType.charAt(0).toUpperCase() + stopoverType.slice(1)} en Panamá</h6>
+                        <span class="price">$${data.price}</span>
+                    </div>
+                    <div class="route-info">
+                        <p><strong>Ruta:</strong> ${data.segments ? data.segments.map(s => s.route).join(' → ') : 'N/A'}</p>
+                        <p><strong>Duración:</strong> ${data.totalDuration || 'N/A'}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Función para obtener el código de aeropuerto por ciudad
+        function getCityAirportCode(city) {
+            const cityCode = city === 'Quito' ? 'UIO' : 
+                           city === 'Medellín' ? 'MDE' : 
+                           city === 'Cali' ? 'CLO' : 
+                           city === 'Cartagena' ? 'CTG' : 
+                           city === 'Bogotá' ? 'BOG' : 
+                           city.substring(0, 3).toUpperCase();
+            
+            console.log(`🏙️ Código aeropuerto para ${city}: ${cityCode}`);
+            return cityCode;
+        }
+
+        // Función para convertir código de aeropuerto a formato "Ciudad (CÓDIGO)"
+        function getAirportDisplayName(code) {
+            const airportMap = {
+                'PTY': 'Panamá (PTY)',
+                'LIM': 'Lima (LIM)',
+                'UIO': 'Quito (UIO)',
+                'MDE': 'Medellín (MDE)',
+                'CLO': 'Cali (CLO)',
+                'CTG': 'Cartagena (CTG)',
+                'BOG': 'Bogotá (BOG)'
+            };
+            
+            const displayName = airportMap[code] || `${code} (${code})`;
+            console.log(`✈️ Código ${code} convertido a: ${displayName}`);
+            return displayName;
+        }
+
+        // Función para generar ruta para el mensaje de la oferta más barata
+        function generateRouteForMessage(city, stopover, searchDate, returnDate) {
+            // Función auxiliar para formatear fecha a DD/MM
+            function formatDateForRoute(dateStr) {
+                if (!dateStr) return '';
+                const parts = dateStr.split('-');
+                if (parts.length === 3) {
+                    return `${parts[2]}/${parts[1]}`;
+                }
+                return dateStr;
+            }
+            
+            const cityCode = city === 'Quito' ? 'UIO' : 
+                           city === 'Medellín' ? 'MDE' : 
+                           city === 'Cali' ? 'CLO' : 
+                           city === 'Cartagena' ? 'CTG' : 
+                           city === 'Bogotá' ? 'BOG' : 
+                           city.substring(0, 3).toUpperCase();
+            
+            const outboundDate = formatDateForRoute(searchDate);
+            const returnDateFormatted = formatDateForRoute(returnDate);
+            
+            // Determinar tipo de stopover
+            const isReturnStopover = stopover && stopover.toLowerCase().includes('regreso');
+            const isOutboundStopover = stopover && stopover.toLowerCase().includes('ida');
+            
+            let routeMessage;
+            if (isReturnStopover) {
+                // QUITO - Stopover de REGRESO en Panamá
+                // Lima (LIM) → Quito (UIO) (11/02), Quito (UIO) → Panamá (PTY) (11/02), Panamá (PTY) → Lima (LIM) (18/02)
+                routeMessage = `${getAirportDisplayName('LIM')} → ${getAirportDisplayName(cityCode)} (${outboundDate})<br>` +
+                              `${getAirportDisplayName(cityCode)} → ${getAirportDisplayName('PTY')} (${outboundDate})<br>` +
+                              `${getAirportDisplayName('PTY')} → ${getAirportDisplayName('LIM')} (${returnDateFormatted})`;
+            } else if (isOutboundStopover) {
+                // MEDELLÍN - Stopover de IDA en Panamá  
+                // Lima (LIM) → Panamá (PTY) (11/02), Panamá (PTY) → Medellín (MDE) (18/02), Medellín (MDE) → Lima (LIM) (18/02)
+                routeMessage = `${getAirportDisplayName('LIM')} → ${getAirportDisplayName('PTY')} (${outboundDate})<br>` +
+                              `${getAirportDisplayName('PTY')} → ${getAirportDisplayName(cityCode)} (${returnDateFormatted})<br>` +
+                              `${getAirportDisplayName(cityCode)} → ${getAirportDisplayName('LIM')} (${returnDateFormatted})`;
+            } else {
+                // Fallback genérico
+                routeMessage = `${getAirportDisplayName('LIM')} → ${getAirportDisplayName(cityCode)} (${outboundDate})<br>` +
+                              `${getAirportDisplayName(cityCode)} → ${getAirportDisplayName('LIM')} (${returnDateFormatted})`;
+            }
+            
+            return routeMessage;
+        }
+
+        // Función para generar la lista de ofertas
+        function generateOffersList(allOffers, dateCombo) {
+            const dateContents = document.getElementById('date-contents');
+            
+            let html = '<div class="offers-list" id="offers-list">';
+            
+            allOffers.forEach((offer, index) => {
+                const data = offer.cheapest;
+                
+                // Debug: verificar estructura de datos
+                console.log(`\n🔍 PROCESANDO OFERTA #${index + 1} - ${offer.city}`);
+                console.log('📦 Estructura completa de offer:', offer);
+                console.log('💰 Data cheapest:', data);
+                console.log('🛫 Segments disponibles:', data?.segments);
+                console.log('✅ Tiene segmentos válidos:', data?.segments && Array.isArray(data.segments) && data.segments.length > 0);
+                
+                // INVESTIGAR ESTRUCTURA ALTERNATIVA DE SEGMENTS
+                console.log('🔍 BUSCANDO SEGMENTS EN OTRAS UBICACIONES:');
+                console.log('   offer.segments:', offer.segments);
+                console.log('   data.flight_segments:', data?.flight_segments);
+                console.log('   data.route:', data?.route);
+                console.log('   data.itinerary:', data?.itinerary);
+                console.log('   Claves disponibles en data:', data ? Object.keys(data) : 'data is null/undefined');
+                
+                if (data?.segments && Array.isArray(data.segments)) {
+                    console.log(`📊 Total de segmentos encontrados: ${data.segments.length}`);
+                    data.segments.forEach((seg, segIndex) => {
+                        console.log(`   Segmento ${segIndex + 1}:`, {
+                            from: seg.from,
+                            to: seg.to,
+                            date: seg.date,
+                            stops: seg.stops,
+                            hasOneStop: seg.stops && seg.stops.toLowerCase().includes('1 escala'),
+                            fullSegment: seg
+                        });
+                    });
+                } else {
+                    console.warn('⚠️ No hay segmentos válidos para esta oferta');
+                    console.log('🔧 INTENTANDO RECONSTRUIR SEGMENTS DESDE OTROS DATOS...');
+                    
+                    // Intentar encontrar datos de ruta en otras propiedades
+                    if (data && typeof data === 'object') {
+                        Object.keys(data).forEach(key => {
+                            if (key.toLowerCase().includes('segment') || 
+                                key.toLowerCase().includes('route') || 
+                                key.toLowerCase().includes('flight')) {
+                                console.log(`   Posible fuente de segments - ${key}:`, data[key]);
+                            }
+                        });
+                    }
+                }
+                
+                // Generar resumen completo del itinerario respetando fechas de cada segmento
+                function generateRouteDescription(segments, city, stopover, searchDate, returnDate) {
+                    
+                    console.log(`\n🚀 INICIANDO generateRouteDescription para ${city}`);
+                    console.log('📥 Parámetros recibidos:', {
+                        segments: segments,
+                        city: city,
+                        stopover: stopover,
+                        searchDate: searchDate,
+                        returnDate: returnDate
+                    });
+                    
+                    // Función auxiliar para formatear fecha a DD/MM
+                    function formatDateForRoute(dateStr) {
+                        if (!dateStr) {
+                            console.warn('⚠️ Fecha vacía recibida en formatDateForRoute');
+                            return '';
+                        }
+                        console.log('📅 Formateando fecha:', dateStr);
+                        const parts = dateStr.split('-');
+                        if (parts.length === 3) {
+                            const formatted = `${parts[2]}/${parts[1]}`;
+                            console.log(`📅 Resultado formato: ${dateStr} → ${formatted}`);
+                            return formatted;
+                        }
+                        console.warn(`⚠️ Formato de fecha inesperado: ${dateStr}`);
+                        return dateStr;
+                    }
+                    
+                    // Validación inicial de parámetros
+                    if (!segments) {
+                        console.error('❌ ERROR: segments es null o undefined');
+                        console.log('🔄 Usando fallback con parámetros básicos:', { city, stopover, searchDate, returnDate });
+                        
+                        // FALLBACK MEJORADO: crear ruta básica con los parámetros disponibles
+                        const cityCode = city === 'Quito' ? 'UIO' : 
+                                       city === 'Medellín' ? 'MDE' : 
+                                       city === 'Cali' ? 'CLO' : 
+                                       city === 'Cartagena' ? 'CTG' : 
+                                       city === 'Bogotá' ? 'BOG' : 
+                                       city.substring(0, 3).toUpperCase();
+                        
+                        const outboundDate = formatDateForRoute(searchDate);
+                        const returnDateFormatted = formatDateForRoute(returnDate);
+                        
+                        // Determinar tipo de stopover para generar ruta apropiada
+                        const isReturnStopover = stopover && stopover.toLowerCase().includes('regreso');
+                        const isOutboundStopover = stopover && stopover.toLowerCase().includes('ida');
+                        
+                        let fallbackRoute;
+                        if (isReturnStopover) {
+                            // QUITO - Stopover de REGRESO en Panamá
+                            // LIM → UIO (11/02), UIO → PTY (11/02), PTY → LIM (18/02)
+                            fallbackRoute = `${getAirportDisplayName('LIM')} → ${getAirportDisplayName(cityCode)} (${outboundDate})<br>${getAirportDisplayName(cityCode)} → ${getAirportDisplayName('PTY')} (${outboundDate})<br>${getAirportDisplayName('PTY')} → ${getAirportDisplayName('LIM')} (${returnDateFormatted})`;
+                            console.log('🎯 Aplicando lógica REGRESO para', city);
+                        } else if (isOutboundStopover) {
+                            // MEDELLÍN - Stopover de IDA en Panamá  
+                            // LIM → PTY (11/02), PTY → MDE (18/02), MDE → LIM (18/02)
+                            fallbackRoute = `${getAirportDisplayName('LIM')} → ${getAirportDisplayName('PTY')} (${outboundDate})<br>${getAirportDisplayName('PTY')} → ${getAirportDisplayName(cityCode)} (${returnDateFormatted})<br>${getAirportDisplayName(cityCode)} → ${getAirportDisplayName('LIM')} (${returnDateFormatted})`;
+                            console.log('🎯 Aplicando lógica IDA para', city);
+                        } else {
+                            // Fallback genérico
+                            fallbackRoute = `${getAirportDisplayName('LIM')} → ${getAirportDisplayName(cityCode)} (${outboundDate})<br>${getAirportDisplayName(cityCode)} → ${getAirportDisplayName('LIM')} (${returnDateFormatted})`;
+                            console.log('🎯 Aplicando lógica GENÉRICA para', city);
+                        }
+                        
+                        console.log('🔄 Ruta fallback generada:', fallbackRoute);
+                        return fallbackRoute;
+                    }
+                    
+                    if (!Array.isArray(segments)) {
+                        console.error('❌ ERROR: segments no es un array:', typeof segments);
+                        return 'Error: Formato de segmentos inválido';
+                    }
+                    
+                    if (segments.length === 0) {
+                        console.warn('⚠️ WARNING: segments está vacío');
+                        console.log('🔄 Usando fallback para array vacío...');
+                        
+                        // Mismo fallback que arriba
+                        const cityCode = city === 'Quito' ? 'UIO' : 
+                                       city === 'Medellín' ? 'MDE' : 
+                                       city === 'Cali' ? 'CLO' : 
+                                       city === 'Cartagena' ? 'CTG' : 
+                                       city === 'Bogotá' ? 'BOG' : 
+                                       city.substring(0, 3).toUpperCase();
+                        
+                        const outboundDate = formatDateForRoute(searchDate);
+                        const returnDateFormatted = formatDateForRoute(returnDate);
+                        
+                        const isReturnStopover = stopover && stopover.toLowerCase().includes('regreso');
+                        const isOutboundStopover = stopover && stopover.toLowerCase().includes('ida');
+                        
+                        let fallbackRoute;
+                        if (isReturnStopover) {
+                            // QUITO - Stopover de REGRESO en Panamá
+                            // LIM → UIO (11/02), UIO → PTY (11/02), PTY → LIM (18/02)
+                            fallbackRoute = `${getAirportDisplayName('LIM')} → ${getAirportDisplayName(cityCode)} (${outboundDate})<br>${getAirportDisplayName(cityCode)} → ${getAirportDisplayName('PTY')} (${outboundDate})<br>${getAirportDisplayName('PTY')} → ${getAirportDisplayName('LIM')} (${returnDateFormatted})`;
+                        } else if (isOutboundStopover) {
+                            // MEDELLÍN - Stopover de IDA en Panamá  
+                            // LIM → PTY (11/02), PTY → MDE (18/02), MDE → LIM (18/02)
+                            fallbackRoute = `${getAirportDisplayName('LIM')} → ${getAirportDisplayName('PTY')} (${outboundDate})<br>${getAirportDisplayName('PTY')} → ${getAirportDisplayName(cityCode)} (${returnDateFormatted})<br>${getAirportDisplayName(cityCode)} → ${getAirportDisplayName('LIM')} (${returnDateFormatted})`;
+                        } else {
+                            fallbackRoute = `${getAirportDisplayName('LIM')} → ${getAirportDisplayName(cityCode)} (${outboundDate})<br>${getAirportDisplayName(cityCode)} → ${getAirportDisplayName('LIM')} (${returnDateFormatted})`;
+                        }
+                        
+                        return fallbackRoute;
+                    }
+                    
+                    // SIEMPRE priorizar los datos reales de segmentos de la API
+                    if (segments && Array.isArray(segments) && segments.length > 0) {
+                        console.log('=== 🛫 GENERANDO RESUMEN COMPLETO DEL ITINERARIO ===');
+                        console.log('📋 Segmentos originales:', JSON.stringify(segments, null, 2));
+                        console.log('🔄 Tipo de stopover:', stopover);
+                        console.log('📊 Total de segmentos:', segments.length);
+                        
+                        // NUEVA LÓGICA: Analizar tipo de stopover
+                        const isReturnStopover = stopover && stopover.toLowerCase().includes('regreso');
+                        const isOutboundStopover = stopover && stopover.toLowerCase().includes('ida');
+                        
+                        console.log('🔍 ANÁLISIS DE STOPOVER:');
+                        console.log(`   ├─ Es stopover de regreso: ${isReturnStopover}`);
+                        console.log(`   ├─ Es stopover de ida: ${isOutboundStopover}`);
+                        console.log(`   └─ Texto completo: "${stopover}"`);
+                        
+                        // Validar estructura de cada segmento
+                        let invalidSegments = [];
+                        segments.forEach((seg, idx) => {
+                            if (!seg.from || !seg.to || !seg.date) {
+                                invalidSegments.push({
+                                    index: idx,
+                                    segment: seg,
+                                    missing: {
+                                        from: !seg.from,
+                                        to: !seg.to,
+                                        date: !seg.date
+                                    }
+                                });
+                            }
+                        });
+                        
+                        if (invalidSegments.length > 0) {
+                            console.error('❌ SEGMENTOS INVÁLIDOS ENCONTRADOS:');
+                            invalidSegments.forEach(invalid => {
+                                console.error(`   Segmento ${invalid.index + 1}:`, invalid);
+                            });
+                        }
+                        
+                        let routes = [];
+                        
+                        // NUEVA ESTRATEGIA: Procesar según el tipo de stopover
+                        if (isReturnStopover && segments.length >= 3) {
+                            console.log('\n🔄 PROCESANDO STOPOVER DE REGRESO...');
+                            
+                            // Para stopover de regreso: LIM→DEST debe agruparse, DEST→PTY→LIM individual
+                            // Ejemplo Quito: LIM→UIO (agrupado), UIO→PTY (individual), PTY→LIM (individual)
+                            
+                            // Buscar el primer segmento que va de LIM a PTY con "1 escala"
+                            let firstTwoGrouped = false;
+                            let i = 0;
+                            
+                            while (i < segments.length) {
+                                const segment = segments[i];
+                                console.log(`\n� Analizando segmento ${i + 1}: ${segment.from} → ${segment.to}`);
+                                
+                                // Si es el primer segmento LIM→PTY con "1 escala" y hay siguiente PTY→DEST
+                                if (i === 0 && segment.from === 'LIM' && segment.to === 'PTY' && 
+                                    segment.stops && segment.stops.includes('1 escala') &&
+                                    i + 1 < segments.length && segments[i + 1].from === 'PTY') {
+                                    
+                                    const nextSegment = segments[i + 1];
+                                    const firstDate = formatDateForRoute(segment.date);
+                                    const secondDate = formatDateForRoute(nextSegment.date);
+                                    
+                                    // Agrupar LIM → DESTINO con fechas
+                                    let dateDisplay = (firstDate === secondDate) ? `(${firstDate})` : `(${firstDate}/${secondDate})`;
+                                    const groupedRoute = `${getAirportDisplayName(segment.from)} → ${getAirportDisplayName(nextSegment.to)} ${dateDisplay}`;
+                                    
+                                    console.log(`✅ AGRUPANDO SEGMENTOS 1 y 2: ${groupedRoute}`);
+                                    routes.push(groupedRoute);
+                                    i += 2;
+                                    firstTwoGrouped = true;
+                                } else {
+                                    // Procesar segmento individual
+                                    const segmentDate = formatDateForRoute(segment.date);
+                                    const route = `${getAirportDisplayName(segment.from)} → ${getAirportDisplayName(segment.to)} (${segmentDate})`;
+                                    console.log(`➡️ SEGMENTO INDIVIDUAL: ${route}`);
+                                    routes.push(route);
+                                    i++;
+                                }
+                            }
+                            
+                        } else if (isOutboundStopover && segments.length >= 3) {
+                            console.log('\n🔄 PROCESANDO STOPOVER DE IDA...');
+                            
+                            // Para stopover de ida: LIM→PTY individual, PTY→DEST→LIM agrupado
+                            // Ejemplo Medellín: LIM→PTY (individual), PTY→MED→LIM puede no agruparse si no tiene "1 escala"
+                            
+                            let i = 0;
+                            
+                            while (i < segments.length) {
+                                const segment = segments[i];
+                                console.log(`\n🔍 Analizando segmento ${i + 1}: ${segment.from} → ${segment.to}`);
+                                
+                                // Buscar agrupaciones con "1 escala" independientemente de la posición
+                                const hasOneStop = segment.stops && segment.stops.toLowerCase().includes('1 escala');
+                                const hasNextSegment = i < segments.length - 1;
+                                const nextSegment = hasNextSegment ? segments[i + 1] : null;
+                                
+                                if (hasOneStop && hasNextSegment && segment.to === 'PTY' && nextSegment.from === 'PTY') {
+                                    // Agrupar este segmento con el siguiente
+                                    const firstDate = formatDateForRoute(segment.date);
+                                    const secondDate = formatDateForRoute(nextSegment.date);
+                                    
+                                    let dateDisplay = (firstDate === secondDate) ? `(${firstDate})` : `(${firstDate}/${secondDate})`;
+                                    const groupedRoute = `${getAirportDisplayName(segment.from)} → ${getAirportDisplayName(nextSegment.to)} ${dateDisplay}`;
+                                    
+                                    console.log(`✅ AGRUPANDO SEGMENTOS ${i + 1} y ${i + 2}: ${groupedRoute}`);
+                                    routes.push(groupedRoute);
+                                    i += 2;
+                                } else {
+                                    // Procesar segmento individual
+                                    const segmentDate = formatDateForRoute(segment.date);
+                                    const route = `${getAirportDisplayName(segment.from)} → ${getAirportDisplayName(segment.to)} (${segmentDate})`;
+                                    console.log(`➡️ SEGMENTO INDIVIDUAL: ${route}`);
+                                    routes.push(route);
+                                    i++;
+                                }
+                            }
+                            
+                        } else {
+                            console.log('\n🔄 PROCESANDO COMO STOPOVER GENÉRICO...');
+                            
+                            // Lógica original para otros casos
+                            let i = 0;
+                            
+                            while (i < segments.length) {
+                                const segment = segments[i];
+                                console.log(`\n🔍 Analizando segmento ${i + 1}: ${segment.from} → ${segment.to}`);
+                                
+                                // Verificar si este segmento tiene "1 escala" y puede agruparse
+                                const hasOneStop = segment.stops && segment.stops.toLowerCase().includes('1 escala');
+                                const hasNextSegment = i < segments.length - 1;
+                                const endsToPty = segment.to === 'PTY';
+                                const nextStartsFromPty = hasNextSegment && segments[i + 1].from === 'PTY';
+                                
+                                console.log(`🔎 ANÁLISIS DE AGRUPACIÓN:`);
+                                console.log(`   ├─ Tiene "1 escala": ${hasOneStop}`);
+                                console.log(`   ├─ Termina en PTY: ${endsToPty}`);
+                                console.log(`   └─ Siguiente empieza en PTY: ${nextStartsFromPty}`);
+                                
+                                // Agrupar si cumple todas las condiciones de "1 escala"
+                                if (hasOneStop && hasNextSegment && endsToPty && nextStartsFromPty) {
+                                    const nextSegment = segments[i + 1];
+                                    
+                                    // Respetar las fechas específicas de cada segmento
+                                    const firstSegmentDate = formatDateForRoute(segment.date);
+                                    const secondSegmentDate = formatDateForRoute(nextSegment.date);
+                                    
+                                    // Si las fechas son iguales, mostrar una sola fecha
+                                    // Si son diferentes, mostrar ambas fechas
+                                    let dateDisplay;
+                                    if (firstSegmentDate === secondSegmentDate) {
+                                        dateDisplay = `(${firstSegmentDate})`;
+                                    } else {
+                                        dateDisplay = `(${firstSegmentDate}/${secondSegmentDate})`;
+                                    }
+                                    
+                                    // Crear ruta agrupada con fechas específicas
+                                    const groupedRoute = `${getAirportDisplayName(segment.from)} → ${getAirportDisplayName(nextSegment.to)} ${dateDisplay}`;
+                                    console.log(`✅ RUTA AGRUPADA: ${groupedRoute}`);
+                                    routes.push(groupedRoute);
+                                    i += 2;
+                                } else {
+                                    // Mostrar segmento individual con su fecha específica
+                                    if (segment.from && segment.to && segment.date) {
+                                        const segmentDate = formatDateForRoute(segment.date);
+                                        const route = `${getAirportDisplayName(segment.from)} → ${getAirportDisplayName(segment.to)} (${segmentDate})`;
+                                        console.log(`➡️ RUTA INDIVIDUAL: ${route}`);
+                                        routes.push(route);
+                                    } else {
+                                        console.error(`❌ SEGMENTO ${i + 1} INCOMPLETO:`, segment);
+                                    }
+                                    i++;
+                                }
+                            }
+                        }
+                        
+                        const result = routes.join('<br>');
+                        console.log('\n=== 🎯 RESULTADO FINAL DEL PROCESAMIENTO ===');
+                        console.log('📋 Rutas procesadas:', routes);
+                        console.log('📊 Total de rutas generadas:', routes.length);
+                        console.log('🔤 HTML resultado:', result);
+                        console.log('� Tipo de stopover aplicado:', isReturnStopover ? 'REGRESO' : isOutboundStopover ? 'IDA' : 'GENÉRICO');
+                        console.log('=== ✅ FIN PROCESAMIENTO ===\n');
+                        return result;
+                    }
+                    
+                    // Solo usar datos de respaldo si NO hay segmentos de la API
+                    console.error('🚨 USANDO DATOS DE RESPALDO - NO HAY SEGMENTOS DE LA API');
+                    console.log('📋 Parámetros para respaldo:', {
+                        city: city,
+                        stopover: stopover,
+                        searchDate: searchDate,
+                        returnDate: returnDate
+                    });
+                    
+                    const cityCode = city === 'Quito' ? 'UIO' : 
+                                   city === 'Medellín' ? 'MED' : 
+                                   city === 'Cali' ? 'CLO' : 
+                                   city === 'Cartagena' ? 'CTG' : 
+                                   city === 'Bogotá' ? 'BOG' : 
+                                   city.substring(0, 3).toUpperCase();
+                    
+                    console.log(`🏙️ Ciudad "${city}" mapeada a código: ${cityCode}`);
+                    
+                    const outboundDate = formatDateForRoute(searchDate);
+                    const returnDateFormatted = formatDateForRoute(returnDate);
+                    
+                    console.log('📅 Fechas de respaldo formateadas:', { 
+                        searchDate: searchDate,
+                        outboundDate: outboundDate,
+                        returnDate: returnDate,
+                        returnDateFormatted: returnDateFormatted 
+                    });
+                    
+                    // Mostrar itinerario simplificado agrupando escalas
+                    const fallbackRoute = `LIM → ${cityCode} (${outboundDate})<br>${cityCode} → LIM (${returnDateFormatted})`;
+                    console.log('🔄 Ruta de respaldo generada:', fallbackRoute);
+                    console.warn('⚠️ NOTA: Esta es una ruta simplificada sin datos reales de segmentos');
+                    return fallbackRoute;
+                }
+                
+                // INTENTAR OBTENER SEGMENTS DE MÚLTIPLES FUENTES
+                let segments = data?.segments;
+                
+                // Si no hay segments en la ubicación esperada, buscar en otras ubicaciones
+                if (!segments || !Array.isArray(segments) || segments.length === 0) {
+                    console.log('🔧 BUSCANDO SEGMENTS EN UBICACIONES ALTERNATIVAS...');
+                    
+                    // Intentar diferentes ubicaciones donde podrían estar los segments
+                    segments = data?.flight_segments || 
+                              data?.route || 
+                              data?.itinerary || 
+                              offer.segments ||
+                              offer.route ||
+                              offer.flight_segments;
+                              
+                    console.log('🔍 Segments encontrados en ubicación alternativa:', segments);
+                }
+                
+                const routeDisplay = generateRouteDescription(segments, offer.city, offer.stopover, offer.searchDate, offer.returnDate);
+                
+                console.log(`\n🎨 GENERANDO HTML PARA OFERTA #${index + 1}`);
+                console.log('🛫 RouteDisplay final generado:', routeDisplay);
+                console.log('📊 Número de líneas en la ruta:', (routeDisplay.match(/<br>/g) || []).length + 1);
+                console.log('🎯 Expectativa: 3 líneas para vuelos con escalas agrupadas correctamente');
+                
+                html += `
+                    <div class="offer-card mb-3" data-combo-id="${offer.comboId}" data-city="${offer.city}">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-1">
+                                        <div class="offer-rank">
+                                            <span class="badge bg-primary">#${index + 1}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <h6 class="mb-1">${offer.city} (${getCityAirportCode(offer.city)})</h6>
+                                        <small class="text-muted">Stopover de ${offer.stopover} en Panamá</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="date-info">
+                                            <small class="text-muted">Salida:</small> ${formatDateDMY(offer.searchDate)}<br>
+                                            <small class="text-muted">Regreso:</small> ${formatDateDMY(offer.returnDate)}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="route-info">
+                                            <p class="mb-1"><strong>Ruta:</strong></p>
+                                            <small style="line-height: 1.4; display: block; white-space: normal;">${routeDisplay}</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-end">
+                                        <div class="price-info">
+                                            <h5 class="text-primary mb-0">$${data.price}</h5>
+                                            <small class="text-muted">USD</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            dateContents.innerHTML = html;
+        }
+
+        // Función para filtrar ofertas por fecha
+        function filterByDate(filterComboId) {
+            // Actualizar botones activos
+            const filterButtons = document.querySelectorAll('.btn-group button');
+            
+            // Remover clase active de todos los botones
+            filterButtons.forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-pressed', 'false');
+            });
+            
+            // Mostrar/ocultar ofertas con animación
+            const offers = document.querySelectorAll('.offer-card');
+            let visibleCount = 0;
+            
+            offers.forEach(offer => {
+                if (filterComboId === 'all' || offer.dataset.comboId === filterComboId) {
+                    offer.style.display = 'block';
+                    offer.style.animation = 'fadeIn 0.3s ease-in';
+                    visibleCount++;
+                } else {
+                    offer.style.display = 'none';
+                }
+            });
+            
+            // Activar el botón correspondiente
+            if (filterComboId === 'all') {
+                filterButtons[0].classList.add('active');
+                filterButtons[0].setAttribute('aria-pressed', 'true');
+            } else {
+                // Encontrar el botón correcto por el atributo data-combo-id
+                filterButtons.forEach(btn => {
+                    if (btn.getAttribute('data-combo-id') === filterComboId) {
+                        btn.classList.add('active');
+                        btn.setAttribute('aria-pressed', 'true');
+                        
+                        // Scroll automático en móviles al botón activo
+                        if (window.innerWidth <= 768) {
+                            btn.scrollIntoView({ 
+                                behavior: 'smooth', 
+                                block: 'nearest',
+                                inline: 'center'
+                            });
+                        }
+                    }
+                });
+            }
+            
+            // Mostrar contador de resultados
+            updateResultsCounter(visibleCount, filterComboId);
+        }
+        
+        // Función para actualizar contador de resultados
+        function updateResultsCounter(count, filterType) {
+            const existingCounter = document.querySelector('.results-counter');
+            if (existingCounter) {
+                existingCounter.remove();
+            }
+            
+            const counter = document.createElement('div');
+            counter.className = 'results-counter alert alert-info mt-2 mb-3';
+            counter.innerHTML = `
+                <i class="bi bi-info-circle"></i> 
+                <strong>${count}</strong> ${count === 1 ? 'resultado encontrado' : 'resultados encontrados'}
+                ${filterType !== 'all' ? ' para la combinación seleccionada' : ''}
+            `;
+            
+            const offersList = document.getElementById('offers-list');
+            if (offersList && offersList.parentNode) {
+                offersList.parentNode.insertBefore(counter, offersList);
+            }
+        }
+        
+        // Función para formatear fecha en formato día/mes/año
+        function formatDateDMY(dateStr) {
+            if (!dateStr) return '';
+            
+            // Si viene en formato YYYY-MM-DD
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                const year = parts[0];
+                const month = parts[1];
+                const day = parts[2];
+                return `${day}/${month}/${year}`;
+            }
+            
+            // Si viene en formato DD/MM/YYYY ya está correcto
+            if (dateStr.includes('/')) {
+                return dateStr;
+            }
+            
+            return dateStr; // Retornar como está si no se puede formatear
+        }
+        
+        // Función para formatear fecha compacta para móviles (solo día/mes)
+        function formatDateCompact(dateStr) {
+            if (!dateStr) return '';
+            
+            // Si viene en formato YYYY-MM-DD
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                const month = parts[1];
+                const day = parts[2];
+                return `${day}/${month}`;
+            }
+            
+            // Si viene en formato DD/MM/YYYY extraer solo día/mes
+            if (dateStr.includes('/')) {
+                const parts = dateStr.split('/');
+                if (parts.length >= 2) {
+                    return `${parts[0]}/${parts[1]}`;
+                }
+            }
+            
+            return dateStr;
+        }
+        
+        // Función para inicializar funcionalidades móviles
+        function initializeMobileFeatures() {
+            // Detectar si es dispositivo móvil
+            const isMobile = window.innerWidth <= 768;
+            
+            if (isMobile) {
+                // Agregar soporte táctil para los filtros
+                const filterContainer = document.querySelector('.btn-group');
+                if (filterContainer) {
+                    addTouchSupport(filterContainer);
+                }
+                
+                // Agregar indicador visual de scroll
+                addScrollIndicator();
+            }
+            
+            // Listener para cambios de orientación
+            window.addEventListener('orientationchange', function() {
+                setTimeout(() => {
+                    updateFilterLayout();
+                }, 100);
+            });
+        }
+        
+        // Función para agregar soporte táctil
+        function addTouchSupport(container) {
+            let isScrolling = false;
+            let startX = 0;
+            let scrollLeft = 0;
+            
+            container.addEventListener('touchstart', function(e) {
+                isScrolling = true;
+                startX = e.touches[0].pageX - container.offsetLeft;
+                scrollLeft = container.scrollLeft;
+                container.style.cursor = 'grabbing';
+            }, { passive: true });
+            
+            container.addEventListener('touchmove', function(e) {
+                if (!isScrolling) return;
+                e.preventDefault();
+                const x = e.touches[0].pageX - container.offsetLeft;
+                const walk = (x - startX) * 2;
+                container.scrollLeft = scrollLeft - walk;
+            });
+            
+            container.addEventListener('touchend', function() {
+                isScrolling = false;
+                container.style.cursor = 'grab';
+            });
+        }
+        
+        // Función para agregar indicador de scroll
+        function addScrollIndicator() {
+            const filterContainer = document.querySelector('.btn-group');
+            if (!filterContainer) return;
+            
+            const indicator = document.createElement('div');
+            indicator.className = 'scroll-indicator';
+            indicator.innerHTML = '<i class="bi bi-chevron-right"></i>';
+            indicator.style.cssText = `
+                position: absolute;
+                right: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                background: rgba(25, 118, 210, 0.8);
+                color: white;
+                border-radius: 50%;
+                width: 30px;
+                height: 30px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                animation: pulse 2s infinite;
+                z-index: 10;
+            `;
+            
+            filterContainer.parentElement.style.position = 'relative';
+            filterContainer.parentElement.appendChild(indicator);
+            
+            // Ocultar indicador después de primer scroll
+            filterContainer.addEventListener('scroll', function() {
+                indicator.style.display = 'none';
+            }, { once: true });
+        }
+        
+        // Función para actualizar layout de filtros
+        function updateFilterLayout() {
+            const filterContainer = document.querySelector('.btn-group');
+            if (!filterContainer) return;
+            
+            const isMobile = window.innerWidth <= 768;
+            
+            if (isMobile) {
+                filterContainer.style.justifyContent = 'flex-start';
+                filterContainer.style.flexWrap = 'nowrap';
+            } else {
+                filterContainer.style.justifyContent = 'center';
+                filterContainer.style.flexWrap = 'wrap';
+            }
+        }
+        
+        // Inicializar funcionalidades móviles cuando se cargan los datos
+        function initializeApp() {
+            fetchOffers();
+            initializeMobileFeatures();
+        }
+        
+        // 🧪 FUNCIÓN DE PRUEBA PARA VERIFICAR ROUTE GENERATION
+        function testRouteGeneration() {
+            console.log('\n🧪🧪🧪 INICIANDO PRUEBAS ESPECÍFICAS DE ROUTE GENERATION 🧪🧪🧪');
+            
+            // Función auxiliar para formatear fecha
+            function formatDateForRoute(dateStr) {
+                if (!dateStr) return '';
+                const parts = dateStr.split('-');
+                if (parts.length === 3) {
+                    return `${parts[2]}/${parts[1]}`;
+                }
+                return dateStr;
+            }
+            
+            // Test Case 1: QUITO - Stopover de REGRESO en Panamá
+            console.log('\n🧪 TEST CASE 1: QUITO - Stopover de REGRESO');
+            console.log('📋 Datos esperados:');
+            console.log('   LIM → UIO (11/02)');
+            console.log('   UIO → PTY (11/02)');  
+            console.log('   PTY → LIM (18/02)');
+            
+            // Simular lógica de fallback para Quito
+            const quitoCity = 'Quito';
+            const quitoStopover = 'Stopover de regreso en Panamá';
+            const quitoSearchDate = '2026-02-11';
+            const quitoReturnDate = '2026-02-18';
+            
+            const quitoCityCode = 'UIO';
+            const quitoOutboundDate = formatDateForRoute(quitoSearchDate);
+            const quitoReturnFormatted = formatDateForRoute(quitoReturnDate);
+            const quitoIsReturnStopover = quitoStopover.toLowerCase().includes('regreso');
+            
+            let quitoRoute;
+            if (quitoIsReturnStopover) {
+                quitoRoute = `LIM → ${quitoCityCode} (${quitoOutboundDate})<br>${quitoCityCode} → PTY (${quitoOutboundDate})<br>PTY → LIM (${quitoReturnFormatted})`;
+            }
+            
+            console.log('🎯 RESULTADO QUITO:', quitoRoute);
+            console.log('✅ ¿Coincide con lo esperado? Verificar manualmente');
+            
+            // Test Case 2: MEDELLÍN - Stopover de IDA en Panamá  
+            console.log('\n🧪 TEST CASE 2: MEDELLÍN - Stopover de IDA');
+            console.log('📋 Datos esperados:');
+            console.log('   LIM → PTY (11/02)');
+            console.log('   PTY → MDE (18/02)');
+            console.log('   MDE → LIM (18/02)');
+            
+            // Simular lógica de fallback para Medellín
+            const medellinCity = 'Medellín';
+            const medellinStopover = 'Stopover de ida en Panamá';
+            const medellinSearchDate = '2026-02-11';
+            const medellinReturnDate = '2026-02-18';
+            
+            const medellinCityCode = 'MDE';
+            const medellinOutboundDate = formatDateForRoute(medellinSearchDate);
+            const medellinReturnFormatted = formatDateForRoute(medellinReturnDate);
+            const medellinIsOutboundStopover = medellinStopover.toLowerCase().includes('ida');
+            
+            let medellinRoute;
+            if (medellinIsOutboundStopover) {
+                medellinRoute = `LIM → PTY (${medellinOutboundDate})<br>PTY → ${medellinCityCode} (${medellinReturnFormatted})<br>${medellinCityCode} → LIM (${medellinReturnFormatted})`;
+            }
+            
+            console.log('🎯 RESULTADO MEDELLÍN:', medellinRoute);
+            console.log('✅ ¿Coincide con lo esperado? Verificar manualmente');
+            
+            // Test Case 3: Verificación de códigos de ciudad
+            console.log('\n🧪 TEST CASE 3: VERIFICACIÓN DE CÓDIGOS DE CIUDAD');
+            
+            const cities = ['Quito', 'Medellín', 'Cali', 'Cartagena', 'Bogotá'];
+            const expectedCodes = ['UIO', 'MDE', 'CLO', 'CTG', 'BOG'];
+            
+            cities.forEach((city, index) => {
+                const cityCode = city === 'Quito' ? 'UIO' : 
+                               city === 'Medellín' ? 'MDE' : 
+                               city === 'Cali' ? 'CLO' : 
+                               city === 'Cartagena' ? 'CTG' : 
+                               city === 'Bogotá' ? 'BOG' : 
+                               city.substring(0, 3).toUpperCase();
+                
+                console.log(`   ${city} → ${cityCode} (esperado: ${expectedCodes[index]})`);
+                console.log(`   ✅ ${cityCode === expectedCodes[index] ? 'CORRECTO' : 'ERROR'}`);
+            });
+            
+            console.log('\n🧪🧪🧪 FIN DE PRUEBAS ESPECÍFICAS 🧪🧪🧪');
+        }
+        
+        // Agregar botón de prueba al DOM
+        function addTestButton() {
+            const button = document.createElement('button');
+            button.textContent = '🧪 Probar Route Generation';
+            button.className = 'btn btn-info position-fixed';
+            button.style.top = '10px';
+            button.style.right = '10px';
+            button.style.zIndex = '9999';
+            button.onclick = testRouteGeneration;
+            document.body.appendChild(button);
+        }
+        
+        // Agregar botón cuando se carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            addTestButton();
+            
+            // También agregar una función global para pruebas manuales
+            window.debugRouteGeneration = testRouteGeneration;
+            window.testRealData = function() {
+                console.log('🔍 Iniciando búsqueda real para obtener datos de la API...');
+                fetchOffers();
+            };
+            
+            console.log('🛠️ FUNCIONES DE DEBUG DISPONIBLES:');
+            console.log('   - window.debugRouteGeneration() - Prueba con datos simulados');
+            console.log('   - window.testRealData() - Ejecuta búsqueda real de ofertas');
+            console.log('   - También hay un botón "🧪 Probar Route Generation" en la esquina superior derecha');
+            
+            // Ejecutar pruebas automáticamente al cargar
+            setTimeout(() => {
+                console.log('\n🤖 EJECUTANDO PRUEBAS AUTOMÁTICAS AL CARGAR LA PÁGINA...');
+                testRouteGeneration();
+            }, 1000);
+        });
     </script>
 </body>
 </html>

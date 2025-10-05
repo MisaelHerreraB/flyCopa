@@ -62,13 +62,17 @@ async function fetchOffers(url, headers, payload, apiName = 'API') {
 }
 
 module.exports = async (req, res) => {
-    const { transactionidentifier, useridentifier, stopover = 'both' } = req.body;
+    const { 
+        transactionidentifier, 
+        useridentifier, 
+        stopover = 'both',
+        searchDate = '2026-02-13', // Fecha de salida
+        returnDate = '2026-02-18'  // Fecha de regreso
+    } = req.body;
     
     if (!transactionidentifier || !useridentifier) {
         return res.status(400).json({ error: 'transactionidentifier y useridentifier son requeridos' });
-    }
-    
-    const url = 'https://api.copaair.com/ibe/booking/plan-multicity';
+    }    const url = 'https://api.copaair.com/ibe/booking/plan-multicity';
     const headers = {
         'accept': '*/*',
         'accept-language': 'es-PA',
@@ -100,13 +104,13 @@ module.exports = async (req, res) => {
                 cabinType: 'Y',
                 isStopOver: true,
                 originDestinations: [
-                    { od: 'OD1', departure: { airportCode: 'LIM', date: '2026-02-13' }, arrival: { airportCode: 'PTY' } },
-                    { od: 'OD2', departure: { airportCode: 'PTY', date: '2026-02-18' }, arrival: { airportCode: 'MDE' } },
-                    { od: 'OD3', departure: { airportCode: 'MDE', date: '2026-02-18' }, arrival: { airportCode: 'LIM' } }
+                    { od: 'OD1', departure: { airportCode: 'LIM', date: searchDate }, arrival: { airportCode: 'PTY' } },
+                    { od: 'OD2', departure: { airportCode: 'PTY', date: returnDate }, arrival: { airportCode: 'MDE' } },
+                    { od: 'OD3', departure: { airportCode: 'MDE', date: returnDate }, arrival: { airportCode: 'LIM' } }
                 ]
             };
             
-            results.ida = await fetchOffers(url, headers, payload1, 'Medellín IDA');
+            results.ida = await fetchOffers(url, headers, payload1, `Medellín IDA (${searchDate})`);
         }
         
         // Medellín regreso (LIM -> MDE -> PTY -> LIM)
@@ -118,18 +122,20 @@ module.exports = async (req, res) => {
                 cabinType: 'Y',
                 isStopOver: true,
                 originDestinations: [
-                    { od: 'OD1', departure: { airportCode: 'LIM', date: '2026-02-13' }, arrival: { airportCode: 'MDE' } },
-                    { od: 'OD2', departure: { airportCode: 'MDE', date: '2026-02-13' }, arrival: { airportCode: 'PTY' } },
-                    { od: 'OD3', departure: { airportCode: 'PTY', date: '2026-02-18' }, arrival: { airportCode: 'LIM' } }
+                    { od: 'OD1', departure: { airportCode: 'LIM', date: searchDate }, arrival: { airportCode: 'MDE' } },
+                    { od: 'OD2', departure: { airportCode: 'MDE', date: searchDate }, arrival: { airportCode: 'PTY' } },
+                    { od: 'OD3', departure: { airportCode: 'PTY', date: returnDate }, arrival: { airportCode: 'LIM' } }
                 ]
             };
             
-            results.regreso = await fetchOffers(url, headers, payload2, 'Medellín REGRESO');
+            results.regreso = await fetchOffers(url, headers, payload2, `Medellín REGRESO (${searchDate})`);
         }
         
         return res.status(200).json({
             success: true,
             city: 'Medellín',
+            searchDate,
+            returnDate,
             data: results,
             originDestinations: {
                 ida: results.ida ? results.ida.originDestinations : null,
@@ -142,7 +148,8 @@ module.exports = async (req, res) => {
         return res.status(500).json({ 
             success: false, 
             error: error.message,
-            city: 'Medellín'
+            city: 'Medellín',
+            searchDate
         });
     }
 };

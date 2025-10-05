@@ -1,32 +1,10 @@
 const axios = require('axios');
 const { v4: uuidv4 } = require('uuid');
-
-// Función para decodificar solutionKeys y extraer horarios reales
-function decodeSolutionKey(solutionKey) {
-    console.log(`[DEBUG] Decodificando solutionKey: ${solutionKey}`);
-    // Formato esperado: "Iflt0300a82e1330a"
-    // Los primeros 4 dígitos después de "Iflt" parecen ser la hora
-    const timeMatch = solutionKey.match(/Iflt(\d{4})/);
-    if (timeMatch) {
-        const timeCode = timeMatch[1];
-        // Convertir de formato HHMM a HH:MM
-        const hours = timeCode.substring(0, 2);
-        const minutes = timeCode.substring(2, 4);
-        const result = `${hours}:${minutes}`;
-        console.log(`[DEBUG] Extraído tiempo: ${result} de ${timeCode}`);
-        return result;
-    }
-    console.log(`[DEBUG] No se pudo extraer tiempo de: ${solutionKey}`);
-    return null;
-}
+const { getDateCombinations, generateItineraryConfig } = require('./utils/dateConfig');
 
 // Función para generar segmentos reales basados en ofertas de Copa Airlines
 function generateRealSegments(globalCheapest, allItineraries) {
-    console.log('[DEBUG] generateRealSegments llamada con:', globalCheapest);
-    console.log('[DEBUG] allItineraries keys:', Object.keys(allItineraries));
-    
     if (!globalCheapest || !globalCheapest.offerIds || globalCheapest.offerIds.length === 0) {
-        console.log('[DEBUG] No hay globalCheapest válido o sin offerIds');
         return null;
     }
     
@@ -40,7 +18,6 @@ function generateRealSegments(globalCheapest, allItineraries) {
                 if (globalCheapest.offerIds.includes(offer.id)) {
                     selectedOffer = offer;
                     selectedItinerary = itinerary;
-                    console.log(`[DEBUG] Encontrada oferta seleccionada: ${offer.id} en ${key}`);
                     break;
                 }
             }
@@ -48,13 +25,7 @@ function generateRealSegments(globalCheapest, allItineraries) {
         }
     }
     
-    if (!selectedOffer || !selectedOffer.solutionKeys) {
-        console.log('[DEBUG] No se encontró la oferta seleccionada o no tiene solutionKeys');
-        return null;
-    }
-    
-    if (!selectedItinerary.originDestinations) {
-        console.log('[DEBUG] No hay originDestinations en el itinerario seleccionado');
+    if (!selectedOffer || !selectedOffer.solutionKeys || !selectedItinerary.originDestinations) {
         return null;
     }
     
@@ -63,32 +34,17 @@ function generateRealSegments(globalCheapest, allItineraries) {
         ? selectedOffer.solutionKeys.split(',').map(k => k.trim())
         : selectedOffer.solutionKeys;
     
-    console.log('[DEBUG] solutionKeys de la oferta:', selectedOffer.solutionKeys);
-    console.log('[DEBUG] originDestinations disponibles:', !!selectedItinerary.originDestinations);
-    
     // Procesar cada originDestination usando los solutionKeys
     for (let i = 0; i < selectedItinerary.originDestinations.length && i < solutionKeys.length; i++) {
         const od = selectedItinerary.originDestinations[i];
         const solutionKey = solutionKeys[i];
         
-        console.log(`[DEBUG] Procesando OD ${i}: buscando solution con key ${solutionKey}`);
-        
         if (od.solutions && Array.isArray(od.solutions)) {
             const solution = od.solutions.find(s => s.key === solutionKey);
             
             if (solution && solution.flights && solution.flights.length > 0) {
-                console.log(`[DEBUG] Encontrada solution con ${solution.flights.length} vuelos`);
-                
-                // Procesar cada vuelo en la solución (puede haber escalas)
-                solution.flights.forEach((flight, flightIndex) => {
-                    console.log(`[DEBUG] Procesando vuelo ${flightIndex}:`, {
-                        from: flight.departure.airportCode,
-                        departure: flight.departure.flightTime,
-                        to: flight.arrival.airportCode,
-                        arrival: flight.arrival.flightTime,
-                        date: flight.departure.flightDate
-                    });
-                    
+                // Procesar cada vuelo en la solución
+                solution.flights.forEach((flight) => {
                     segments.push({
                         date: flight.departure.flightDate,
                         from: flight.departure.airportCode,
@@ -102,131 +58,31 @@ function generateRealSegments(globalCheapest, allItineraries) {
                         aircraft: flight.aircraftName || 'Boeing 737-800'
                     });
                 });
-            } else {
-                console.log(`[DEBUG] No se encontró solution con key ${solutionKey} o no tiene vuelos`);
             }
         }
     }
     
-    console.log(`[DEBUG] Total segmentos generados: ${segments.length}`);
-    console.log('[DEBUG] Segmentos:', segments);
-    
     return segments.length > 0 ? segments : null;
 }
 
-// Función auxiliar para sumar horas a un tiempo
-function addHours(timeStr, hours) {
-    const [h, m] = timeStr.split(':').map(Number);
-    const totalMinutes = h * 60 + m + (hours * 60);
-    const newHours = Math.floor(totalMinutes / 60) % 24;
-    const newMinutes = totalMinutes % 60;
-    return `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
-}
 
-// Función para generar segmentos básicos basados en el itinerario (fallback)
-function generateBasicSegments(itinerary, city, stopover) {
-    const segments = [];
-    const cityNames = {
-        'Medellín': 'MDE',
-        'Quito': 'UIO', 
-        'Cali': 'CLO',
-        'Bogotá': 'BOG',
-        'Cartagena': 'CTG'
-    };
-    
-    const cityCode = cityNames[city] || 'MDE';
-    
-    if (stopover === 'ida') {
-        // Stopover de ida: LIM -> PTY -> Ciudad -> LIM
-        segments.push({
-            date: '2026-02-13',
-            from: 'LIM',
-            departure: '08:00',
-            to: 'PTY',
-            arrival: '12:30',
-            class: 'Económica Basic',
-            direct: true,
-            stops: 'Sin escalas',
-            flightNumber: 'CM123',
-            aircraft: 'Boeing 737-800'
-        });
-        segments.push({
-            date: '2026-02-18',
-            from: 'PTY',
-            departure: '14:00',
-            to: cityCode,
-            arrival: '16:30',
-            class: 'Económica Basic',
-            direct: true,
-            stops: 'Sin escalas',
-            flightNumber: 'CM456',
-            aircraft: 'Boeing 737-800'
-        });
-        segments.push({
-            date: '2026-02-18',
-            from: cityCode,
-            departure: '18:00',
-            to: 'LIM',
-            arrival: '23:30',
-            class: 'Económica Basic',
-            direct: false,
-            stops: '1 escala en PTY',
-            flightNumber: 'CM789',
-            aircraft: 'Boeing 737-800'
-        });
-    } else if (stopover === 'regreso') {
-        // Stopover de regreso: LIM -> Ciudad -> PTY -> LIM
-        segments.push({
-            date: '2026-02-13',
-            from: 'LIM',
-            departure: '08:00',
-            to: cityCode,
-            arrival: '12:30',
-            class: 'Económica Basic',
-            direct: false,
-            stops: '1 escala en PTY',
-            flightNumber: 'CM123',
-            aircraft: 'Boeing 737-800'
-        });
-        segments.push({
-            date: '2026-02-13',
-            from: cityCode,
-            departure: '14:00',
-            to: 'PTY',
-            arrival: '16:30',
-            class: 'Económica Basic',
-            direct: true,
-            stops: 'Sin escalas',
-            flightNumber: 'CM456',
-            aircraft: 'Boeing 737-800'
-        });
-        segments.push({
-            date: '2026-02-18',
-            from: 'PTY',
-            departure: '18:00',
-            to: 'LIM',
-            arrival: '23:30',
-            class: 'Económica Basic',
-            direct: true,
-            stops: 'Sin escalas',
-            flightNumber: 'CM789',
-            aircraft: 'Boeing 737-800'
-        });
-    }
-    
-    return segments;
-}
+
+
 
 module.exports = async (req, res) => {
     const BASE_URL = req.headers['x-forwarded-proto'] && req.headers['x-forwarded-host'] 
         ? `${req.headers['x-forwarded-proto']}://${req.headers['x-forwarded-host']}`
         : 'http://localhost:3000';
     
+    // Obtener combinaciones de fechas configuradas
+    const dateCombinations = getDateCombinations();
+    const primaryCombo = dateCombinations[0]; // Combinación principal para claves de Redis
+    
     // Definir claves de Redis al inicio para acceso global
-    const REDIS_KEY = "flycopaapp:offers:2026-02-13";
-    const PROCESSING_KEY = "flycopaapp:processing:2026-02-13";
-    const FAILED_KEY = "flycopaapp:failed:2026-02-13";
-    const FAILED_TIMESTAMP_KEY = "flycopaapp:failed:timestamp:2026-02-13";
+    const REDIS_KEY = `flycopaapp:offers:all-combinations`;
+    const PROCESSING_KEY = `flycopaapp:processing:all-combinations`;
+    const FAILED_KEY = `flycopaapp:failed:all-combinations`;
+    const FAILED_TIMESTAMP_KEY = `flycopaapp:failed:timestamp:all-combinations`;
     
     try {
         // Generar identificadores para las APIs de Copa
@@ -352,40 +208,33 @@ module.exports = async (req, res) => {
         
         console.log(`[${new Date().toISOString()}] Obtenido lock para ejecutar APIs`);
         
-        console.log(`[${new Date().toISOString()}] Iniciando llamadas concurrentes a APIs especializadas`);
+        console.log(`[${new Date().toISOString()}] Iniciando llamadas concurrentes a APIs especializadas para ${dateCombinations.length} combinaciones de fechas`);
         
-        // Llamadas concurrentes a todas las funciones especializadas
-        const cityPromises = [
-            axios.post(`${BASE_URL}/api/medellin`, { 
-                transactionidentifier, 
-                useridentifier,
-                stopover: 'both'
-            }).catch(err => ({ error: true, city: 'Medellín', message: err.message })),
-            
-            axios.post(`${BASE_URL}/api/quito`, { 
-                transactionidentifier, 
-                useridentifier,
-                stopover: 'both'
-            }).catch(err => ({ error: true, city: 'Quito', message: err.message })),
-            
-            axios.post(`${BASE_URL}/api/cali`, { 
-                transactionidentifier, 
-                useridentifier,
-                stopover: 'both'
-            }).catch(err => ({ error: true, city: 'Cali', message: err.message })),
-            
-            axios.post(`${BASE_URL}/api/bogota`, { 
-                transactionidentifier, 
-                useridentifier,
-                stopover: 'both'
-            }).catch(err => ({ error: true, city: 'Bogotá', message: err.message })),
-            
-            axios.post(`${BASE_URL}/api/cartagena`, { 
-                transactionidentifier, 
-                useridentifier,
-                stopover: 'both'
-            }).catch(err => ({ error: true, city: 'Cartagena', message: err.message }))
-        ];
+        // Llamadas concurrentes a todas las funciones especializadas para múltiples combinaciones
+        const cityPromises = [];
+        
+        // Para cada combinación de fechas
+        dateCombinations.forEach(combo => {
+            // Para cada ciudad
+            const cities = ['medellin', 'quito', 'cali', 'bogota', 'cartagena'];
+            cities.forEach(city => {
+                const promise = axios.post(`${BASE_URL}/api/${city}`, { 
+                    transactionidentifier, 
+                    useridentifier,
+                    stopover: 'both',
+                    searchDate: combo.searchDate, // Fecha de salida específica
+                    returnDate: combo.returnDate   // Fecha de regreso específica
+                }).catch(err => ({ 
+                    error: true, 
+                    city: city.charAt(0).toUpperCase() + city.slice(1), 
+                    searchDate: combo.searchDate,
+                    returnDate: combo.returnDate,
+                    message: err.message 
+                }));
+                
+                cityPromises.push(promise);
+            });
+        });
         
         const startTime = Date.now();
         const cityResults = await Promise.allSettled(cityPromises);
@@ -393,85 +242,68 @@ module.exports = async (req, res) => {
         
         console.log(`[${new Date().toISOString()}] Llamadas concurrentes completadas en ${duration}ms`);
         
-        // Procesar resultados y mapear a estructura original
-        const response = {
-            itinerary1: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> PTY -> MDE -> LIM', city: 'Medellín', stopover: 'ida' },
-            itinerary2: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> PTY -> UIO -> LIM', city: 'Quito', stopover: 'ida' },
-            itinerary3: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> PTY -> CLO -> LIM', city: 'Cali', stopover: 'ida' },
-            itinerary4: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> PTY -> BOG -> LIM', city: 'Bogotá', stopover: 'ida' },
-            itinerary5: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> PTY -> CTG -> LIM', city: 'Cartagena', stopover: 'ida' },
-            itinerary6: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> MDE -> PTY -> LIM', city: 'Medellín', stopover: 'regreso' },
-            itinerary7: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> UIO -> PTY -> LIM', city: 'Quito', stopover: 'regreso' },
-            itinerary8: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> CLO -> PTY -> LIM', city: 'Cali', stopover: 'regreso' },
-            itinerary9: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> BOG -> PTY -> LIM', city: 'Bogotá', stopover: 'regreso' },
-            itinerary10: { offers: [], cheapest: null, error: null, itinerary: 'LIM -> CTG -> PTY -> LIM', city: 'Cartagena', stopover: 'regreso' },
-            globalCheapest: null
-        };
-        
-        const cityMapping = [
-            { city: 'Medellín', idaItinerary: 'itinerary1', regresoItinerary: 'itinerary6' },
-            { city: 'Quito', idaItinerary: 'itinerary2', regresoItinerary: 'itinerary7' },
-            { city: 'Cali', idaItinerary: 'itinerary3', regresoItinerary: 'itinerary8' },
-            { city: 'Bogotá', idaItinerary: 'itinerary4', regresoItinerary: 'itinerary9' },
-            { city: 'Cartagena', idaItinerary: 'itinerary5', regresoItinerary: 'itinerary10' }
-        ];
+        // Procesar resultados y mapear a estructura expandida para múltiples combinaciones
+        const response = generateItineraryConfig();
+        response.globalCheapest = null;
         
         const failedApis = [];
         
-        // Procesar cada resultado de ciudad
+        // Procesar cada resultado de ciudad con múltiples combinaciones de fechas
         cityResults.forEach((result, index) => {
-            const cityInfo = cityMapping[index];
-            
-            console.log(`[${new Date().toISOString()}] Procesando resultado ${index} - ${cityInfo.city}:`);
-            console.log(`Status: ${result.status}`);
-            if (result.value) {
-                console.log(`Value keys:`, Object.keys(result.value));
-                if (result.value.data) {
-                    console.log(`Data keys:`, Object.keys(result.value.data));
-                }
-            }
+            // Calcular qué ciudad y combinación de fechas corresponde a este índice
+            const comboIndex = Math.floor(index / 5); // 5 ciudades por combinación
+            const cityIndex = index % 5;
+            const currentCombo = dateCombinations[comboIndex];
+            const cities = ['Medellín', 'Quito', 'Cali', 'Bogotá', 'Cartagena'];
+            const currentCity = cities[cityIndex];
             
             if (result.status === 'fulfilled' && result.value && !result.value.error) {
-                const cityData = result.value.data; // Esta es la respuesta de axios
+                const cityData = result.value.data;
                 
-                console.log(`[${new Date().toISOString()}] CityData para ${cityInfo.city}:`, cityData ? Object.keys(cityData) : 'null');
+                // Buscar itinerario para ida
+                const idaItineraryKey = Object.keys(response).find(key => {
+                    const item = response[key];
+                    return item.searchDate === currentCombo.searchDate &&
+                           item.returnDate === currentCombo.returnDate &&
+                           item.city === currentCity &&
+                           item.stopover === 'ida';
+                });
                 
                 // Procesar ida
                 if (cityData && cityData.data && cityData.data.ida && !cityData.data.ida.error) {
-                    response[cityInfo.idaItinerary] = processOffers(cityData.data.ida, response[cityInfo.idaItinerary]);
-                    // Almacenar datos originales de ida
-                    response[cityInfo.idaItinerary].originDestinations = cityData.originDestinations?.ida;
+                    if (idaItineraryKey) {
+                        response[idaItineraryKey] = processOffers(cityData.data.ida, response[idaItineraryKey]);
+                        response[idaItineraryKey].originDestinations = cityData.originDestinations?.ida;
+                    }
                 } else {
-                    response[cityInfo.idaItinerary].error = cityData?.data?.ida?.error || 'Error en stopover de ida';
-                    failedApis.push(`${cityInfo.city}-ida`);
+                    failedApis.push(`${currentCity}-ida-${currentCombo.searchDate}-${currentCombo.returnDate}`);
                 }
+                
+                // Buscar itinerario para regreso
+                const regresoItineraryKey = Object.keys(response).find(key => {
+                    const item = response[key];
+                    return item.searchDate === currentCombo.searchDate &&
+                           item.returnDate === currentCombo.returnDate &&
+                           item.city === currentCity &&
+                           item.stopover === 'regreso';
+                });
                 
                 // Procesar regreso
                 if (cityData && cityData.data && cityData.data.regreso && !cityData.data.regreso.error) {
-                    response[cityInfo.regresoItinerary] = processOffers(cityData.data.regreso, response[cityInfo.regresoItinerary]);
-                    // Almacenar datos originales de regreso
-                    response[cityInfo.regresoItinerary].originDestinations = cityData.originDestinations?.regreso;
+                    if (regresoItineraryKey) {
+                        response[regresoItineraryKey] = processOffers(cityData.data.regreso, response[regresoItineraryKey]);
+                        response[regresoItineraryKey].originDestinations = cityData.originDestinations?.regreso;
+                    }
                 } else {
-                    response[cityInfo.regresoItinerary].error = cityData?.data?.regreso?.error || 'Error en stopover de regreso';
-                    failedApis.push(`${cityInfo.city}-regreso`);
+                    failedApis.push(`${currentCity}-regreso-${currentCombo.searchDate}-${currentCombo.returnDate}`);
                 }
             } else {
-                console.log(`[${new Date().toISOString()}] Error en ${cityInfo.city}:`, result.reason || result.value);
-                response[cityInfo.idaItinerary].error = result.value?.message || 'Error en función de ciudad';
-                response[cityInfo.regresoItinerary].error = result.value?.message || 'Error en función de ciudad';
-                failedApis.push(`${cityInfo.city}-ida`, `${cityInfo.city}-regreso`);
+                // API falló completamente
+                failedApis.push(`${currentCity}-ida-${currentCombo.searchDate}-${currentCombo.returnDate}`, `${currentCity}-regreso-${currentCombo.searchDate}-${currentCombo.returnDate}`);
             }
         });
         
-        // Debug: Verificar estado del response antes de calcular globalCheapest
-        console.log(`[${new Date().toISOString()}] Verificando response antes de globalCheapest:`);
-        Object.entries(response).forEach(([key, value]) => {
-            if (value && typeof value === 'object') {
-                console.log(`${key}: cheapest=${value.cheapest ? 'exists' : 'null'}, error=${value.error || 'none'}`);
-            } else {
-                console.log(`${key}: VALOR NULO O INVÁLIDO - value=${value}`);
-            }
-        });
+
 
         // Calcular globalCheapest con validación robusta
         const allCheapest = Object.values(response)
@@ -502,74 +334,40 @@ module.exports = async (req, res) => {
         // Crear globalCheapest con ida, vuelta y stopoverType
         if (allCheapest.length > 0) {
             const winner = allCheapest[0];
-            let ida = '';
-            let vuelta = '';
-            let stopoverType = '';
             
-            // Determinar ida, vuelta y tipo de stopover según el itinerario
-            switch (winner.itinerary) {
-                case 'LIM -> PTY -> MDE -> LIM':
-                    ida = 'Lima - Panamá';
-                    vuelta = 'Panamá - Medellín - Panamá - Lima';
-                    stopoverType = '🛫 Stopover de ida en Panamá';
-                    break;
-                case 'LIM -> PTY -> UIO -> LIM':
-                    ida = 'Lima - Panamá';
-                    vuelta = 'Panamá - Quito - Panamá - Lima';
-                    stopoverType = '🛫 Stopover de ida en Panamá';
-                    break;
-                case 'LIM -> PTY -> CLO -> LIM':
-                    ida = 'Lima - Panamá';
-                    vuelta = 'Panamá - Cali - Panamá - Lima';
-                    stopoverType = '🛫 Stopover de ida en Panamá';
-                    break;
-                case 'LIM -> PTY -> BOG -> LIM':
-                    ida = 'Lima - Panamá';
-                    vuelta = 'Panamá - Bogotá - Panamá - Lima';
-                    stopoverType = '🛫 Stopover de ida en Panamá';
-                    break;
-                case 'LIM -> PTY -> CTG -> LIM':
-                    ida = 'Lima - Panamá';
-                    vuelta = 'Panamá - Cartagena - Panamá - Lima';
-                    stopoverType = '🛫 Stopover de ida en Panamá';
-                    break;
-                case 'LIM -> MDE -> PTY -> LIM':
-                    ida = 'Lima - Medellín - Panamá';
-                    vuelta = 'Panamá - Lima';
-                    stopoverType = '🛬 Stopover de regreso en Panamá';
-                    break;
-                case 'LIM -> UIO -> PTY -> LIM':
-                    ida = 'Lima - Quito - Panamá';
-                    vuelta = 'Panamá - Lima';
-                    stopoverType = '🛬 Stopover de regreso en Panamá';
-                    break;
-                case 'LIM -> CLO -> PTY -> LIM':
-                    ida = 'Lima - Cali - Panamá';
-                    vuelta = 'Panamá - Lima';
-                    stopoverType = '🛬 Stopover de regreso en Panamá';
-                    break;
-                case 'LIM -> BOG -> PTY -> LIM':
-                    ida = 'Lima - Bogotá - Panamá';
-                    vuelta = 'Panamá - Lima';
-                    stopoverType = '🛬 Stopover de regreso en Panamá';
-                    break;
-                case 'LIM -> CTG -> PTY -> LIM':
-                    ida = 'Lima - Cartagena - Panamá';
-                    vuelta = 'Panamá - Lima';
-                    stopoverType = '🛬 Stopover de regreso en Panamá';
-                    break;
-                default:
-                    ida = '';
-                    vuelta = '';
-                    stopoverType = '';
-            }
+            // Encontrar el itinerario original para obtener las fechas
+            const originalItinerary = Object.values(response).find(itinerary => 
+                itinerary && 
+                itinerary.cheapest && 
+                itinerary.cheapest.price === winner.price.toString() &&
+                itinerary.city === winner.city &&
+                itinerary.stopover === winner.stopover
+            );
+            
+            // Mapeo más eficiente para determinar rutas
+            const routeMap = {
+                'LIM -> PTY -> MDE -> LIM': { ida: 'Lima - Panamá', vuelta: 'Panamá - Medellín - Panamá - Lima', type: '🛫 Stopover de ida en Panamá' },
+                'LIM -> PTY -> UIO -> LIM': { ida: 'Lima - Panamá', vuelta: 'Panamá - Quito - Panamá - Lima', type: '🛫 Stopover de ida en Panamá' },
+                'LIM -> PTY -> CLO -> LIM': { ida: 'Lima - Panamá', vuelta: 'Panamá - Cali - Panamá - Lima', type: '🛫 Stopover de ida en Panamá' },
+                'LIM -> PTY -> BOG -> LIM': { ida: 'Lima - Panamá', vuelta: 'Panamá - Bogotá - Panamá - Lima', type: '🛫 Stopover de ida en Panamá' },
+                'LIM -> PTY -> CTG -> LIM': { ida: 'Lima - Panamá', vuelta: 'Panamá - Cartagena - Panamá - Lima', type: '🛫 Stopover de ida en Panamá' },
+                'LIM -> MDE -> PTY -> LIM': { ida: 'Lima - Medellín - Panamá', vuelta: 'Panamá - Lima', type: '🛬 Stopover de regreso en Panamá' },
+                'LIM -> UIO -> PTY -> LIM': { ida: 'Lima - Quito - Panamá', vuelta: 'Panamá - Lima', type: '🛬 Stopover de regreso en Panamá' },
+                'LIM -> CLO -> PTY -> LIM': { ida: 'Lima - Cali - Panamá', vuelta: 'Panamá - Lima', type: '🛬 Stopover de regreso en Panamá' },
+                'LIM -> BOG -> PTY -> LIM': { ida: 'Lima - Bogotá - Panamá', vuelta: 'Panamá - Lima', type: '🛬 Stopover de regreso en Panamá' },
+                'LIM -> CTG -> PTY -> LIM': { ida: 'Lima - Cartagena - Panamá', vuelta: 'Panamá - Lima', type: '🛬 Stopover de regreso en Panamá' }
+            };
+            
+            const route = routeMap[winner.itinerary] || { ida: '', vuelta: '', type: '' };
             
             response.globalCheapest = {
                 ...winner,
-                ida,
-                vuelta,
-                stopoverType,
-                segments: generateRealSegments(winner, response) || generateBasicSegments(winner.itinerary, winner.city, winner.stopover)
+                ida: route.ida,
+                vuelta: route.vuelta,
+                stopoverType: route.type,
+                searchDate: originalItinerary ? originalItinerary.searchDate : null,
+                returnDate: originalItinerary ? originalItinerary.returnDate : null,
+                segments: generateRealSegments(winner, response)
             };
         } else {
             response.globalCheapest = null;
@@ -648,6 +446,7 @@ function processOffers(apiData, itineraryObj) {
     const offers = apiData.offers;
     let minPrice = Infinity;
     const cheapestOffers = [];
+    let cheapestOffer = null;
 
     const processedOffers = offers.map(offer => {
         const fareFamily = offer.fareFamilies ? `${offer.fareFamilies[0].name} (${offer.fareFamilies[0].code})` : 'N/A';
@@ -655,6 +454,7 @@ function processOffers(apiData, itineraryObj) {
             minPrice = offer.pricePerAdult;
             cheapestOffers.length = 0;
             cheapestOffers.push(offer.id);
+            cheapestOffer = offer;
         } else if (offer.pricePerAdult === minPrice) {
             cheapestOffers.push(offer.id);
         }
@@ -667,9 +467,37 @@ function processOffers(apiData, itineraryObj) {
         };
     });
 
+    // Extraer información de rutas y duración de originDestinations
+    let routeInfo = null;
+    let totalDuration = null;
+    
+    if (apiData.originDestinations && apiData.originDestinations.length > 0 && cheapestOffer) {
+        const segments = [];
+        
+        // Procesar originDestinations - estructura: [{ od, departure: { airportCode, date }, arrival: { airportCode } }]
+        apiData.originDestinations.forEach((od, index) => {
+            if (od.departure && od.arrival) {
+                segments.push({
+                    route: `${od.departure.airportCode} → ${od.arrival.airportCode}`,
+                    departure: od.departure.date || 'N/A',
+                    arrival: od.arrival.date || 'N/A',
+                    duration: 'N/A' // La API no provee duración individual por segmento
+                });
+            }
+        });
+        
+        routeInfo = segments;
+        // Como no tenemos duración individual, mostraremos la ruta completa
+        if (segments.length > 0) {
+            totalDuration = `${segments.length} segmento${segments.length > 1 ? 's' : ''}`;
+        }
+    }
+
     const cheapest = offers.length > 0 ? {
         price: minPrice.toFixed(2),
-        offerIds: cheapestOffers
+        offerIds: cheapestOffers,
+        segments: routeInfo,
+        totalDuration: totalDuration || 'N/A'
     } : null;
     
     return {

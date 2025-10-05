@@ -62,13 +62,17 @@ async function fetchOffers(url, headers, payload, apiName = 'API') {
 }
 
 module.exports = async (req, res) => {
-    const { transactionidentifier, useridentifier, stopover = 'both' } = req.body;
+    const { 
+        transactionidentifier, 
+        useridentifier, 
+        stopover = 'both',
+        searchDate = '2026-02-13', // Fecha de salida
+        returnDate = '2026-02-18'  // Fecha de regreso
+    } = req.body;
     
     if (!transactionidentifier || !useridentifier) {
         return res.status(400).json({ error: 'transactionidentifier y useridentifier son requeridos' });
-    }
-    
-    const url = 'https://api.copaair.com/ibe/booking/plan-multicity';
+    }    const url = 'https://api.copaair.com/ibe/booking/plan-multicity';
     const headers = {
         'accept': '*/*',
         'accept-language': 'es-PA',
@@ -100,9 +104,9 @@ module.exports = async (req, res) => {
                 cabinType: 'Y',
                 isStopOver: true,
                 originDestinations: [
-                    { od: 'OD1', departure: { airportCode: 'LIM', date: '2026-02-13' }, arrival: { airportCode: 'PTY' } },
-                    { od: 'OD2', departure: { airportCode: 'PTY', date: '2026-02-18' }, arrival: { airportCode: 'CLO' } },
-                    { od: 'OD3', departure: { airportCode: 'CLO', date: '2026-02-18' }, arrival: { airportCode: 'LIM' } }
+                    { od: 'OD1', departure: { airportCode: 'LIM', date: searchDate }, arrival: { airportCode: 'PTY' } },
+                    { od: 'OD2', departure: { airportCode: 'PTY', date: returnDate }, arrival: { airportCode: 'CLO' } },
+                    { od: 'OD3', departure: { airportCode: 'CLO', date: returnDate }, arrival: { airportCode: 'LIM' } }
                 ]
             };
             
@@ -118,9 +122,9 @@ module.exports = async (req, res) => {
                 cabinType: 'Y',
                 isStopOver: true,
                 originDestinations: [
-                    { od: 'OD1', departure: { airportCode: 'LIM', date: '2026-02-13' }, arrival: { airportCode: 'CLO' } },
-                    { od: 'OD2', departure: { airportCode: 'CLO', date: '2026-02-13' }, arrival: { airportCode: 'PTY' } },
-                    { od: 'OD3', departure: { airportCode: 'PTY', date: '2026-02-18' }, arrival: { airportCode: 'LIM' } }
+                    { od: 'OD1', departure: { airportCode: 'LIM', date: searchDate }, arrival: { airportCode: 'CLO' } },
+                    { od: 'OD2', departure: { airportCode: 'CLO', date: searchDate }, arrival: { airportCode: 'PTY' } },
+                    { od: 'OD3', departure: { airportCode: 'PTY', date: returnDate }, arrival: { airportCode: 'LIM' } }
                 ]
             };
             

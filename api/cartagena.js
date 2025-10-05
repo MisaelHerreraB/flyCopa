@@ -62,7 +62,13 @@ async function fetchOffers(url, headers, payload, apiName = 'API') {
 }
 
 module.exports = async (req, res) => {
-    const { transactionidentifier, useridentifier, stopover = 'both' } = req.body;
+    const { 
+        transactionidentifier, 
+        useridentifier, 
+        stopover = 'both',
+        searchDate = '2026-02-13', // Fecha de salida
+        returnDate = '2026-02-18'  // Fecha de regreso
+    } = req.body;
     
     if (!transactionidentifier || !useridentifier) {
         return res.status(400).json({ error: 'transactionidentifier y useridentifier son requeridos' });
@@ -100,13 +106,13 @@ module.exports = async (req, res) => {
                 cabinType: 'Y',
                 isStopOver: true,
                 originDestinations: [
-                    { od: 'OD1', departure: { airportCode: 'LIM', date: '2026-02-13' }, arrival: { airportCode: 'PTY' } },
-                    { od: 'OD2', departure: { airportCode: 'PTY', date: '2026-02-18' }, arrival: { airportCode: 'CTG' } },
-                    { od: 'OD3', departure: { airportCode: 'CTG', date: '2026-02-18' }, arrival: { airportCode: 'LIM' } }
+                    { od: 'OD1', departure: { airportCode: 'LIM', date: searchDate }, arrival: { airportCode: 'PTY' } },
+                    { od: 'OD2', departure: { airportCode: 'PTY', date: returnDate }, arrival: { airportCode: 'CTG' } },
+                    { od: 'OD3', departure: { airportCode: 'CTG', date: returnDate }, arrival: { airportCode: 'LIM' } }
                 ]
             };
             
-            results.ida = await fetchOffers(url, headers, payload1, 'Cartagena IDA');
+            results.ida = await fetchOffers(url, headers, payload1, `Cartagena IDA (${searchDate})`);
         }
         
         // Cartagena regreso (LIM -> CTG -> PTY -> LIM)
@@ -118,18 +124,20 @@ module.exports = async (req, res) => {
                 cabinType: 'Y',
                 isStopOver: true,
                 originDestinations: [
-                    { od: 'OD1', departure: { airportCode: 'LIM', date: '2026-02-13' }, arrival: { airportCode: 'CTG' } },
-                    { od: 'OD2', departure: { airportCode: 'CTG', date: '2026-02-13' }, arrival: { airportCode: 'PTY' } },
-                    { od: 'OD3', departure: { airportCode: 'PTY', date: '2026-02-18' }, arrival: { airportCode: 'LIM' } }
+                    { od: 'OD1', departure: { airportCode: 'LIM', date: searchDate }, arrival: { airportCode: 'CTG' } },
+                    { od: 'OD2', departure: { airportCode: 'CTG', date: searchDate }, arrival: { airportCode: 'PTY' } },
+                    { od: 'OD3', departure: { airportCode: 'PTY', date: returnDate }, arrival: { airportCode: 'LIM' } }
                 ]
             };
             
-            results.regreso = await fetchOffers(url, headers, payload2, 'Cartagena REGRESO');
+            results.regreso = await fetchOffers(url, headers, payload2, `Cartagena REGRESO (${searchDate})`);
         }
         
         return res.status(200).json({
             success: true,
             city: 'Cartagena',
+            searchDate,
+            returnDate,
             data: results,
             originDestinations: {
                 ida: results.ida ? results.ida.originDestinations : null,
@@ -142,7 +150,8 @@ module.exports = async (req, res) => {
         return res.status(500).json({ 
             success: false, 
             error: error.message,
-            city: 'Cartagena'
+            city: 'Cartagena',
+            searchDate
         });
     }
 };
