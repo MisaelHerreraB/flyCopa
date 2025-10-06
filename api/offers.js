@@ -79,10 +79,10 @@ module.exports = async (req, res) => {
     const primaryCombo = dateCombinations[0]; // Combinación principal para claves de Redis
     
     // Definir claves de Redis al inicio para acceso global
-    const REDIS_KEY = `flycopaapp:offers:all-combinations`;
-    const PROCESSING_KEY = `flycopaapp:processing:all-combinations`;
-    const FAILED_KEY = `flycopaapp:failed:all-combinations`;
-    const FAILED_TIMESTAMP_KEY = `flycopaapp:failed:timestamp:all-combinations`;
+    const REDIS_KEY = `mmm-vuelos-2026:ofertas:combinaciones-completas`;
+    const PROCESSING_KEY = `mmm-vuelos-2026:procesando:combinaciones-activas`;
+    const FAILED_KEY = `mmm-vuelos-2026:fallidas:apis-error`;
+    const FAILED_TIMESTAMP_KEY = `mmm-vuelos-2026:timestamp:ultimo-error`;
     
     try {
         // Generar identificadores para las APIs de Copa
@@ -110,7 +110,7 @@ module.exports = async (req, res) => {
             // Guardar en cache por 6 horas
             await axios.post(`${BASE_URL}/api/cache`, {
                 action: 'set',
-                key: `flycopaapp:identifiers:${period}`,
+                key: `mmm-vuelos-2026:identificadores:${period}`,
                 data: { transactionidentifier, useridentifier },
                 ttl: 60 * 60 * 6
             }).catch(console.error);
