@@ -52,7 +52,6 @@ const createApiHandler = (handler) => {
             
             await handler(mockReq, mockRes);
         } catch (error) {
-            console.error('Error en API handler:', error);
             res.status(500).json({ error: 'Error interno del servidor' });
         }
     };
@@ -61,25 +60,42 @@ const createApiHandler = (handler) => {
 // Importar y configurar rutas de API
 try {
     const offersHandler = require('./api/offers.js');
+    const directOffersHandler = require('./api/direct-offers.js');
     const cacheHandler = require('./api/cache.js');
     const medellinHandler = require('./api/medellin.js');
     const quitoHandler = require('./api/quito.js');
     const caliHandler = require('./api/cali.js');
     const bogotaHandler = require('./api/bogota.js');
     const cartagenaHandler = require('./api/cartagena.js');
+    const directo10Handler = require('./api/directo-10feb.js');
+    const directo11Handler = require('./api/directo-11feb.js');
+    const directo12Handler = require('./api/directo-12feb.js');
+    const directo13Handler = require('./api/directo-13feb.js');
+    
+    // Nuevos handlers para verificación de cache
+    const directOffersCheckCacheHandler = require('./api/direct-offers/check-cache.js');
+    const offersCheckCacheHandler = require('./api/offers/check-cache.js');
 
     // Configurar rutas
     app.all('/api/offers', createApiHandler(offersHandler));
+    app.all('/api/direct-offers', createApiHandler(directOffersHandler));
     app.all('/api/cache', createApiHandler(cacheHandler));
     app.all('/api/medellin', createApiHandler(medellinHandler));
     app.all('/api/quito', createApiHandler(quitoHandler));
     app.all('/api/cali', createApiHandler(caliHandler));
     app.all('/api/bogota', createApiHandler(bogotaHandler));
     app.all('/api/cartagena', createApiHandler(cartagenaHandler));
+    app.all('/api/directo-10feb', createApiHandler(directo10Handler));
+    app.all('/api/directo-11feb', createApiHandler(directo11Handler));
+    app.all('/api/directo-12feb', createApiHandler(directo12Handler));
+    app.all('/api/directo-13feb', createApiHandler(directo13Handler));
     
-    console.log('✅ Todas las funciones API cargadas correctamente');
+    // Nuevas rutas para verificación de cache
+    app.all('/api/direct-offers/check-cache', createApiHandler(directOffersCheckCacheHandler));
+    app.all('/api/offers/check-cache', createApiHandler(offersCheckCacheHandler));
+    
 } catch (error) {
-    console.error('❌ Error cargando funciones API:', error.message);
+    console.error('Error cargando funciones API:', error.message);
 }
 
 // Ruta principal
@@ -93,19 +109,7 @@ app.get('*', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`\n🚀 FlyCopa - Servidor Local Iniciado`);
-    console.log(`📍 URL: http://localhost:${PORT}`);
-    console.log(`📁 Archivos estáticos: ${path.join(__dirname, 'public')}`);
-    console.log(`\n🔗 APIs Disponibles:`);
-    console.log(`   - http://localhost:${PORT}/api/offers`);
-    console.log(`   - http://localhost:${PORT}/api/cache`);
-    console.log(`   - http://localhost:${PORT}/api/medellin`);
-    console.log(`   - http://localhost:${PORT}/api/quito`);
-    console.log(`   - http://localhost:${PORT}/api/cali`);
-    console.log(`   - http://localhost:${PORT}/api/bogota`);
-    console.log(`   - http://localhost:${PORT}/api/cartagena`);
-    console.log(`\n🌟 ¡Abre tu navegador y ve a http://localhost:${PORT}!`);
-    console.log(`\n💡 Para detener el servidor: Ctrl + C`);
+    console.log(`FlyCopa Server running on http://localhost:${PORT}`);
 });
 
 module.exports = app;

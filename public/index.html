@@ -151,6 +151,33 @@
             margin-bottom: 15px;
             font-weight: 600;
         }
+        .copy-image-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 86, 179, 0.9);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .copy-image-btn:hover {
+            background: rgba(0, 123, 255, 0.95);
+            transform: translateY(-1px);
+        }
+        .copy-image-btn:active {
+            transform: translateY(0);
+        }
+        .copy-image-btn.copied {
+            background: rgba(40, 167, 69, 0.9);
+        }
         .global-offer-container {
             background: transparent;
             padding: 25px 0;
@@ -738,7 +765,7 @@
             left: 50%;
             transform: translateX(-50%);
             z-index: 1000;
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
             box-shadow: 0 4px 20px rgba(0,0,0,0.15), 0 0 40px rgba(0,123,255,0.05);
             transition: all 0.3s ease;
             width: calc(100% - 30px);
@@ -794,6 +821,18 @@
             box-shadow: 0 8px 25px rgba(0,123,255,0.5), 0 0 40px rgba(0,123,255,0.3);
         }
         
+        /* Estado deshabilitado del menú durante carga */
+        .fixed-menu.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            user-select: none;
+        }
+        
+        .fixed-menu.disabled .menu-button {
+            cursor: not-allowed;
+            filter: grayscale(50%);
+        }
+        
         /* Variables CSS para modo oscuro */
         :root {
             --bg-color: #f8f9fa;
@@ -823,7 +862,7 @@
         }
         
         [data-theme="dark"] .fixed-menu {
-            background: linear-gradient(135deg, #161b22 0%, #21262d 100%);
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
             box-shadow: 0 4px 25px rgba(0,0,0,0.4), 0 0 50px rgba(58, 134, 255, 0.1);
             border: 1px solid #30363d;
         }
@@ -1251,11 +1290,11 @@
         <div class="menu-buttons">
             <button class="menu-button active" id="normalMode">
                 <i class="bi bi-sun"></i>
-                Modo Normal
+                VUELOS MULTICIUDAD/STOPOVER
             </button>
             <button class="menu-button" id="darkMode">
                 <i class="bi bi-moon"></i>
-                Modo Oscuro
+                VUELOS DIRECTOS
             </button>
         </div>
     </div>
@@ -1273,23 +1312,7 @@
                 </h1>
             </div>
         </div>
-            <div class="row justify-content-center">
-                <div class="col-12 col-md-8 col-lg-6">
-                    <button class="btn btn-primary btn-lg w-100" id="fetch-button" style="display:none">
-                        <i class="bi bi-airplane-fill"></i> ¡Buscar Ofertas de Vuelos Ahora!
-                    </button>
-                    
-                    <!-- Información de reintento automático -->
-                    <div class="alert alert-warning mt-2" id="auto-retry-info" style="display:none">
-                        <div class="text-center">
-                            <i class="bi bi-clock"></i>
-                            <strong>Algunas ciudades fallan. Reintento automático en:</strong><br>
-                            <span id="retry-countdown" class="badge bg-warning text-dark">-</span>
-                            <br><small class="text-muted mt-1 d-block">El sistema reintentará automáticamente las ciudades que fallaron</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
             <!-- Progress Bar -->
             <div class="loading-progress" id="loading">
                 <div class="progress" role="progressbar" aria-label="Progreso de búsqueda" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
@@ -1334,12 +1357,9 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Columna derecha: Imagen generada -->
+                                <!-- Columna derecha: Imagen generada (se genera dinámicamente) -->
                                 <div class="col-lg-4 col-md-12">
-                                    <div class="mt-4 mt-lg-0 offer-image-container" id="offer-image-container" style="display: none;">
-                                        
-                                        <img src="" alt="Oferta Visual" class="offer-image" id="offer-image">
-                                    </div>
+                                    <!-- Los contenedores de imagen se generan dinámicamente en displayGlobalCheapest -->
                                 </div>
                             </div>
                         </div>
@@ -1452,7 +1472,6 @@
             initializeApp();
         });
         async function fetchOffers() {
-            const fetchButton = document.getElementById('fetch-button');
             const loading = document.getElementById('loading');
             const progressBar = document.getElementById('progress-bar');
             const progressText = document.getElementById('progress-text');
@@ -1462,162 +1481,698 @@
             const dateTabs = document.getElementById('date-tabs');
             const dateContents = document.getElementById('date-contents');
 
-            // Deshabilitar botón y cambiar texto solo si existe
-            if (fetchButton) {
-                fetchButton.disabled = true;
-                fetchButton.innerHTML = '<i class="bi bi-hourglass-split"></i> Buscando...';
+            // Detectar modo actual (claro/oscuro)
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const isDarkMode = currentTheme === 'dark';
+            
+            console.log(`🌙 Modo actual: ${isDarkMode ? 'OSCURO (Vuelos Directos)' : 'CLARO (Stopover)'}`); 
+            
+            // Funciones para manejar el menú durante la carga
+            function disableMenu() {
+                const menu = document.querySelector('.fixed-menu');
+                if (menu) {
+                    menu.classList.add('disabled');
+                    console.log('🚫 Menú deshabilitado durante la carga');
+                }
             }
+            
+            function enableMenu() {
+                const menu = document.querySelector('.fixed-menu');
+                if (menu) {
+                    menu.classList.remove('disabled');
+                    console.log('✅ Menú habilitado');
+                }
+            }
+            
+            // Deshabilitar menú al iniciar la carga
+            disableMenu();
 
             // Mostrar barra de progreso y ocultar elementos previos
             loading.style.display = 'block';
             progressBar.style.width = '10%';
-            progressText.textContent = 'Iniciando búsqueda de 90 combinaciones... Progreso: 10%';
-            errorDiv.style.display = 'none';
-            globalCheapestInfo.style.display = 'none';
-            summaryStats.style.display = 'none';
-            dateTabs.style.display = 'none';
+            
+            if (isDarkMode) {
+                progressText.textContent = 'Iniciando búsqueda de vuelos directos (12 combinaciones)... Progreso: 10%';
+            } else {
+                progressText.textContent = 'Iniciando búsqueda de 90 combinaciones... Progreso: 10%';
+            }
+            
+            if (errorDiv) errorDiv.style.display = 'none';
+            
+            if (globalCheapestInfo) globalCheapestInfo.style.display = 'none';
+            if (summaryStats) summaryStats.style.display = 'none';
+            if (dateTabs) dateTabs.style.display = 'none';
             
             // Limpiar contenido previo
-            dateTabs.innerHTML = '';
-            dateContents.innerHTML = '';
+            if (dateTabs) dateTabs.innerHTML = '';
+            if (dateContents) dateContents.innerHTML = '';
+
+            // Función para actualizar progreso
+            const updateProgress = (percentage) => {
+                progressBar.style.width = `${percentage}%`;
+            };
 
             try {
-                // Iniciar progreso en 10% (inicio de búsqueda)
-                let progress = 10;
-                progressBar.style.width = `${progress}%`;
-                progressText.textContent = `Buscando 90 combinaciones de fechas y destinos... Progreso: ${progress}%`;
-                
-                const updateProgress = (newProgress) => {
-                    progress = newProgress;
-                    progressBar.style.width = `${progress}%`;
-                    progressText.textContent = `Procesando 90 combinaciones de fechas... Progreso: ${Math.round(progress)}%`;
-                };
-
-                // Verificar si hay APIs fallidas previas para reintentar
-                let apiUrl = '/api/offers';
-                const failedApis = localStorage.getItem('failedApis');
-                let estimatedTime = 25000; // 25 segundos para 90 combinaciones
-                
-                // Agregar timestamp para evitar cache del navegador
-                const timestamp = new Date().getTime();
-                const separator = apiUrl.includes('?') ? '&' : '?';
-                apiUrl += `${separator}_t=${timestamp}`;
-                
-                if (failedApis) {
-                    const parsedFailed = JSON.parse(failedApis);
-                    if (parsedFailed.length > 0) {
-                        apiUrl += `&retry=${parsedFailed.join(',')}`;
-                        console.log(`Reintentando búsqueda en ciudades: ${parsedFailed.join(', ')}`);
-                        progressText.textContent = `Reintentando búsqueda en ciudades pendientes... Progreso: ${progress}%`;
-                        estimatedTime = parsedFailed.length * 1800; // 1.8 segundos por API fallida
-                    }
+                if (isDarkMode) {
+                    // Modo oscuro: llamar APIs de vuelos directos
+                    await fetchDirectFlights(progressBar, progressText, updateProgress);
+                } else {
+                    // Modo normal: llamar API de stopover
+                    await fetchStopoverFlights(progressBar, progressText, updateProgress);
                 }
                 
+            } catch (error) {
+                console.error('Error durante la búsqueda:', error);
+                if (errorDiv) {
+                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Error durante la búsqueda: ${error.message}`;
+                    errorDiv.style.display = 'block';
+                }
+            } finally {
+                // Rehabilitar botón
+                // Habilitar menú al terminar la carga
+                enableMenu();
+                
+                // Mostrar mensaje de finalización
+                console.log('✅ Búsqueda completada y menú habilitado');
+                
+                // Ocultar barra de progreso
+                if (loading) loading.style.display = 'none';
+            }
+        }
+
+        // Función para búsqueda de vuelos directos (modo oscuro)
+        async function fetchDirectFlights(progressBar, progressText, updateProgress) {
+            console.log('🌙 Iniciando búsqueda de vuelos directos...');
+            
+            const BASE_URL = window.location.origin;
+            
+            // Iniciar progreso en 10% (inicio de búsqueda)
+            let progress = 10;
+            progressBar.style.width = `${progress}%`;
+            progressText.textContent = `Iniciando búsqueda de vuelos directos... ${progress}%`;
+            
+            const updateProgressLocal = (newProgress) => {
+                progress = newProgress;
+                progressBar.style.width = `${progress}%`;
+                progressText.textContent = `Consultando APIs de vuelos directos... ${Math.round(progress)}%`;
+            };
+            
+            try {
+                // Generar identificadores únicos
+                const transactionidentifier = 'direct-' + Date.now() + '-' + Math.random().toString(36).substring(2);
+                const useridentifier = 'user-' + Date.now() + '-' + Math.random().toString(36).substring(2);
+                
+                // Llamar al endpoint de vuelos directos con POST
+                const apiUrl = `${BASE_URL}/api/direct-offers`;
+                
+                updateProgressLocal(15);
+                
                 // Simular progreso incremental durante las llamadas a APIs
+                const estimatedTime = 15000; // 15 segundos estimados para vuelos directos
                 const startTime = Date.now();
                 const progressInterval = setInterval(() => {
                     const elapsed = Date.now() - startTime;
-                    const timeProgress = (elapsed / estimatedTime) * 85; // 85% del progreso total
-                    const newProgress = Math.min(10 + timeProgress, 90); // Máximo 90% durante simulación
-                    updateProgress(newProgress);
+                    const timeProgress = (elapsed / estimatedTime) * 75; // 75% del progreso total
+                    const newProgress = Math.min(15 + timeProgress, 85); // Máximo 85% durante simulación
+                    updateProgressLocal(newProgress);
                     
-                    if (newProgress >= 90) {
+                    if (newProgress >= 85) {
                         clearInterval(progressInterval);
                     }
-                }, 250); // Actualizar cada 250ms
-
-                let data;
-                try {
-                    const response = await fetch(apiUrl);
-                    clearInterval(progressInterval); // Detener simulación al recibir respuesta
-                    updateProgress(95); // 95% al recibir respuesta
-                    if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
-                    data = await response.json();
-                    updateProgress(98); // 98% al procesar respuesta
-                } catch (error) {
-                    clearInterval(progressInterval); // Asegurarse de detener simulación en caso de error
-                    throw error;
-                }
-
-                if (data.error) {
-                    throw new Error(data.error);
+                }, 300); // Actualizar cada 300ms
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        transactionidentifier: transactionidentifier,
+                        useridentifier: useridentifier
+                    })
+                });
+                
+                // Detener simulación al recibir respuesta
+                clearInterval(progressInterval);
+                updateProgressLocal(90);
+                progressText.textContent = 'Procesando vuelos directos... 90%';
+                
+                if (!response.ok) {
+                    throw new Error(`Error ${response.status}: ${response.statusText}`);
                 }
                 
-                // Gestionar ciudades con búsqueda fallida
-                if (data.failedApis && data.failedApis.length > 0) {
-                    console.log(`Ciudades con búsqueda fallida: ${data.failedApis.join(', ')}`);
-                    
-                    // Mostrar error específico cuando fallen algunas ciudades
-                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Falló la búsqueda con algunas combinaciones - Reintento automático en 5 minutos`;
-                    errorDiv.style.display = 'block';
-                } else if (data.pendingRetry) {
-                    // Mostrar información de reintento pendiente
-                    displayPendingRetry(data.pendingRetry);
-                }
-
-                // Progreso completado (100%)
-                updateProgress(100);
-                progressText.textContent = `¡Búsqueda completada! 90 combinaciones procesadas - Progreso: 100%`;
-
-                // Procesar los 90 itinerarios dinámicamente
-                console.log('\n🎯 INICIANDO PROCESAMIENTO DE ITINERARIOS');
-                console.log('📊 Total de claves en data:', Object.keys(data).length);
-                console.log('🛫 Itinerarios encontrados:', Object.keys(data).filter(k => k.startsWith('itinerary')).length);
-                console.log('📋 Estructura completa de data:', data);
+                updateProgressLocal(95);
+                progressText.textContent = 'Finalizando búsqueda de vuelos directos... 95%';
                 
-                // Log de ejemplo de un itinerario para ver estructura
-                const firstItinerary = Object.keys(data).find(k => k.startsWith('itinerary'));
-                if (firstItinerary) {
-                    console.log(`📦 EJEMPLO DE ESTRUCTURA - ${firstItinerary}:`, data[firstItinerary]);
-                    if (data[firstItinerary].cheapest && data[firstItinerary].cheapest.segments) {
-                        console.log('🛫 Segmentos del primer itinerario:', data[firstItinerary].cheapest.segments);
-                    }
+                const data = await response.json();
+                
+                // Procesar datos de vuelos directos
+                console.log('🛫 Datos de vuelos directos recibidos:', data);
+                console.log('📋 Estructura de data:', data);
+                console.log('📊 Vuelos directos encontrados:', Object.keys(data).filter(key => key.startsWith('direct')).length);
+                console.log('� Claves en data:', Object.keys(data));
+                console.log('🏆 Global cheapest:', data.globalCheapest);
+                console.log('� Total de vuelos:', data.flights ? data.flights.length : 0);
+                
+                // Verificar si tenemos datos válidos (estructura real de la API)
+                const directFlightKeys = Object.keys(data).filter(key => key.startsWith('direct'));
+                if (directFlightKeys.length === 0) {
+                    throw new Error('No se encontraron vuelos directos en la respuesta');
+                }
+                
+                // Mostrar resultado global más barato desde data.globalCheapest
+                const cheapestFlight = data.globalCheapest;
+                
+                if (cheapestFlight) {
+                    console.log('🏆 Vuelo directo más barato encontrado:', cheapestFlight);
+                    // Crear estructura compatible con displayGlobalCheapest
+                    const globalCheapest = {
+                        price: cheapestFlight.price,
+                        segments: cheapestFlight.segments || [],
+                        city: 'Panamá',
+                        stopover: 'directo',
+                        searchDate: cheapestFlight.departureDate,
+                        departureDate: cheapestFlight.departureDate,
+                        returnDate: cheapestFlight.returnDate,
+                        ida: cheapestFlight.ida || 'Lima - Panamá',
+                        vuelta: cheapestFlight.vuelta || 'Panamá - Lima',
+                        stopoverType: cheapestFlight.stopoverType || '✈️ Vuelo Directo Sin Escalas'
+                    };
+                    await displayGlobalCheapest(globalCheapest);
+                } else {
+                    console.log('⚠️ No se encontraron datos de vuelo directo global');
                 }
                 
                 // Extraer y organizar los datos por combinaciones de fechas
-                const dateCombo = organizeDataByDates(data);
+                const dateCombo = organizeDirectDataByDates(data);
+                console.log('📏 DateCombo generado:', dateCombo);
                 
-                // Generar estadísticas de resumen
-                const stats = generateSummaryStats(data);
+                // Generar estadísticas de resumen para vuelos directos
+                const stats = generateDirectSummaryStats(data);
+                console.log('📈 Stats generadas:', stats);
                 updateSummaryStats(stats);
                 
-                // Mostrar oferta más barata global
-                if (data.globalCheapest) {
-                    console.log('🏆 Datos de oferta global encontrados:', data.globalCheapest);
-                    await displayGlobalCheapest(data.globalCheapest);
-                } else {
-                    console.log('⚠️ No se encontraron datos de oferta global');
-                }
-                
-                // Generar interfaz dinámica
+                // Generar interfaz dinámica para vuelos directos
+                console.log('🎨 Generando interfaz dinámica...');
                 generateDynamicInterface(dateCombo);
                 
-                // Mostrar elementos finales
-                summaryStats.style.display = 'block';
-                dateTabs.style.display = 'block';
-
-                // Recopilar errores de ciudades para mostrar en toast
-                const failedCities = [];
-                Object.keys(data).filter(k => k.startsWith('itinerary')).forEach(key => {
-                    const itinerary = data[key];
-                    if (itinerary.error) {
-                        failedCities.push(`${itinerary.city || 'Ciudad'} (${itinerary.stopover || 'stopover'})`);
+                updateProgressLocal(100);
+                progressText.textContent = '¡Búsqueda de vuelos directos completada! 12 combinaciones procesadas - Progreso: 100%';
+                
+                // Forzar visibilidad de elementos finales (mostrar siempre)
+                const globalCheapestElement = document.getElementById('global-cheapest-info');
+                if (globalCheapestElement) {
+                    globalCheapestElement.style.display = 'block';
+                    globalCheapestElement.style.visibility = 'visible';
+                    console.log('👀 Forzando visibilidad de global-cheapest-info');
+                }
+                
+                const summaryStatsElement = document.getElementById('summary-stats');
+                if (summaryStatsElement) {
+                    summaryStatsElement.style.display = 'block';
+                    summaryStatsElement.style.visibility = 'visible';
+                    console.log('👀 Forzando visibilidad de summary-stats');
+                }
+                
+                const dateTabsElement = document.getElementById('date-tabs');
+                if (dateTabsElement) {
+                    dateTabsElement.style.display = 'block';
+                    dateTabsElement.style.visibility = 'visible';
+                    console.log('👀 Forzando visibilidad de date-tabs');
+                }
+                
+                // Agregar delay pequeño para asegurar renderizado
+                setTimeout(() => {
+                    console.log('✅ Renderizado completo de vuelos directos confirmado');
+                }, 100);
+                
+                // Gestionar APIs fallidas si las hay
+                if (data.failedApis && data.failedApis.length > 0) {
+                    console.log(`Vuelos directos con error: ${data.failedApis.join(', ')}`);
+                    const errorDiv = document.getElementById('error');
+                    if (errorDiv) {
+                        errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Falló la búsqueda de algunos vuelos directos - Reintento automático en 5 minutos`;
+                        errorDiv.style.display = 'block';
                     }
+                }
+                
+            } catch (error) {
+                console.error('❌ Error en fetchDirectFlights:', error);
+                throw error;
+            }
+        }
+
+        // Función para organizar datos de vuelos directos por fechas (similar a organizeDataByDates)
+        function organizeDirectDataByDates(data) {
+            console.log('📊 Organizando datos de vuelos directos por fechas');
+            console.log('📂 Estructura de data recibida:', data);
+            
+            const dateCombo = {};
+            
+            // Procesar la estructura real de la API (claves direct01, direct02, etc.)
+            const directFlights = Object.keys(data)
+                .filter(key => key.startsWith('direct'))
+                .map(key => ({ key, ...data[key] }));
+            
+            console.log(`📋 Vuelos directos encontrados: ${directFlights.length}`);
+            
+            // Agrupar por combinación de fecha de salida + fecha de regreso
+            directFlights.forEach(flight => {
+                const dateKey = `${flight.departureDate}-to-${flight.returnDate}`;
+                if (!dateCombo[dateKey]) {
+                    dateCombo[dateKey] = {
+                        searchDate: flight.departureDate || '2026-02-10',
+                        returnDate: flight.returnDate || '2026-02-18', 
+                        itineraries: []
+                    };
+                }
+                
+                if (flight.offers && flight.offers.length > 0) {
+                    dateCombo[dateKey].itineraries.push({
+                        city: 'Panamá',
+                        stopover: 'directo',
+                        cheapest: flight.cheapest || {
+                            price: 'N/A',
+                            segments: []
+                        }
+                    });
+                }
+            });
+            
+            console.log('📊 Datos organizados por fechas:', dateCombo);
+            return dateCombo;
+        }
+
+        // Funciones para verificar cache de Redis antes de llamar APIs
+        async function checkRedisAndLoadDirectFlights() {
+            console.log('🔍 Verificando cache de Redis para vuelos directos...');
+            
+            try {
+                // Hacer una llamada específica para verificar cache sin ejecutar APIs
+                const response = await fetch('/api/direct-offers/check-cache', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
                 });
                 
-                // Mostrar toast con ciudades fallidas si las hay
-                if (failedCities.length > 0) {
-                    showErrorToast(failedCities);
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Si hay datos válidos en cache, usarlos
+                    if (data.success && data.data && Object.keys(data.data).some(key => key.startsWith('direct'))) {
+                        console.log('✅ Datos encontrados en Redis, usando cache del servidor');
+                        displayDirectFlightsData(data.data);
+                        return;
+                    }
+                }
+                
+                console.log('❌ No hay datos válidos en Redis, ejecutando búsqueda...');
+                // Si no hay datos válidos en Redis, ejecutar búsqueda normal
+                setTimeout(() => {
+                    console.log('🚀 Ejecutando búsqueda automática de vuelos directos...');
+                    fetchOffers();
+                }, 500);
+                
+            } catch (error) {
+                console.error('Error verificando cache de Redis:', error);
+                // En caso de error, ejecutar búsqueda normal
+                setTimeout(() => {
+                    fetchOffers();
+                }, 500);
+            }
+        }
+        
+        async function checkRedisAndLoadStopoverFlights() {
+            console.log('🔍 Verificando cache de Redis para stopover...');
+            
+            try {
+                // Hacer una llamada específica para verificar cache sin ejecutar APIs
+                const response = await fetch('/api/offers/check-cache', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Si hay datos válidos en cache, usarlos
+                    if (data.success && data.data && (data.data.globalCheapest || Object.keys(data.data).some(key => key.startsWith('itinerary')))) {
+                        console.log('✅ Datos de stopover encontrados en Redis, usando cache del servidor');
+                        
+                        // Procesar datos igual que en fetchStopoverFlights
+                        const dateCombo = organizeDataByDates(data.data);
+                        const stats = generateSummaryStats(data.data);
+                        
+                        const stopoverData = { 
+                            globalCheapest: data.data.globalCheapest, 
+                            dateCombo: dateCombo,
+                            stats: stats
+                        };
+                        displayStopoverData(stopoverData);
+                        return;
+                    }
+                }
+                
+                console.log('❌ No hay datos válidos en Redis, ejecutando búsqueda...');
+                // Si no hay datos válidos en Redis, ejecutar búsqueda normal
+                setTimeout(() => {
+                    console.log('🚀 Ejecutando búsqueda automática de vuelos con stopover...');
+                    fetchOffers();
+                }, 500);
+                
+            } catch (error) {
+                console.error('Error verificando cache de Redis:', error);
+                // En caso de error, ejecutar búsqueda normal
+                setTimeout(() => {
+                    fetchOffers();
+                }, 500);
+            }
+        }
+
+        // Funciones auxiliares para mostrar datos desde cache
+        function displayDirectFlightsData(data) {
+            console.log('📋 Mostrando datos de vuelos directos desde cache');
+            
+            // Procesar y mostrar datos igual que en fetchDirectFlights
+            const cheapestFlight = data.globalCheapest;
+            if (cheapestFlight) {
+                const globalCheapest = {
+                    price: cheapestFlight.price,
+                    segments: cheapestFlight.segments || [],
+                    city: 'Panamá',
+                    stopover: 'directo',
+                    searchDate: cheapestFlight.departureDate,
+                    departureDate: cheapestFlight.departureDate,
+                    returnDate: cheapestFlight.returnDate,
+                    ida: cheapestFlight.ida || 'Lima - Panamá',
+                    vuelta: cheapestFlight.vuelta || 'Panamá - Lima',
+                    stopoverType: cheapestFlight.stopoverType || '✈️ Vuelo Directo Sin Escalas'
+                };
+                displayGlobalCheapest(globalCheapest);
+            }
+            
+            const dateCombo = organizeDirectDataByDates(data);
+            const stats = generateDirectSummaryStats(data);
+            updateSummaryStats(stats);
+            generateDynamicInterface(dateCombo);
+            
+            // Mostrar elementos
+            const elements = ['global-cheapest-info', 'summary-stats', 'date-tabs'];
+            elements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.style.display = 'block';
+                    element.style.visibility = 'visible';
+                }
+            });
+        }
+        
+        function displayStopoverData(data) {
+            console.log('📋 Mostrando datos de stopover desde cache');
+            
+            // Procesar y mostrar datos igual que en fetchStopoverFlights
+            if (data.globalCheapest) {
+                displayGlobalCheapest(data.globalCheapest);
+            }
+            
+            if (data.dateCombo) {
+                updateSummaryStats(data.stats || generateSummaryStats(data.dateCombo));
+                generateDynamicInterface(data.dateCombo);
+            }
+            
+            // Mostrar elementos
+            const elements = ['global-cheapest-info', 'summary-stats', 'date-tabs'];
+            elements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.style.display = 'block';
+                    element.style.visibility = 'visible';
+                }
+            });
+        }
+
+        // Función para generar estadísticas de vuelos directos
+        function generateDirectSummaryStats(data) {
+            console.log('📊 Generando estadísticas de vuelos directos');
+            console.log('📂 Data recibida:', data);
+            
+            // Procesar estructura real de la API (claves direct01, direct02, etc.)
+            const flights = Object.keys(data)
+                .filter(key => key.startsWith('direct'))
+                .map(key => data[key]);
+            
+            console.log(`📋 Total de vuelos encontrados: ${flights.length}`);
+            
+            const stats = {
+                total: 12, // 12 combinaciones de vuelos directos
+                successful: flights.filter(f => f.offers && f.offers.length > 0).length,
+                failed: flights.filter(f => !f.offers || f.offers.length === 0 || f.error).length,
+                cheapestPrice: Infinity
+            };
+            
+            // Encontrar el precio más barato de los vuelos con ofertas
+            const validPrices = flights
+                .filter(f => f.cheapest && f.cheapest.price)
+                .map(f => parseFloat(f.cheapest.price))
+                .filter(price => !isNaN(price) && price > 0);
+            
+            if (validPrices.length > 0) {
+                stats.cheapestPrice = Math.min(...validPrices);
+            }
+            
+            console.log('📈 Estadísticas generadas:', stats);
+            return stats;
+        }
+
+        // Función para búsqueda de stopover (modo normal)
+        async function fetchStopoverFlights(progressBar, progressText, updateProgress) {
+            console.log('☀️ Iniciando búsqueda de stopover...');
+            
+            // Iniciar progreso en 10% (inicio de búsqueda)
+            let progress = 10;
+            progressBar.style.width = `${progress}%`;
+            progressText.textContent = `Buscando 90 combinaciones de fechas y destinos... Progreso: ${progress}%`;
+            
+            const updateProgressLocal = (newProgress) => {
+                progress = newProgress;
+                progressBar.style.width = `${progress}%`;
+                progressText.textContent = `Procesando 90 combinaciones de fechas... Progreso: ${Math.round(progress)}%`;
+            };
+
+            // Verificar si hay APIs fallidas previas para reintentar
+            let apiUrl = '/api/offers';
+            const failedApis = localStorage.getItem('failedApis');
+            let estimatedTime = 25000; // 25 segundos para 90 combinaciones
+            
+            // Agregar timestamp para evitar cache del navegador
+            const timestamp = new Date().getTime();
+            const separator = apiUrl.includes('?') ? '&' : '?';
+            apiUrl += `${separator}_t=${timestamp}`;
+            
+            if (failedApis) {
+                const parsedFailed = JSON.parse(failedApis);
+                if (parsedFailed.length > 0) {
+                    apiUrl += `&retry=${parsedFailed.join(',')}`;
+                    console.log(`Reintentando búsqueda en ciudades: ${parsedFailed.join(', ')}`);
+                    progressText.textContent = `Reintentando búsqueda en ciudades pendientes... Progreso: ${progress}%`;
+                    estimatedTime = parsedFailed.length * 1800; // 1.8 segundos por API fallida
+                }
+            }
+            
+            // Simular progreso incremental durante las llamadas a APIs
+            const startTime = Date.now();
+            const progressInterval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                const timeProgress = (elapsed / estimatedTime) * 85; // 85% del progreso total
+                const newProgress = Math.min(10 + timeProgress, 90); // Máximo 90% durante simulación
+                updateProgressLocal(newProgress);
+                
+                if (newProgress >= 90) {
+                    clearInterval(progressInterval);
+                }
+            }, 250); // Actualizar cada 250ms
+
+            let data;
+            const response = await fetch(apiUrl);
+            clearInterval(progressInterval); // Detener simulación al recibir respuesta
+            updateProgressLocal(95); // 95% al recibir respuesta
+            if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+            data = await response.json();
+            updateProgressLocal(98); // 98% al procesar respuesta
+
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            
+            // Gestionar ciudades con búsqueda fallida
+            if (data.failedApis && data.failedApis.length > 0) {
+                console.log(`Ciudades con búsqueda fallida: ${data.failedApis.join(', ')}`);
+                
+                // Mostrar error específico cuando fallen algunas ciudades
+                const errorDiv = document.getElementById('error');
+                if (errorDiv) {
+                    errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Falló la búsqueda con algunas combinaciones - Reintento automático en 5 minutos`;
+                    errorDiv.style.display = 'block';
+                }
+            } else if (data.pendingRetry) {
+                // Mostrar información de reintento pendiente
+                displayPendingRetry(data.pendingRetry);
+            }
+
+            // Progreso completado (100%)
+            updateProgressLocal(100);
+            progressText.textContent = `¡Búsqueda completada! 90 combinaciones procesadas - Progreso: 100%`;
+
+            // Procesar los 90 itinerarios dinámicamente
+            console.log('\n🎯 INICIANDO PROCESAMIENTO DE ITINERARIOS');
+            console.log('📊 Total de claves en data:', Object.keys(data).length);
+            console.log('🛫 Itinerarios encontrados:', Object.keys(data).filter(k => k.startsWith('itinerary')).length);
+            console.log('📋 Estructura completa de data:', data);
+            
+            // Log de ejemplo de un itinerario para ver estructura
+            const firstItinerary = Object.keys(data).find(k => k.startsWith('itinerary'));
+            if (firstItinerary) {
+                console.log(`📦 EJEMPLO DE ESTRUCTURA - ${firstItinerary}:`, data[firstItinerary]);
+                if (data[firstItinerary].cheapest && data[firstItinerary].cheapest.segments) {
+                    console.log('🛫 Segmentos del primer itinerario:', data[firstItinerary].cheapest.segments);
+                }
+            }
+            
+            // Extraer y organizar los datos por combinaciones de fechas
+            const dateCombo = organizeDataByDates(data);
+            
+            // Generar estadísticas de resumen
+            const stats = generateSummaryStats(data);
+            updateSummaryStats(stats);
+            
+            // Mostrar oferta más barata global
+            if (data.globalCheapest) {
+                console.log('🏆 Datos de oferta global encontrados:', data.globalCheapest);
+                await displayGlobalCheapest(data.globalCheapest);
+            } else {
+                console.log('⚠️ No se encontraron datos de oferta global');
+            }
+            
+            // Generar interfaz dinámica
+            generateDynamicInterface(dateCombo);
+            
+            // Mostrar elementos finales (solo si existen)
+            const summaryStatsElement = document.getElementById('summary-stats');
+            if (summaryStatsElement) {
+                summaryStatsElement.style.display = 'block';
+            }
+            
+            const dateTabsElement = document.getElementById('date-tabs');
+            if (dateTabsElement) {
+                dateTabsElement.style.display = 'block';
+            }
+
+            // Recopilar errores de ciudades para mostrar en toast
+            const failedCities = [];
+            Object.keys(data).filter(k => k.startsWith('itinerary')).forEach(key => {
+                const itinerary = data[key];
+                if (itinerary.error) {
+                    failedCities.push(`${itinerary.city || 'Ciudad'} (${itinerary.stopover || 'stopover'})`);
+                }
+            });
+            
+            // Mostrar toast con ciudades fallidas si las hay
+            if (failedCities.length > 0) {
+                showErrorToast(failedCities);
+            }
+            
+        }
+
+        // Función para copiar imagen al clipboard
+        async function copyImageToClipboard(mode = 'light') {
+            try {
+                const imgId = mode === 'dark' ? 'offer-image-dark' : 'offer-image-light';
+                const img = document.getElementById(imgId);
+                if (!img || !img.src) {
+                    throw new Error('No hay imagen para copiar');
                 }
 
+                // Crear un canvas para convertir la imagen
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Crear una nueva imagen para asegurar que esté cargada
+                const imageElement = new Image();
+                imageElement.crossOrigin = 'anonymous';
+                
+                return new Promise((resolve, reject) => {
+                    imageElement.onload = async function() {
+                        try {
+                            // Configurar el canvas con las dimensiones de la imagen
+                            canvas.width = imageElement.naturalWidth;
+                            canvas.height = imageElement.naturalHeight;
+                            
+                            // Dibujar la imagen en el canvas
+                            ctx.drawImage(imageElement, 0, 0);
+                            
+                            // Convertir canvas a blob
+                            canvas.toBlob(async (blob) => {
+                                try {
+                                    // Copiar al clipboard usando la Clipboard API
+                                    await navigator.clipboard.write([
+                                        new ClipboardItem({ 'image/png': blob })
+                                    ]);
+                                    
+                                    // Mostrar feedback visual
+                                    showCopyFeedback();
+                                    resolve();
+                                } catch (clipboardError) {
+                                    console.error('Error copiando al clipboard:', clipboardError);
+                                    reject(clipboardError);
+                                }
+                            }, 'image/png');
+                        } catch (canvasError) {
+                            console.error('Error procesando imagen:', canvasError);
+                            reject(canvasError);
+                        }
+                    };
+                    
+                    imageElement.onerror = function() {
+                        reject(new Error('Error cargando la imagen'));
+                    };
+                    
+                    // Cargar la imagen
+                    imageElement.src = img.src;
+                });
+                
             } catch (error) {
-                errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> ${error.message}`;
-                errorDiv.style.display = 'block';
-            } finally {
-                loading.style.display = 'none';
-                fetchButton.disabled = false;
-                fetchButton.innerHTML = '<i class="bi bi-search"></i> Actualizar Búsqueda';
+                console.error('Error copiando imagen:', error);
+                showCopyError();
             }
+        }
+
+        // Función para mostrar feedback de copia exitosa
+        function showCopyFeedback() {
+            const copyBtns = document.querySelectorAll('.copy-image-btn');
+            copyBtns.forEach(btn => {
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="bi bi-check-circle"></i> ¡Copiado!';
+                btn.classList.add('copied');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // Función para mostrar error de copia
+        function showCopyError() {
+            const copyBtns = document.querySelectorAll('.copy-image-btn');
+            copyBtns.forEach(btn => {
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="bi bi-exclamation-circle"></i> Error';
+                btn.style.background = 'rgba(220, 53, 69, 0.9)';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.style.background = '';
+                }, 2000);
+            });
         }
 
         // Función para generar la imagen basada en el diseño proporcionado
@@ -1705,9 +2260,7 @@
                             arrival: nextSeg.arrival,
                             class: nextSeg.class,
                             direct: false,
-                            stops: seg.stops,
-                            flightNumber: seg.flightNumber + ' / ' + nextSeg.flightNumber,
-                            aircraft: seg.aircraft + ' / ' + nextSeg.aircraft
+                            stops: seg.stops
                         });
                         i += 2;
                     } else {
@@ -1792,19 +2345,10 @@
                         ctx.fillText(seg.to, 240, y);
                         ctx.font = 'bold 18px Arial';
                         ctx.fillText(formatTimeAMPM(seg.arrival), 320, y);
-                        // Clase y número de vuelo
+                        // Clase solamente
                         ctx.font = '14px Arial';
                         ctx.fillStyle = '#0056b3';
                         ctx.fillText(seg.class || 'Económica Basic', 40, y + 20);
-                        ctx.fillStyle = '#666';
-                        if (seg.flightNumber && seg.flightNumber !== 'undefined') {
-                            ctx.fillText(`Vuelo: ${seg.flightNumber}`, 240, y + 20);
-                        }
-                        ctx.font = '13px Arial';
-                        ctx.fillStyle = '#888';
-                        if (seg.aircraft && seg.aircraft !== 'undefined') {
-                            ctx.fillText(seg.aircraft, 420, y + 20);
-                        }
                         y += 52; // Más espacio antes del separador
                         // Separador visual con mejor espaciado
                         ctx.strokeStyle = '#d0d0d0';
@@ -1974,7 +2518,9 @@
                 'Medellín': 'MDE',
                 'Cali': 'CLO',
                 'Cartagena': 'CTG',
-                'Bogotá': 'BOG'
+                'Bogotá': 'BOG',
+                'Panamá': 'PTY',
+                'Panamá (Directo)': 'PTY'
             };
             return airportCodes[city] || city;
         }
@@ -1982,6 +2528,10 @@
         // Función para mostrar la oferta más barata global
         async function displayGlobalCheapest(cheapest) {
             console.log('🏆 Mostrando oferta global más barata:', cheapest);
+            
+            // Detectar el modo actual basado en el tema
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const isDarkMode = currentTheme === 'dark';
             
             const globalCheapestSection = document.getElementById('global-cheapest-section');
             const globalCheapestInfo = document.getElementById('global-cheapest-info');
@@ -1991,8 +2541,17 @@
                 return;
             }
             
-            // Determinar el texto del stopover
-            const stopoverText = cheapest.stopover === 'ida' ? 'Stopover de Ida en Panamá' : 'Stopover de Regreso en Panamá';
+            // Determinar el texto del stopover o vuelo directo
+            let stopoverText;
+            let flightTypeEmoji;
+            
+            if (cheapest.stopover === 'directo') {
+                stopoverText = '✈️ Vuelo Directo Sin Escalas';
+                flightTypeEmoji = '✈️';
+            } else {
+                stopoverText = cheapest.stopover === 'ida' ? 'Stopover de Ida en Panamá' : 'Stopover de Regreso en Panamá';
+                flightTypeEmoji = '🔄';
+            }
             
             globalCheapestInfo.innerHTML = `
                 <div class="card-body">
@@ -2011,7 +2570,7 @@
                             <div class="mt-3">
                                 <div class="pre-formatted" id="cheapest-message">🎉 OFERTA ESPECIAL - Congreso Centroamericano 2026! 🎉
 ✈️ Ciudad: ${cheapest.city} | 📅 ${formatDateDMY(cheapest.searchDate)} - ${formatDateDMY(cheapest.returnDate)}
-🔄 ${stopoverText} | 💵 $${cheapest.price} USD
+${flightTypeEmoji} ${stopoverText} | 💵 $${cheapest.price} USD
 ✨ ¡No dejen pasar esta oportunidad! ✨
 
 🛫 Ruta: 
@@ -2028,9 +2587,19 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
                         
                         <!-- Columna derecha: Imagen generada -->
                         <div class="col-lg-8 col-md-12">
-                            <div class="mt-4 mt-lg-0 offer-image-container" id="offer-image-container" style="display: none;">
-                                
-                                <img src="" alt="Oferta Visual" class="offer-image" id="offer-image">
+                            <!-- Contenedor para modo claro -->
+                            <div class="mt-4 mt-lg-0 offer-image-container" id="offer-image-container-light" style="display: none;">
+                                <button class="copy-image-btn" id="copy-image-btn-light" onclick="copyImageToClipboard('light')" style="display: none;">
+                                    <i class="bi bi-clipboard"></i> Copiar
+                                </button>
+                                <img src="" alt="Oferta Visual" class="offer-image" id="offer-image-light">
+                            </div>
+                            <!-- Contenedor para modo oscuro -->
+                            <div class="mt-4 mt-lg-0 offer-image-container" id="offer-image-container-dark" style="display: none;">
+                                <button class="copy-image-btn" id="copy-image-btn-dark" onclick="copyImageToClipboard('dark')" style="display: none;">
+                                    <i class="bi bi-clipboard"></i> Copiar
+                                </button>
+                                <img src="" alt="Oferta Visual" class="offer-image" id="offer-image-dark">
                             </div>
                         </div>
                     </div>
@@ -2060,18 +2629,43 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
                 
                 const generatedImage = await generateOfferImage(imageData);
                 if (generatedImage) {
-                    // Buscar el contenedor y la imagen dentro del HTML generado dinámicamente
+                    // Detectar modo actual
+                    const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+                    console.log('Debug - Modo detectado:', isDarkMode ? 'dark' : 'light');
+                    
+                    // Usar IDs correctos según el modo
+                    const imageId = isDarkMode ? 'offer-image-dark' : 'offer-image-light';
+                    const containerId = isDarkMode ? 'offer-image-container-dark' : 'offer-image-container-light';
+                    const copyBtnId = isDarkMode ? 'copy-image-btn-dark' : 'copy-image-btn-light';
+                    
+                    console.log('Debug - IDs a buscar:', { imageId, containerId, copyBtnId });
+                    
+                    // Buscar el contenedor y la imagen con los IDs correctos
                     setTimeout(() => {
-                        const dynamicOfferImage = document.getElementById('offer-image');
-                        const dynamicOfferImageContainer = document.getElementById('offer-image-container');
+                        const offerImage = document.getElementById(imageId);
+                        const offerImageContainer = document.getElementById(containerId);
                         
-                        if (dynamicOfferImage && dynamicOfferImageContainer) {
-                            dynamicOfferImage.src = generatedImage;
-                            dynamicOfferImageContainer.style.display = 'block';
-                            dynamicOfferImageContainer.classList.add('offer-image-container');
-                            console.log('Imagen asignada correctamente al contenedor dinámico');
+                        console.log('Debug - Elementos encontrados:', { 
+                            offerImage: !!offerImage, 
+                            offerImageContainer: !!offerImageContainer,
+                            imageId,
+                            containerId 
+                        });
+                        
+                        if (offerImage && offerImageContainer) {
+                            offerImage.src = generatedImage;
+                            offerImageContainer.style.display = 'block';
+                            offerImageContainer.classList.add('offer-image-container');
+                            
+                            // Mostrar el botón de copia
+                            const copyBtn = document.getElementById(copyBtnId);
+                            if (copyBtn) {
+                                copyBtn.style.display = 'flex';
+                            }
+                            
+                            console.log(`Imagen asignada correctamente al contenedor ${isDarkMode ? 'dinámico (dark)' : 'estático (light)'}`);
                         } else {
-                            console.error('No se encontraron los elementos de imagen en el DOM dinámico');
+                            console.error(`No se encontraron los elementos de imagen para modo ${isDarkMode ? 'dark' : 'light'}`);
                         }
                     }, 100);
                 }
@@ -2152,7 +2746,8 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
                             ...itinerary,
                             comboId: comboId,
                             searchDate: combo.searchDate,
-                            returnDate: combo.returnDate
+                            returnDate: combo.returnDate,
+                            segments: itinerary.cheapest?.segments || itinerary.segments
                         });
                     }
                 });
@@ -2292,12 +2887,18 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
             const outboundDate = formatDateForRoute(searchDate);
             const returnDateFormatted = formatDateForRoute(returnDate);
             
-            // Determinar tipo de stopover
+            // Determinar tipo de stopover o vuelo directo
+            const isDirectFlight = stopover && (stopover.toLowerCase().includes('directo') || stopover.toLowerCase().includes('sin escalas'));
             const isReturnStopover = stopover && stopover.toLowerCase().includes('regreso');
             const isOutboundStopover = stopover && stopover.toLowerCase().includes('ida');
             
             let routeMessage;
-            if (isReturnStopover) {
+            if (isDirectFlight) {
+                // VUELO DIRECTO - Sin escalas
+                // Lima (LIM) → Panamá (PTY) (10/02), Panamá (PTY) → Lima (LIM) (18/02)
+                routeMessage = `${getAirportDisplayName('LIM')} → ${getAirportDisplayName('PTY')} (${outboundDate})<br>` +
+                              `${getAirportDisplayName('PTY')} → ${getAirportDisplayName('LIM')} (${returnDateFormatted})`;
+            } else if (isReturnStopover) {
                 // QUITO - Stopover de REGRESO en Panamá
                 // Lima (LIM) → Quito (UIO) (11/02), Quito (UIO) → Panamá (PTY) (11/02), Panamá (PTY) → Lima (LIM) (18/02)
                 routeMessage = `${getAirportDisplayName('LIM')} → ${getAirportDisplayName(cityCode)} (${outboundDate})<br>` +
@@ -2382,6 +2983,77 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
                         returnDate: returnDate
                     });
                     
+                    // 🔧 VERIFICAR Y MAPEAR PROPIEDADES DE SEGMENTOS
+                    if (!segments || !Array.isArray(segments) || segments.length === 0) {
+                        console.log('❌ Segments es null, undefined, no es array o está vacío:', segments);
+                        console.log('🔄 Usando datos de respaldo...');
+                        
+                        // Generar un respaldo básico usando los parámetros disponibles
+                        const cityCode = city === 'Quito' ? 'UIO' : 
+                                        city === 'Panamá' ? 'PTY' : 
+                                        city === 'Cartagena' ? 'CTG' : 
+                                        city === 'Medellín' ? 'MDE' : 
+                                        city === 'Cali' ? 'CLO' : 
+                                        city === 'Bogotá' ? 'BOG' : 'XXX';
+                        
+                        const formattedSearchDate = searchDate ? formatDateForRoute(searchDate) : '';
+                        return `Lima (LIM) → ${city} (${cityCode}) ${formattedSearchDate ? `(${formattedSearchDate})` : ''}`;
+                    }
+                    
+                    console.log('🔧 Mapeando propiedades de segmentos...');
+                    const mappedSegments = segments.map((segment, index) => {
+                        // Verificar que segment no sea null/undefined
+                        if (!segment) {
+                            console.log(`⚠️ Segmento ${index + 1} es null/undefined`);
+                            return null;
+                        }
+                        
+                        // Si el segmento tiene 'route', extraer from/to
+                        let from, to, date;
+                        
+                        if (segment.route && segment.route.includes('→')) {
+                            const [fromCode, toCode] = segment.route.split('→').map(s => s.trim());
+                            from = fromCode;
+                            to = toCode;
+                            date = segment.departure;
+                        } else {
+                            from = segment.from;
+                            to = segment.to;
+                            date = segment.date;
+                        }
+                        
+                        const mapped = {
+                            ...segment,
+                            from: from,
+                            to: to,
+                            date: date
+                        };
+                        
+                        console.log(`📍 Segmento ${index + 1} mapeado:`, {
+                            original: { route: segment.route, departure: segment.departure },
+                            mapped: { from: mapped.from, to: mapped.to, date: mapped.date }
+                        });
+                        
+                        return mapped;
+                    }).filter(segment => segment !== null); // Filtrar segmentos null
+                    
+                    // Usar segmentos mapeados en lugar de originales
+                    segments = mappedSegments;
+                    
+                    // Verificar estructura de cada segmento
+                    if (segments && Array.isArray(segments)) {
+                        console.log('📊 Análisis detallado de segmentos mapeados:');
+                        segments.forEach((seg, index) => {
+                            console.log(`Segmento ${index + 1}:`, {
+                                from: seg.from,
+                                to: seg.to,
+                                date: seg.date,
+                                keys: Object.keys(seg),
+                                valid: !!(seg.from && seg.to && seg.date)
+                            });
+                        });
+                    }
+                    
                     // Función auxiliar para formatear fecha a DD/MM
                     function formatDateForRoute(dateStr) {
                         if (!dateStr) {
@@ -2418,9 +3090,15 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
                         // Determinar tipo de stopover para generar ruta apropiada
                         const isReturnStopover = stopover && stopover.toLowerCase().includes('regreso');
                         const isOutboundStopover = stopover && stopover.toLowerCase().includes('ida');
+                        const isDirectFlight = stopover && stopover.toLowerCase().includes('directo');
                         
                         let fallbackRoute;
-                        if (isReturnStopover) {
+                        if (isDirectFlight) {
+                            // VUELO DIRECTO - No hay escalas
+                            // LIM → PTY (10/02), PTY → LIM (18/02)
+                            fallbackRoute = `${getAirportDisplayName('LIM')} → ${getAirportDisplayName('PTY')} (${outboundDate})<br>${getAirportDisplayName('PTY')} → ${getAirportDisplayName('LIM')} (${returnDateFormatted})`;
+                            console.log('🎯 Aplicando lógica VUELO DIRECTO para', city);
+                        } else if (isReturnStopover) {
                             // QUITO - Stopover de REGRESO en Panamá
                             // LIM → UIO (11/02), UIO → PTY (11/02), PTY → LIM (18/02)
                             fallbackRoute = `${getAirportDisplayName('LIM')} → ${getAirportDisplayName(cityCode)} (${outboundDate})<br>${getAirportDisplayName(cityCode)} → ${getAirportDisplayName('PTY')} (${outboundDate})<br>${getAirportDisplayName('PTY')} → ${getAirportDisplayName('LIM')} (${returnDateFormatted})`;
@@ -2462,9 +3140,13 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
                         
                         const isReturnStopover = stopover && stopover.toLowerCase().includes('regreso');
                         const isOutboundStopover = stopover && stopover.toLowerCase().includes('ida');
+                        const isDirectFlight = stopover && stopover.toLowerCase().includes('directo');
                         
                         let fallbackRoute;
-                        if (isReturnStopover) {
+                        if (isDirectFlight) {
+                            // VUELO DIRECTO - No hay escalas
+                            fallbackRoute = `${getAirportDisplayName('LIM')} → ${getAirportDisplayName('PTY')} (${outboundDate})<br>${getAirportDisplayName('PTY')} → ${getAirportDisplayName('LIM')} (${returnDateFormatted})`;
+                        } else if (isReturnStopover) {
                             // QUITO - Stopover de REGRESO en Panamá
                             // LIM → UIO (11/02), UIO → PTY (11/02), PTY → LIM (18/02)
                             fallbackRoute = `${getAirportDisplayName('LIM')} → ${getAirportDisplayName(cityCode)} (${outboundDate})<br>${getAirportDisplayName(cityCode)} → ${getAirportDisplayName('PTY')} (${outboundDate})<br>${getAirportDisplayName('PTY')} → ${getAirportDisplayName('LIM')} (${returnDateFormatted})`;
@@ -2652,6 +3334,15 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
                                         routes.push(route);
                                     } else {
                                         console.error(`❌ SEGMENTO ${i + 1} INCOMPLETO:`, segment);
+                                        console.error('📊 Propiedades del segmento:', {
+                                            from: segment.from,
+                                            to: segment.to,
+                                            date: segment.date,
+                                            hasFrom: segment.hasOwnProperty('from'),
+                                            hasTo: segment.hasOwnProperty('to'),
+                                            hasDate: segment.hasOwnProperty('date'),
+                                            keys: Object.keys(segment)
+                                        });
                                     }
                                     i++;
                                 }
@@ -2665,6 +3356,13 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
                         console.log('🔤 HTML resultado:', result);
                         console.log('� Tipo de stopover aplicado:', isReturnStopover ? 'REGRESO' : isOutboundStopover ? 'IDA' : 'GENÉRICO');
                         console.log('=== ✅ FIN PROCESAMIENTO ===\n');
+                        
+                        // ✅ VERIFICACIÓN FINAL: Asegurar que siempre retornemos algo válido
+                        if (!result || result.trim() === '') {
+                            console.log('⚠️ Resultado vacío, generando respaldo...');
+                            return `${city} - ${searchDate}`;
+                        }
+                        
                         return result;
                     }
                     
@@ -2715,13 +3413,32 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
                               data?.route || 
                               data?.itinerary || 
                               offer.segments ||
+                              offer.cheapest?.segments ||
                               offer.route ||
-                              offer.flight_segments;
+                              offer.flight_segments ||
+                              offer.cheapest?.segments;
                               
                     console.log('🔍 Segments encontrados en ubicación alternativa:', segments);
                 }
                 
+                // Última validación antes de llamar a generateRouteDescription
+                if (!segments || !Array.isArray(segments) || segments.length === 0) {
+                    console.warn('⚠️ No se encontraron segments válidos, usando array vacío para fallback');
+                    segments = []; // Usar array vacío en lugar de null
+                }
+                
                 const routeDisplay = generateRouteDescription(segments, offer.city, offer.stopover, offer.searchDate, offer.returnDate);
+                
+                console.log(`\n🎯 LLAMADA A generateRouteDescription para ${offer.city}:`);
+                console.log('📨 Parámetros enviados:', {
+                    segments: segments,
+                    city: offer.city,
+                    stopover: offer.stopover,
+                    searchDate: offer.searchDate,
+                    returnDate: offer.returnDate
+                });
+                console.log('📊 Segments es array?', Array.isArray(segments));
+                console.log('📊 Segments length:', segments?.length || 0);
                 
                 console.log(`\n🎨 GENERANDO HTML PARA OFERTA #${index + 1}`);
                 console.log('🛫 RouteDisplay final generado:', routeDisplay);
@@ -2740,7 +3457,7 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
                                     </div>
                                     <div class="col-md-2">
                                         <h6 class="mb-1">${offer.city} (${getCityAirportCode(offer.city)})</h6>
-                                        <small class="text-muted">Stopover de ${offer.stopover} en Panamá</small>
+                                        <small class="text-muted">${offer.stopover === 'directo' ? '✈️ Vuelo Directo Sin Escalas' : `Stopover de ${offer.stopover} en Panamá`}</small>
                                     </div>
                                     <div class="col-md-3">
                                         <div class="date-info">
@@ -2992,8 +3709,12 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
         
         // Inicializar funcionalidades móviles cuando se cargan los datos
         function initializeApp() {
-            fetchOffers();
             initializeMobileFeatures();
+            // Cargar automáticamente los vuelos de stopover al iniciar
+            setTimeout(() => {
+                console.log('🚀 Cargando automáticamente vuelos de stopover...');
+                fetchOffers();
+            }, 1000); // Delay de 1 segundo para que se inicialice todo correctamente
         }
         
         // 🧪 FUNCIÓN DE PRUEBA PARA VERIFICAR ROUTE GENERATION
@@ -3109,19 +3830,18 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
             
             // Configurar modo oscuro al cargar la página
             function initTheme() {
-                const savedTheme = localStorage.getItem('theme') || 'light';
+                // FORZAR MODO LIGHT POR DEFECTO (STOPOVER)
+                const savedTheme = 'light'; // Siempre empezar en modo light (stopover)
+                localStorage.setItem('theme', 'light'); // Asegurar que se guarde como light
                 document.documentElement.setAttribute('data-theme', savedTheme);
                 
                 const normalBtn = document.getElementById('normalMode');
                 const darkBtn = document.getElementById('darkMode');
                 
-                if (savedTheme === 'dark') {
-                    normalBtn.classList.remove('active');
-                    darkBtn.classList.add('active');
-                } else {
-                    darkBtn.classList.remove('active');
-                    normalBtn.classList.add('active');
-                }
+                // Siempre activar modo light por defecto
+                if (darkBtn) darkBtn.classList.remove('active');
+                if (normalBtn) normalBtn.classList.add('active');
+                updateUIForStopover();
             }
             
             // Toggle del modo oscuro
@@ -3134,12 +3854,72 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
                     localStorage.setItem('theme', 'dark');
                     normalBtn.classList.remove('active');
                     darkBtn.classList.add('active');
+                    updateUIForDirectFlights();
+                    
+                    // Verificar cache de Redis antes de llamar APIs
+                    checkRedisAndLoadDirectFlights();
                 } else {
                     document.documentElement.setAttribute('data-theme', 'light');
                     localStorage.setItem('theme', 'light');
                     darkBtn.classList.remove('active');
                     normalBtn.classList.add('active');
+                    updateUIForStopover();
+                    
+                    // Verificar cache de Redis antes de llamar APIs
+                    checkRedisAndLoadStopoverFlights();
                 }
+            }
+            
+            // Función para actualizar UI para vuelos directos (modo oscuro)
+            function updateUIForDirectFlights() {
+                console.log('🌙 Actualizando UI para vuelos directos');
+                
+                const headerTitle = document.querySelector('.header-title');
+                
+                if (headerTitle) {
+                    headerTitle.innerHTML = `
+                        <i class="bi bi-airplane-engines"></i> MMM - Congreso Centroamericano 2026 - Vuelos Directos - Copa Airlines<br>
+                        <small class="text-muted" style="font-size: 0.6em;">12 Combinaciones de Vuelos Directos LIM-PTY-LIM</small>
+                    `;
+                }
+                
+                // Solo limpiar resultados previos, no ejecutar automáticamente las APIs
+                clearPreviousResults();
+            }
+            
+            // Función para actualizar UI para stopover (modo normal)
+            function updateUIForStopover() {
+                console.log('☀️ Actualizando UI para stopover');
+                
+                const headerTitle = document.querySelector('.header-title');
+                
+                if (headerTitle) {
+                    headerTitle.innerHTML = `
+                        <i class="bi bi-airplane-engines"></i> MMM - Congreso Centroamericano 2026 - Copa Airlines<br>
+                        <small class="text-muted" style="font-size: 0.6em;">90 Combinaciones de Ciudades (Ida/Regreso con Stopover en Panamá)</small>
+                    `;
+                }
+                
+                // Limpiar resultados previos pero no ocultar elementos si ya tienen datos válidos
+                clearPreviousResults();
+            }
+            
+            // Función para limpiar resultados previos
+            function clearPreviousResults() {
+                const globalCheapestInfo = document.getElementById('global-cheapest-info');
+                const summaryStats = document.getElementById('summary-stats');
+                const dateTabs = document.getElementById('date-tabs');
+                const dateContents = document.getElementById('date-contents');
+                const errorDiv = document.getElementById('error');
+                
+                // Solo limpiar contenido HTML, no ocultar elementos que podrían tener datos válidos
+                if (dateTabs) {
+                    dateTabs.innerHTML = '';
+                }
+                if (dateContents) dateContents.innerHTML = '';
+                if (errorDiv) errorDiv.style.display = 'none';
+                
+                console.log('🧹 Contenido previo limpiado, elementos listos para nuevos datos');
             }
             
             // Event listeners para los botones del menú

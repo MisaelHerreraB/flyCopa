@@ -142,13 +142,13 @@ module.exports = async (req, res) => {
             
             if (timeSinceFailure >= MIN_RETRY_INTERVAL) {
                 shouldSkipFailedApis = false;
-                console.log(`[${new Date().toISOString()}] Reintento automático activado para APIs fallidas`);
+
             }
         }
         
         // Si tenemos cache y no es momento de reintentar APIs fallidas, retornar cache
         if (cachedOffers && cachedOffers.data.success && shouldSkipFailedApis) {
-            console.log(`[${new Date().toISOString()}] Retornando datos desde cache`);
+
             // Añadir un pequeño delay para que el usuario vea la barra de progreso
             await new Promise(resolve => setTimeout(resolve, 400));
             return res.status(200).json(cachedOffers.data.data);
@@ -161,7 +161,7 @@ module.exports = async (req, res) => {
         }).catch(() => null);
         
         if (isProcessingResponse && isProcessingResponse.data.success) {
-            console.log(`[${new Date().toISOString()}] Otro proceso está ejecutando APIs, esperando...`);
+
             
             // Esperar hasta 25 segundos por el resultado
             for (let i = 0; i < 50; i++) {
@@ -172,11 +172,11 @@ module.exports = async (req, res) => {
                 }).catch(() => null);
                 
                 if (newCachedOffers && newCachedOffers.data.success) {
-                    console.log(`[${new Date().toISOString()}] Datos disponibles después de espera`);
+
                     return res.status(200).json(newCachedOffers.data.data);
                 }
             }
-            console.log(`[${new Date().toISOString()}] Timeout esperando datos, ejecutando APIs propias`);
+
         }
         
         // Intentar obtener el lock para ejecutar las APIs
@@ -191,7 +191,7 @@ module.exports = async (req, res) => {
         // Si no se pudo obtener el lock (status 409 o error), otro proceso está ejecutando
         if (!lockResponse || lockResponse.status === 409 || !lockResponse.data.success) {
             // Otro proceso obtuvo el lock, esperar y verificar cache
-            console.log(`[${new Date().toISOString()}] No se pudo obtener lock (${lockResponse?.status || 'error'}), esperando...`);
+
             await new Promise(resolve => setTimeout(resolve, 1000));
             
             // Reintentar verificación de cache después de espera
@@ -201,14 +201,14 @@ module.exports = async (req, res) => {
             }).catch(() => null);
             
             if (newCachedOffers && newCachedOffers.data.success) {
-                console.log(`[${new Date().toISOString()}] Datos encontrados después de esperar lock`);
+
                 return res.status(200).json(newCachedOffers.data.data);
             }
         }
         
-        console.log(`[${new Date().toISOString()}] Obtenido lock para ejecutar APIs`);
+
         
-        console.log(`[${new Date().toISOString()}] Iniciando llamadas concurrentes a APIs especializadas para ${dateCombinations.length} combinaciones de fechas`);
+
         
         // Llamadas concurrentes a todas las funciones especializadas para múltiples combinaciones
         const cityPromises = [];
@@ -240,7 +240,7 @@ module.exports = async (req, res) => {
         const cityResults = await Promise.allSettled(cityPromises);
         const duration = Date.now() - startTime;
         
-        console.log(`[${new Date().toISOString()}] Llamadas concurrentes completadas en ${duration}ms`);
+
         
         // Procesar resultados y mapear a estructura expandida para múltiples combinaciones
         const response = generateItineraryConfig();
@@ -318,7 +318,7 @@ module.exports = async (req, res) => {
                     !isNaN(parseFloat(itinerary.cheapest.price));
                 
                 if (!isValid && itinerary) {
-                    console.log(`[${new Date().toISOString()}] Filtrando itinerario inválido: ${itinerary.itinerary}, cheapest:`, itinerary.cheapest);
+
                 }
                 return isValid;
             })
@@ -409,14 +409,14 @@ module.exports = async (req, res) => {
             }).catch(console.error);
         }
         
-        console.log(`[${new Date().toISOString()}] Respuesta procesada exitosamente. APIs fallidas: ${failedApis.length}`);
+
         
         // Liberar el lock de procesamiento
         await axios.post(`${BASE_URL}/api/cache`, {
             action: 'del',
             key: PROCESSING_KEY
         }).catch(console.error);
-        console.log(`[${new Date().toISOString()}] Lock de procesamiento liberado`);
+
         
         return res.status(200).json(response);
         
@@ -428,7 +428,7 @@ module.exports = async (req, res) => {
             action: 'del',
             key: PROCESSING_KEY
         }).catch(console.error);
-        console.log(`[${new Date().toISOString()}] Lock de procesamiento liberado por error`);
+
         
         return res.status(500).json({ 
             error: 'Error interno del servidor',

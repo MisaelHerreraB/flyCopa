@@ -1,4 +1,6 @@
-﻿const axios = require('axios');
+# Clean Bogotá
+$bogotaContent = @'
+const axios = require('axios');
 
 async function fetchOffers(url, headers, payload) {
     try {
@@ -53,7 +55,7 @@ module.exports = async (req, res) => {
     const results = {};
     
     try {
-        // BogotÃ¡ ida (LIM -> PTY -> BOG -> LIM)
+        // Bogotá ida (LIM -> PTY -> BOG -> LIM)
         if (stopover === 'both' || stopover === 'ida') {
             const payload1 = {
                 numberOfAdults: 1,
@@ -71,7 +73,7 @@ module.exports = async (req, res) => {
             results.ida = await fetchOffers(url, headers, payload1);
         }
         
-        // BogotÃ¡ regreso (LIM -> BOG -> PTY -> LIM)
+        // Bogotá regreso (LIM -> BOG -> PTY -> LIM)
         if (stopover === 'both' || stopover === 'regreso') {
             const payload2 = {
                 numberOfAdults: 1,
@@ -91,7 +93,7 @@ module.exports = async (req, res) => {
         
         return res.status(200).json({
             success: true,
-            city: 'BogotÃ¡',
+            city: 'Bogotá',
             searchDate,
             returnDate,
             data: results,
@@ -102,12 +104,15 @@ module.exports = async (req, res) => {
         });
         
     } catch (error) {
-        console.error('Error en funciÃ³n BogotÃ¡:', error);
+        console.error('Error en función Bogotá:', error);
         return res.status(500).json({ 
             success: false, 
             error: error.message,
-            city: 'BogotÃ¡',
+            city: 'Bogotá',
             searchDate
         });
     }
 };
+'@
+
+$bogotaContent | Out-File -FilePath "api\bogota.js" -Encoding UTF8
