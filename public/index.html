@@ -138,12 +138,11 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
         .offer-image-container {
-            background: white;
             border-radius: 12px;
             padding: 0px;
             margin-top: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border: 1px solid #e3f2fd;
+
             position: relative;
         }
         .offer-image-container h6 {
@@ -177,6 +176,36 @@
         }
         .copy-image-btn.copied {
             background: rgba(40, 167, 69, 0.9);
+        }
+        .promo-code-banner {
+            animation: pulse-glow 2s infinite;
+        }
+        .promo-code-banner .alert {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .promo-code-banner .alert::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 193, 7, 0.1), transparent);
+            animation: shine 3s infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        @keyframes shine {
+            0% { transform: rotate(0deg) translate(-50%, -50%); }
+            100% { transform: rotate(360deg) translate(-50%, -50%); }
+        }
+        .promo-code-banner:hover .alert {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);
         }
         .global-offer-container {
             background: transparent;
@@ -2593,6 +2622,15 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
                                     <i class="bi bi-clipboard"></i> Copiar
                                 </button>
                                 <img src="" alt="Oferta Visual" class="offer-image" id="offer-image-light">
+                                <div class="promo-code-banner mt-3 text-center">
+                                    <div class="alert alert-warning border-warning" style="background: linear-gradient(45deg, #fff3cd, #fefefe); border: 2px solid #ffc107;">
+                                        <h6 class="mb-1 fw-bold text-dark">
+                                            <i class="bi bi-tag-fill text-warning me-2"></i>¡Usa el Código Promocional!
+                                        </h6>
+                                        <h4 class="mb-0 fw-bold text-primary">B9580</h4>
+                                        <small class="text-muted">Aplica este código al momento de reservar</small>
+                                    </div>
+                                </div>
                             </div>
                             <!-- Contenedor para modo oscuro -->
                             <div class="mt-4 mt-lg-0 offer-image-container" id="offer-image-container-dark" style="display: none;">
@@ -2600,6 +2638,15 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
                                     <i class="bi bi-clipboard"></i> Copiar
                                 </button>
                                 <img src="" alt="Oferta Visual" class="offer-image" id="offer-image-dark">
+                                <div class="promo-code-banner mt-3 text-center">
+                                    <div class="alert alert-warning border-warning" style="background: linear-gradient(45deg, #2c2c2c, #404040); border: 2px solid #ffc107;">
+                                        <h6 class="mb-1 fw-bold text-light">
+                                            <i class="bi bi-tag-fill text-warning me-2"></i>¡Usa el Código Promocional!
+                                        </h6>
+                                        <h4 class="mb-0 fw-bold text-warning">B9580</h4>
+                                        <small class="text-light">Aplica este código al momento de reservar</small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -3168,11 +3215,13 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
                         console.log('🔄 Tipo de stopover:', stopover);
                         console.log('📊 Total de segmentos:', segments.length);
                         
-                        // NUEVA LÓGICA: Analizar tipo de stopover
+                        // NUEVA LÓGICA: Analizar tipo de vuelo
                         const isReturnStopover = stopover && stopover.toLowerCase().includes('regreso');
                         const isOutboundStopover = stopover && stopover.toLowerCase().includes('ida');
+                        const isDirectFlight = stopover && (stopover.toLowerCase().includes('directo') || stopover.toLowerCase().includes('sin escalas'));
                         
-                        console.log('🔍 ANÁLISIS DE STOPOVER:');
+                        console.log('🔍 ANÁLISIS DE TIPO DE VUELO:');
+                        console.log(`   ├─ Es vuelo directo: ${isDirectFlight}`);
                         console.log(`   ├─ Es stopover de regreso: ${isReturnStopover}`);
                         console.log(`   ├─ Es stopover de ida: ${isOutboundStopover}`);
                         console.log(`   └─ Texto completo: "${stopover}"`);
@@ -3202,45 +3251,43 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
                         
                         let routes = [];
                         
-                        // NUEVA ESTRATEGIA: Procesar según el tipo de stopover
-                        if (isReturnStopover && segments.length >= 3) {
+                        // NUEVA ESTRATEGIA: Procesar según el tipo de vuelo
+                        if (isDirectFlight) {
+                            console.log('\n✈️ PROCESANDO VUELO DIRECTO...');
+                            
+                            // Para vuelos directos: mostrar todos los segmentos individuales (ida y vuelta)
+                            for (let i = 0; i < segments.length; i++) {
+                                const segment = segments[i];
+                                console.log(`\n🔍 Procesando segmento directo ${i + 1}: ${segment.from} → ${segment.to}`);
+                                
+                                if (segment.from && segment.to && segment.date) {
+                                    const segmentDate = formatDateForRoute(segment.date);
+                                    const route = `${getAirportDisplayName(segment.from)} → ${getAirportDisplayName(segment.to)} (${segmentDate})`;
+                                    console.log(`➡️ SEGMENTO DIRECTO: ${route}`);
+                                    routes.push(route);
+                                } else {
+                                    console.error(`❌ SEGMENTO DIRECTO ${i + 1} INCOMPLETO:`, segment);
+                                }
+                            }
+                            
+                        } else if (isReturnStopover && segments.length >= 3) {
                             console.log('\n🔄 PROCESANDO STOPOVER DE REGRESO...');
                             
-                            // Para stopover de regreso: LIM→DEST debe agruparse, DEST→PTY→LIM individual
-                            // Ejemplo Quito: LIM→UIO (agrupado), UIO→PTY (individual), PTY→LIM (individual)
+                            // Para stopover de regreso: mostrar TODOS los segmentos individuales
+                            // Ejemplo Quito: LIM→UIO (individual), UIO→PTY (individual), PTY→LIM (individual)
                             
-                            // Buscar el primer segmento que va de LIM a PTY con "1 escala"
-                            let firstTwoGrouped = false;
-                            let i = 0;
-                            
-                            while (i < segments.length) {
+                            for (let i = 0; i < segments.length; i++) {
                                 const segment = segments[i];
                                 console.log(`\n� Analizando segmento ${i + 1}: ${segment.from} → ${segment.to}`);
                                 
-                                // Si es el primer segmento LIM→PTY con "1 escala" y hay siguiente PTY→DEST
-                                if (i === 0 && segment.from === 'LIM' && segment.to === 'PTY' && 
-                                    segment.stops && segment.stops.includes('1 escala') &&
-                                    i + 1 < segments.length && segments[i + 1].from === 'PTY') {
-                                    
-                                    const nextSegment = segments[i + 1];
-                                    const firstDate = formatDateForRoute(segment.date);
-                                    const secondDate = formatDateForRoute(nextSegment.date);
-                                    
-                                    // Agrupar LIM → DESTINO con fechas
-                                    let dateDisplay = (firstDate === secondDate) ? `(${firstDate})` : `(${firstDate}/${secondDate})`;
-                                    const groupedRoute = `${getAirportDisplayName(segment.from)} → ${getAirportDisplayName(nextSegment.to)} ${dateDisplay}`;
-                                    
-                                    console.log(`✅ AGRUPANDO SEGMENTOS 1 y 2: ${groupedRoute}`);
-                                    routes.push(groupedRoute);
-                                    i += 2;
-                                    firstTwoGrouped = true;
-                                } else {
-                                    // Procesar segmento individual
+                                // Para stopover de regreso: NO agrupar, mostrar todos los segmentos individuales
+                                if (segment.from && segment.to && segment.date) {
                                     const segmentDate = formatDateForRoute(segment.date);
                                     const route = `${getAirportDisplayName(segment.from)} → ${getAirportDisplayName(segment.to)} (${segmentDate})`;
                                     console.log(`➡️ SEGMENTO INDIVIDUAL: ${route}`);
                                     routes.push(route);
-                                    i++;
+                                } else {
+                                    console.error(`❌ SEGMENTO ${i + 1} INCOMPLETO:`, segment);
                                 }
                             }
                             
@@ -3401,30 +3448,123 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
                     return fallbackRoute;
                 }
                 
-                // INTENTAR OBTENER SEGMENTS DE MÚLTIPLES FUENTES
-                let segments = data?.segments;
+                // EXTRAER SEGMENTS DESDE originDestinations
+                console.log('🔍 DEBUG: Extrayendo segments desde originDestinations...');
                 
-                // Si no hay segments en la ubicación esperada, buscar en otras ubicaciones
-                if (!segments || !Array.isArray(segments) || segments.length === 0) {
-                    console.log('🔧 BUSCANDO SEGMENTS EN UBICACIONES ALTERNATIVAS...');
+                let segments = [];
+                
+                // PRIORIDAD 1: Intentar extraer desde offer.segments (para vuelos directos)
+                if (offer.segments && Array.isArray(offer.segments) && offer.segments.length > 0) {
+                    console.log('🔍 DEBUG: Encontrados segments en offer.segments:', offer.segments.length);
                     
-                    // Intentar diferentes ubicaciones donde podrían estar los segments
-                    segments = data?.flight_segments || 
-                              data?.route || 
-                              data?.itinerary || 
-                              offer.segments ||
-                              offer.cheapest?.segments ||
-                              offer.route ||
-                              offer.flight_segments ||
-                              offer.cheapest?.segments;
-                              
-                    console.log('🔍 Segments encontrados en ubicación alternativa:', segments);
+                    offer.segments.forEach((segment, index) => {
+                        console.log(`🔍 DEBUG: Procesando segment ${index + 1} desde offer.segments:`, segment);
+                        
+                        // Para vuelos directos: index 0 = ida, index 1 = regreso
+                        const isReturnSegment = index === 1;
+                        
+                        // Crear segmento con la estructura disponible
+                        const mappedSegment = {
+                            from: segment.origin || segment.departure?.airportCode || (isReturnSegment ? 'PTY' : 'LIM'),
+                            to: segment.destination || segment.arrival?.airportCode || (isReturnSegment ? 'LIM' : 'PTY'),
+                            date: segment.departureDate || (isReturnSegment ? offer.returnDate : offer.searchDate),
+                            stops: 'Directo'
+                        };
+                        
+                        console.log(`✅ Segmento mapeado desde offer.segments: ${mappedSegment.from} → ${mappedSegment.to} (${mappedSegment.date})`);
+                        segments.push(mappedSegment);
+                    });
                 }
+                
+                // PRIORIDAD 2: Si no hay segments, extraer desde originDestinations (para stopovers)
+                if (segments.length === 0 && offer.originDestinations && Array.isArray(offer.originDestinations)) {
+                    console.log('🔍 DEBUG: Procesando originDestinations, total:', offer.originDestinations.length);
+                    
+                    offer.originDestinations.forEach((od, index) => {
+                        console.log(`🔍 DEBUG: Procesando OD${index + 1}:`, od.originDestinationKey);
+                        
+                        if (od.solutions && od.solutions.length > 0) {
+                            const firstSolution = od.solutions[0]; // Tomar la primera solución
+                            
+                            // Para cada OD, crear UN SOLO segmento que represente el tramo completo
+                            const segment = {
+                                from: od.origin.code,
+                                to: od.destination.code,
+                                date: od.origin.departureDate,
+                                stops: firstSolution.numberOfLayovers > 0 ? '1 escala' : 'Directo'
+                            };
+                            
+                            console.log(`✅ Segmento extraído desde originDestinations: ${segment.from} → ${segment.to} (${segment.date})`);
+                            segments.push(segment);
+                        }
+                    });
+                }
+                
+                // MANEJO ESPECIAL PARA VUELOS DIRECTOS
+                // Si es vuelo directo y solo hay un segmento, agregar el segmento de regreso
+                const isDirectFlightCheck = offer.stopover && (
+                    offer.stopover.toLowerCase().includes('directo') || 
+                    offer.stopover.toLowerCase().includes('sin escalas') ||
+                    offer.stopover.toLowerCase().includes('sinescalas')
+                );
+                
+                console.log('🔍 DEBUG VUELOS DIRECTOS:');
+                console.log('   ├─ offer.stopover:', offer.stopover);
+                console.log('   ├─ isDirectFlightCheck:', isDirectFlightCheck);
+                console.log('   ├─ segments.length ANTES:', segments.length);
+                
+                if (isDirectFlightCheck && segments.length === 1) {
+                    console.log('✅ DEBUG: Vuelo directo con 1 segmento, agregando segmento de regreso...');
+                    
+                    const outboundSegment = segments[0];
+                    const returnSegment = {
+                        from: outboundSegment.to,
+                        to: outboundSegment.from,
+                        date: offer.returnDate,
+                        stops: 'Directo'
+                    };
+                    
+                    console.log(`✅ Segmento de regreso agregado: ${returnSegment.from} → ${returnSegment.to} (${returnSegment.date})`);
+                    segments.push(returnSegment);
+                } else if (isDirectFlightCheck && segments.length === 0) {
+                    console.log('✅ DEBUG: Vuelo directo sin segmentos, creando segmentos básicos...');
+                    
+                    // Crear segmentos básicos para vuelos directos
+                    const outboundSegment = {
+                        from: 'LIM',
+                        to: 'PTY',
+                        date: offer.searchDate,
+                        stops: 'Directo'
+                    };
+                    
+                    const returnSegment = {
+                        from: 'PTY',
+                        to: 'LIM',
+                        date: offer.returnDate,
+                        stops: 'Directo'
+                    };
+                    
+                    segments.push(outboundSegment);
+                    segments.push(returnSegment);
+                    
+                    console.log(`✅ Segmentos directos creados: LIM→PTY (${offer.searchDate}) y PTY→LIM (${offer.returnDate})`);
+                } else if (isDirectFlightCheck) {
+                    console.log(`✅ DEBUG: Vuelo directo con ${segments.length} segmentos, no necesita ajustes`);
+                } else {
+                    console.log('ℹ️ DEBUG: No es vuelo directo o condiciones no cumplen para ajustes');
+                }
+                
+                console.log('   └─ segments.length DESPUÉS:', segments.length);
+                
+                console.log('🔍 DEBUG: Total segments extraídos:', segments.length);
+                console.log('🔍 DEBUG: Segments completos:', segments);
                 
                 // Última validación antes de llamar a generateRouteDescription
                 if (!segments || !Array.isArray(segments) || segments.length === 0) {
-                    console.warn('⚠️ No se encontraron segments válidos, usando array vacío para fallback');
+                    console.warn('⚠️ No se encontraron segments válidos después de extraer desde originDestinations');
                     segments = []; // Usar array vacío en lugar de null
+                } else {
+                    console.log('✅ Segments válidos encontrados:', segments.length);
                 }
                 
                 const routeDisplay = generateRouteDescription(segments, offer.city, offer.stopover, offer.searchDate, offer.returnDate);
