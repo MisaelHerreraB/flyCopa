@@ -1311,6 +1311,26 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
+        
+        /* Media queries para dispositivos móviles */
+        @media (max-width: 480px) {
+            .menu-button {
+                font-size: 0.7rem !important;
+                gap: 5px !important;
+                padding: 8px 4px !important;
+            }
+            
+            .menu-button i {
+                font-size: 0.8rem !important;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .menu-button {
+                font-size: 0.75rem !important;
+                gap: 6px !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1319,7 +1339,7 @@
         <div class="menu-buttons">
             <button class="menu-button active" id="normalMode">
                 <i class="bi bi-sun"></i>
-                VUELOS MULTICIUDAD/STOPOVER
+                VUELOS MULTICIUDAD / STOPOVER
             </button>
             <button class="menu-button" id="darkMode">
                 <i class="bi bi-moon"></i>
