@@ -1798,7 +1798,7 @@
             
             try {
                 // Hacer una llamada específica para verificar cache sin ejecutar APIs
-                const response = await fetch('/api/direct-offers/check-cache', {
+                const response = await fetch('/api/cache?type=direct', {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' }
                 });
@@ -1835,7 +1835,7 @@
             
             try {
                 // Hacer una llamada específica para verificar cache sin ejecutar APIs
-                const response = await fetch('/api/offers/check-cache', {
+                const response = await fetch('/api/cache?type=offers', {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' }
                 });

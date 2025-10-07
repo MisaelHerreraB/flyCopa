@@ -1,6 +1,6 @@
 const axios = require('axios');
 const { v4: uuidv4 } = require('uuid');
-const { getDateCombinations, generateItineraryConfig } = require('./utils/dateConfig');
+const { getDateCombinations, generateItineraryConfig } = require('../lib/utils/dateConfig');
 
 // Función para generar segmentos reales basados en ofertas de Copa Airlines
 function generateRealSegments(globalCheapest, allItineraries) {

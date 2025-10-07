@@ -71,10 +71,6 @@ try {
     const directo11Handler = require('./api/directo-11feb.js');
     const directo12Handler = require('./api/directo-12feb.js');
     const directo13Handler = require('./api/directo-13feb.js');
-    
-    // Nuevos handlers para verificación de cache
-    const directOffersCheckCacheHandler = require('./api/direct-offers/check-cache.js');
-    const offersCheckCacheHandler = require('./api/offers/check-cache.js');
 
     // Configurar rutas
     app.all('/api/offers', createApiHandler(offersHandler));
@@ -89,10 +85,6 @@ try {
     app.all('/api/directo-11feb', createApiHandler(directo11Handler));
     app.all('/api/directo-12feb', createApiHandler(directo12Handler));
     app.all('/api/directo-13feb', createApiHandler(directo13Handler));
-    
-    // Nuevas rutas para verificación de cache
-    app.all('/api/direct-offers/check-cache', createApiHandler(directOffersCheckCacheHandler));
-    app.all('/api/offers/check-cache', createApiHandler(offersCheckCacheHandler));
     
 } catch (error) {
     console.error('Error cargando funciones API:', error.message);
