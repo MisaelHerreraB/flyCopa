@@ -61,7 +61,6 @@ module.exports = async (req, res) => {
                 numberOfInfants: 0,
                 cabinType: 'Y',
                 isStopOver: true,
-                promoCode: 'B9580',
                 originDestinations: [
                     { od: 'OD1', departure: { airportCode: 'LIM', date: searchDate }, arrival: { airportCode: 'PTY' } },
                     { od: 'OD2', departure: { airportCode: 'PTY', date: returnDate }, arrival: { airportCode: 'MDE' } },
@@ -80,7 +79,6 @@ module.exports = async (req, res) => {
                 numberOfInfants: 0,
                 cabinType: 'Y',
                 isStopOver: true,
-                promoCode: 'B9580',
                 originDestinations: [
                     { od: 'OD1', departure: { airportCode: 'LIM', date: searchDate }, arrival: { airportCode: 'MDE' } },
                     { od: 'OD2', departure: { airportCode: 'MDE', date: searchDate }, arrival: { airportCode: 'PTY' } },
