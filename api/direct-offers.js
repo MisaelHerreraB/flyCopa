@@ -311,12 +311,12 @@ module.exports = async (req, res) => {
             };
         }
         
-        // Guardar en cache por 30 minutos
+        // Guardar en cache por 10 minutos
         await axios.post(`${BASE_URL}/api/cache`, {
             action: 'set',
             key: REDIS_KEY,
             data: response,
-            ttl: 1800 // 30 minutos
+            ttl: 600 // 10 minutos
         }).catch(console.error);
         
         // Actualizar APIs fallidas si las hay
@@ -325,14 +325,14 @@ module.exports = async (req, res) => {
                 action: 'set',
                 key: FAILED_KEY,
                 data: failedApis,
-                ttl: 600 // 10 minutos
+                ttl: 420 // 7 minutos
             }).catch(console.error);
             
             await axios.post(`${BASE_URL}/api/cache`, {
                 action: 'set',
                 key: FAILED_TIMESTAMP_KEY,
                 data: Date.now(),
-                ttl: 600 // 10 minutos
+                ttl: 420 // 7 minutos
             }).catch(console.error);
         } else {
             // Limpiar APIs fallidas si todo fue exitoso

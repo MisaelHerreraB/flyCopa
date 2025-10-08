@@ -82,7 +82,7 @@ module.exports = async (req, res) => {
                 return res.status(404).json({ success: false, message: 'Key not found' });
                 
             case 'set':
-                const expiration = ttl || 1800; // 30 minutos por defecto
+                const expiration = ttl || 600; // 10 minutos por defecto
                 
                 if (nx) {
                     // SET con NX (solo si no existe)

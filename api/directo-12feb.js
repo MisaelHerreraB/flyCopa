@@ -2,7 +2,7 @@ const axios = require('axios');
 
 // Función para llamar al sistema de cache con URL base dinámica
 function createCacheFunction(req) {
-    return async function callCache(action, key, data = null, ttl = 1800, nx = false) {
+    return async function callCache(action, key, data = null, ttl = 600, nx = false) {
         try {
             const BASE_URL = req.headers['x-forwarded-proto'] && req.headers['x-forwarded-host'] 
                 ? `${req.headers['x-forwarded-proto']}://${req.headers['x-forwarded-host']}`
@@ -199,8 +199,8 @@ module.exports = async (req, res) => {
             }
         };
         
-        // Guardar resultado en cache (TTL: 30 minutos = 1800 segundos)
-        await callCache('set', cacheKey, finalResult, 1800);
+    // Guardar resultado en cache (TTL: 10 minutos = 600 segundos)
+    await callCache('set', cacheKey, finalResult, 600);
         console.log(`[DIRECT ${departureDate}] ✅ Resultado guardado en cache: ${cacheKey}`);
         
         // Liberar lock
