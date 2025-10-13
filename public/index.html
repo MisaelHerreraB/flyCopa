@@ -4187,6 +4187,24 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
             // Inicializar tema al cargar
             initTheme();
 
+                // Sesión: bloquear y oscurecer tras 10 minutos con botón para refrescar
+                function setupSessionTimeout() {
+                    const overlay = document.getElementById('session-overlay');
+                    const btn = document.getElementById('session-refresh-btn');
+                    if (!overlay || !btn) return;
+                    const showOverlay = () => {
+                        overlay.style.display = 'flex';
+                        overlay.setAttribute('aria-hidden', 'false');
+                        document.body.style.overflow = 'hidden';
+                    };
+                    btn.addEventListener('click', () => {
+                        window.location.reload();
+                    });
+                    // 10 minutos = 600000 ms
+                    setTimeout(showOverlay, 10 * 60 * 1000);
+                }
+                setupSessionTimeout();
+
                 // Asegurar formateador AM/PM en ámbito global para usarlo en el modal
                 if (typeof window.formatTimeAMPM !== 'function') {
                     window.formatTimeAMPM = function(time24) {
@@ -4415,6 +4433,14 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
             .fd-details { display: flex; justify-content: space-between; gap: 8px; color: #6c757d; font-size: .85rem; margin-top: 10px; }
                 .flag-icon { width: 20px; height: 15px; object-fit: cover; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,.05); vertical-align: -2px; margin-right: 6px; }
 
+    /* Overlay de sesión expirada (10 min) */
+    .session-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.65); display: none; align-items: center; justify-content: center; z-index: 5000; backdrop-filter: blur(1px); }
+    .session-box { background: #ffffff; color: #212529; border-radius: 12px; padding: 22px 24px; width: min(92vw, 420px); box-shadow: 0 10px 30px rgba(0,0,0,.25); text-align: center; }
+    .session-box h5 { margin-bottom: 8px; font-weight: 700; }
+    .session-box p { margin: 0 0 14px; color: #6c757d; }
+    [data-theme="dark"] .session-box { background: #23272f; color: #e9ecef; }
+    [data-theme="dark"] .session-box p { color: #adb5bd; }
+
         @media (max-width: 576px) {
             .fd-row { grid-template-columns: 1fr; text-align: left; }
             .fd-col-extra { text-align: left; margin-top: 6px; }
@@ -4425,6 +4451,15 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
     </style>
 
     <!-- Modal Detalle de Vuelo -->
+    <!-- Overlay de sesión expirada -->
+    <div id="session-overlay" class="session-overlay" aria-hidden="true">
+        <div class="session-box">
+            <h5>Tu sesión necesita actualizarse.</h5>
+            <p>Vuelve a cargar la página para obtener las ofertas más recientes.</p>
+            <button id="session-refresh-btn" class="btn btn-primary">Actualizar</button>
+        </div>
+    </div>
+
     <div class="modal fade" id="flightDetailModal" tabindex="-1" aria-labelledby="flightDetailLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
