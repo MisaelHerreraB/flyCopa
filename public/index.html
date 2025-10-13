@@ -2693,8 +2693,17 @@
                                 <div class="global-dates">Salida: ${formatDateDMY(cheapest.searchDate)} | Regreso: ${formatDateDMY(cheapest.returnDate)}</div>
                                 <div class="global-dates">${stopoverText}</div>
                                 <div class="global-price">$${cheapest.price} USD</div>
+                                <!-- CTA principal de reserva, ahora bajo el precio -->
+                                <div class="mt-2 d-grid d-lg-block">
+                                    ${cheapest.stopover === 'directo' 
+                                        ? `<a class="btn btn-copa btn-lg" href="${buildCopaDirectUrl(cheapest)}" target="_blank" rel="noopener noreferrer">
+                                                <i class=\"bi bi-bag-check-fill me-1\"></i> Reservar en Copa
+                                           </a>`
+                                        : `<a class=\"btn btn-copa btn-lg\" href=\"${buildCopaStopoverSummaryUrl(cheapest)}\" target=\"_blank\" rel=\"noopener noreferrer\">
+                                                <i class=\\"bi bi-bag-check-fill me-1\\"></i> Reservar en Copa
+                                           </a>`}
+                                </div>
                             </div>
-                            
                             <!-- Mensaje para copiar -->
                             <div class="mt-3">
                                 <div class="pre-formatted" id="cheapest-message">🎉 OFERTA ESPECIAL - Congreso Centroamericano 2026! 🎉
@@ -2706,15 +2715,11 @@ ${flightTypeEmoji} ${stopoverText} | 💵 $${cheapest.price} USD
 ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, cheapest.returnDate)}</div>
                             </div>
                             
-                            <!-- Botón -->
-                            <div class="text-center text-lg-start mt-3 d-flex flex-column gap-2 align-items-stretch align-items-lg-start">
-                                <button class="btn btn-primary btn-lg" onclick="copyCheapestMessage()">
+                            <!-- Botón para copiar -->
+                            <div class="text-center text-lg-start mt-3">
+                                <button class="btn btn-outline-secondary" onclick="copyCheapestMessage()">
                                     <i class="bi bi-clipboard"></i> Copiar mensaje
                                 </button>
-                                ${cheapest.stopover !== 'directo' ? `
-                                <a class="btn btn-copa btn-lg" href="${buildCopaStopoverSummaryUrl(cheapest)}" target="_blank" rel="noopener noreferrer">
-                                    <i class="bi bi-bag-check-fill me-1"></i> Reservar en Copa
-                                </a>` : ''}
                             </div>
                         </div>
                         
@@ -3029,6 +3034,36 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
             const text = getAirportDisplayName(code);
             const img = getFlagImg(code);
             return `${img}${text}`;
+        }
+        // Construir URL a Copa Airlines para vuelos directos (roundtrip clásico)
+        function buildCopaDirectUrl(offer) {
+            try {
+                const origin = 'LIM';
+                const dest = 'PTY';
+                const date1 = offer.searchDate;
+                const date2 = offer.returnDate;
+                const params = {
+                    roundtrip: 'true',
+                    adults: '1',
+                    children: '0',
+                    infants: '0',
+                    date1,
+                    date2,
+                    promocode: 'B9580',
+                    area1: origin,
+                    area2: dest,
+                    advanced_air_search: 'false',
+                    flexible_dates_v2: 'false',
+                    airline_preference: ''
+                };
+                const qs = Object.entries(params)
+                    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+                    .join('&');
+                return `https://shopping.copaair.com/?${qs}`;
+            } catch (e) {
+                console.warn('No se pudo construir la URL de Copa para vuelo directo', e);
+                return '#';
+            }
         }
         // Construir URL a Copa Airlines (summary) para stopover (ida/regreso) según la oferta
         function buildCopaStopoverSummaryUrl(offer) {
@@ -3805,7 +3840,10 @@ ${generateRouteForMessage(cheapest.city, stopoverText, cheapest.searchDate, chea
                                         ${offer.stopover !== 'directo' ? `
                                         <a class="btn btn-copa btn-sm mt-2" href="${buildCopaStopoverSummaryUrl(offer)}" target="_blank" rel="noopener noreferrer" title="Abrir reserva en Copa en nueva pestaña">
                                             <i class="bi bi-bag-check-fill me-1"></i> Reservar en Copa
-                                        </a>` : ''}
+                                        </a>` : `
+                                        <a class="btn btn-copa btn-sm mt-2" href="${buildCopaDirectUrl(offer)}" target="_blank" rel="noopener noreferrer" title="Abrir reserva en Copa en nueva pestaña">
+                                            <i class="bi bi-bag-check-fill me-1"></i> Reservar en Copa
+                                        </a>`}
                                         ${offer.stopover === 'directo' ? '' : `
                                         <button type="button" class="btn btn-outline-primary btn-sm mt-2 btn-flight-detail" 
                                             data-offer='${JSON.stringify(detailPayload).replace(/'/g, "&apos;")}'>
