@@ -2246,6 +2246,36 @@
                 
                 return `${hour12}:${minutes} ${ampm}`;
             }
+
+            // Convierte fecha (YYYY-MM-DD) y hora (HH:MM) a Date local
+            function toLocalDateTime(dateStr, timeStr) {
+                if (!dateStr || !timeStr) return null;
+                const [y, m, d] = dateStr.split('-').map(Number);
+                const [hh, mm] = timeStr.split(':').map(Number);
+                return new Date(y, m - 1, d, hh, mm, 0, 0);
+            }
+
+            // Calcula minutos de escala entre llegada (fecha/hora) y salida (fecha/hora)
+            function calcLayoverMinutes(arriveDate, arriveTime, departDate, departTime) {
+                const a = toLocalDateTime(arriveDate, arriveTime);
+                const b = toLocalDateTime(departDate, departTime);
+                if (!a || !b) return null;
+                const diffMs = b - a;
+                if (isNaN(diffMs)) return null;
+                // Si por alguna razón llega negativo (datos raros), no mostramos
+                if (diffMs < 0) return null;
+                return Math.round(diffMs / 60000);
+            }
+
+            // Formatea minutos a "Hh Mm" (ej: 5h 14m) o solo "Xm" si < 60
+            function formatLayover(minutes) {
+                if (minutes == null) return '';
+                const h = Math.floor(minutes / 60);
+                const m = minutes % 60;
+                if (h > 0 && m > 0) return `${h}h ${m}m`;
+                if (h > 0) return `${h}h`;
+                return `${m}m`;
+            }
             
             // Canvas inicial con altura temporal
             const canvas = document.createElement('canvas');
@@ -2301,6 +2331,17 @@
                             fromCity = seg.from;
                             toCity = nextSeg.to;
                         }
+                        // Calcular duración de la escala en PTY (entre llegada del primer tramo y salida del segundo)
+                        const layoverMin = calcLayoverMinutes(
+                            // llegada a PTY
+                            seg.date,
+                            seg.arrival,
+                            // salida desde PTY
+                            nextSeg.date,
+                            nextSeg.departure
+                        );
+                        const layoverText = formatLayover(layoverMin);
+
                         groupedSegments.push({
                             date: nextSeg.date,
                             from: fromCity,
@@ -2309,7 +2350,9 @@
                             arrival: nextSeg.arrival,
                             class: nextSeg.class,
                             direct: false,
-                            stops: seg.stops
+                            stops: seg.stops,
+                            layoverAt: 'PTY',
+                            layoverText
                         });
                         i += 2;
                     } else {
@@ -2332,17 +2375,22 @@
                         ctx.fillStyle = '#333';
                         ctx.font = 'bold 15px Arial';
                         ctx.fillText(fechaStr, 40, y);
-                        // Icono avión y texto escala
+                        // Icono avión y texto escala (mismo estilo para el tiempo)
                         ctx.font = '16px Arial';
                         ctx.fillStyle = '#888';
-                        ctx.fillText('✈ Escala en PTY', 180, y);
-                        ctx.font = 'italic 14px Arial';
-                        ctx.fillStyle = '#888';
-                        // Duración escala si está disponible
-                        let escalaDur = '';
-                        let match = seg.stops.match(/\(([^)]+)\)/);
-                        if (match) escalaDur = match[1];
-                        if (escalaDur) ctx.fillText(`(${escalaDur})`, 320, y);
+                        const escalaBase = `✈ Escala en ${seg.layoverAt || 'PTY'}`;
+                        const baseX = 180;
+                        ctx.fillText(escalaBase, baseX, y);
+                        // Duración escala: preferimos la calculada; si no, extraemos de stops
+                        let escalaDur = seg.layoverText;
+                        if (!escalaDur && seg.stops) {
+                            const match = seg.stops.match(/\(([^)]+)\)/);
+                            if (match) escalaDur = match[1];
+                        }
+                        if (escalaDur) {
+                            const baseWidth = ctx.measureText(escalaBase).width;
+                            ctx.fillText(` (${escalaDur})`, baseX + baseWidth, y);
+                        }
                         y += 28;
                         // Ruta y horas
                         ctx.font = 'bold 20px Arial';
